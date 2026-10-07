@@ -2,6 +2,7 @@ import React from "react";
 import { Composition } from "remotion";
 import { DURATION, FPS } from "./data/timeline";
 import { MainVideo, MainVideoProps } from "./MainVideo";
+import { Portada } from "./Portada";
 
 const defaultProps: MainVideoProps = { grain: 0.05, showSubtitles: true };
 
@@ -41,5 +42,7 @@ export const RemotionRoot: React.FC = () => (
       height={1920}
       defaultProps={defaultProps}
     />
+    {/* Portada / miniatura (render: npx remotion still Portada out/portada.png --frame=59) */}
+    <Composition id="Portada" component={Portada} durationInFrames={60} fps={FPS} width={2160} height={3840} />
   </>
 );
