@@ -6,7 +6,7 @@ import { colors, fonts, gradients, weights } from "../theme";
 export type TitleToken = {
   text: string;
   color?: string;
-  /** Pinta la palabra con el gradiente azul → violeta. */
+  /** Pinta la palabra con el gradiente verde de marca. */
   gradient?: boolean;
   /** Ícono vectorial que reemplaza al emoji; recibe el tamaño en px. */
   icon?: (size: number) => React.ReactNode;
@@ -128,7 +128,7 @@ export const UnderlinedPhrase: React.FC<{
   u: number;
   progress: number;
   color?: string;
-}> = ({ text, size, u, progress, color = colors.blueText }) => (
+}> = ({ text, size, u, progress, color = colors.brandText }) => (
   <span style={{ position: "relative", display: "inline-block", whiteSpace: "nowrap" }}>
     <span style={{ color: interpolateColors(progress, [0, 0.5], [colors.white, color]) }}>
       {text}
@@ -144,7 +144,7 @@ export const UnderlinedPhrase: React.FC<{
         background: gradients.brand,
         transformOrigin: "left center",
         transform: `scaleX(${progress})`,
-        boxShadow: `0 0 ${18 * u}px rgba(47,107,255,0.6)`,
+        boxShadow: `0 0 ${18 * u}px rgba(25,148,123,0.6)`,
       }}
     />
   </span>

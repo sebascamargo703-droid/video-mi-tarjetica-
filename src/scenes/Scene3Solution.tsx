@@ -15,7 +15,7 @@ const WalletScreen: React.FC<{ width: number; u: number }> = ({ width, u }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const k = width / 100;
-  const open = spring({ frame: frame - 22, fps, config: springs.smooth });
+  const open = spring({ frame: frame - 14, fps, config: springs.smooth });
   const stamps = interpolate(frame, [48, 64, 80], [6, 7, 8], clamp);
   const details = enterProgress(frame, fps, 40);
 
@@ -74,20 +74,20 @@ export const Scene3Solution: React.FC<SceneProps> = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { u, isVertical, safe, W, H } = useLayout();
-  const phoneIn = spring({ frame: frame - 2, fps, config: springs.soft });
+  const phoneIn = spring({ frame, fps, config: springs.smooth });
   const phoneWidth = (isVertical ? 560 : 400) * u;
 
   const title = (
     <KineticTitle
       u={u}
       size={(isVertical ? 80 : 96) * u}
-      delay={8}
-      stagger={4}
+      delay={2}
+      stagger={3}
       weight={weights.bold}
       align={isVertical ? "center" : "left"}
       lines={[
         [{ text: "Fidelización" }, { text: "directa" }],
-        [{ text: "en" }, { text: "el" }, { text: "celular", gradient: true, icon: (s) => <PhoneIcon size={s} color={colors.blueText} /> }],
+        [{ text: "en" }, { text: "el" }, { text: "celular", gradient: true, icon: (s) => <PhoneIcon size={s} color={colors.brandText} /> }],
       ]}
     />
   );

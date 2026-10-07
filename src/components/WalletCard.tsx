@@ -42,7 +42,7 @@ export const WalletCard: React.FC<{
         overflow: "hidden",
         fontFamily: fonts.text,
         color: colors.white,
-        boxShadow: `0 ${4 * k}px ${10 * k}px rgba(10,16,60,0.45), inset 0 0 0 ${0.25 * k}px rgba(255,255,255,0.18)`,
+        boxShadow: `0 ${4 * k}px ${10 * k}px rgba(2,20,16,0.5), inset 0 0 0 ${0.25 * k}px rgba(255,255,255,0.18)`,
         padding: `${5.5 * k}px ${6 * k}px`,
         boxSizing: "border-box",
         display: "flex",
@@ -56,7 +56,7 @@ export const WalletCard: React.FC<{
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(90% 70% at 10% 0%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 60%), radial-gradient(60% 60% at 100% 100%, rgba(122,92,255,0.5) 0%, rgba(122,92,255,0) 70%)",
+            "radial-gradient(90% 70% at 10% 0%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 60%), radial-gradient(60% 60% at 100% 100%, rgba(14,82,68,0.5) 0%, rgba(14,82,68,0) 70%)",
         }}
       />
       {/* cabecera */}
@@ -127,14 +127,14 @@ export const WalletCard: React.FC<{
                   position: "absolute",
                   inset: 0,
                   borderRadius: "50%",
-                  background: "linear-gradient(160deg, #FFFFFF 0%, #DCE4FF 100%)",
+                  background: "linear-gradient(160deg, #FFFFFF 0%, #DCF5EE 100%)",
                   transform: `scale(${fill})`,
                   opacity: fill,
-                  boxShadow: `0 ${0.8 * k}px ${2 * k}px rgba(0,0,30,0.3)`,
+                  boxShadow: `0 ${0.8 * k}px ${2 * k}px rgba(0,20,15,0.3)`,
                 }}
               />
               <div style={{ position: "relative", opacity: fill, transform: `scale(${0.6 + fill * 0.4})` }}>
-                <CoffeeIcon size={6 * k} color={colors.blue} />
+                <CoffeeIcon size={6 * k} color={colors.brand} />
               </div>
             </div>
           );
@@ -165,7 +165,7 @@ export const WalletCard: React.FC<{
               width: `${progress * 100}%`,
               height: "100%",
               borderRadius: 999,
-              background: "linear-gradient(90deg, #FFFFFF 0%, #BFD0FF 100%)",
+              background: "linear-gradient(90deg, #FFFFFF 0%, #A8E6D9 100%)",
               boxShadow: `0 0 ${2 * k}px rgba(255,255,255,0.6)`,
             }}
           />

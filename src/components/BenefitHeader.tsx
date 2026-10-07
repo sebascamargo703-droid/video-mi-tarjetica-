@@ -34,7 +34,7 @@ export const BenefitHeader: React.FC<{
           letterSpacing: "-0.06em",
           color: "transparent",
           WebkitTextStroke: `${2 * u}px rgba(255,255,255,0.14)`,
-          backgroundImage: "linear-gradient(180deg, rgba(47,107,255,0.22) 0%, rgba(47,107,255,0) 80%)",
+          backgroundImage: "linear-gradient(180deg, rgba(25,148,123,0.22) 0%, rgba(25,148,123,0) 80%)",
           WebkitBackgroundClip: "text",
           backgroundClip: "text",
           opacity: interpolate(p, [0, 1], [0, 1]),
@@ -53,14 +53,14 @@ export const BenefitHeader: React.FC<{
             fontSize: 26 * u,
             letterSpacing: "0.16em",
             textTransform: "uppercase",
-            color: colors.blueText,
+            color: colors.brandText,
             marginBottom: 22 * u,
             textAlign: align,
           }}
         >
           Beneficio {String(number).padStart(2, "0")}
         </div>
-        <KineticTitle lines={title} size={size} u={u} delay={delay + 4} stagger={4} align={align} />
+        <KineticTitle lines={title} size={size} u={u} delay={delay + 2} stagger={4} align={align} />
       </div>
     </div>
   );

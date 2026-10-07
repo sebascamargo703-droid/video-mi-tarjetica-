@@ -33,9 +33,9 @@ export const Backdrop: React.FC<{
     <AbsoluteFill style={{ backgroundColor: colors.ink, overflow: "hidden" }}>
       <AbsoluteFill
         style={{
-          background: `radial-gradient(ellipse 70% 45% at ${glowX}% ${glowY}%, rgba(47,107,255,${
+          background: `radial-gradient(ellipse 70% 45% at ${glowX}% ${glowY}%, rgba(25,148,123,${
             0.22 * intensity
-          }) 0%, rgba(122,92,255,${0.08 * intensity}) 45%, rgba(10,10,15,0) 75%)`,
+          }) 0%, rgba(14,82,68,${0.08 * intensity}) 45%, rgba(10,10,15,0) 75%)`,
         }}
       />
       {dots.map((d, i) => {
@@ -51,10 +51,10 @@ export const Backdrop: React.FC<{
               width: d.r * 2,
               height: d.r * 2,
               borderRadius: "50%",
-              background: "#BFD0FF",
+              background: "#A8E6D9",
               opacity: d.alpha * (0.6 + 0.4 * Math.sin(frame / 25 + d.phase)),
               filter: `blur(${d.r * 0.6}px)`,
-              boxShadow: `0 0 ${d.r * 4}px rgba(120,150,255,0.8)`,
+              boxShadow: `0 0 ${d.r * 4}px rgba(89,207,183,0.8)`,
             }}
           />
         );

@@ -59,7 +59,7 @@ const WalletDrop: React.FC<{ u: number; width: number }> = ({ u, width }) => {
   const cardH = width * 0.63;
   const pocketH = cardH * 0.56;
   const slide = interpolate(frame, [stopwatchStart - 6, DONE], [0, 1], { ...clamp, easing: easeOutQuint });
-  const appear = enterProgress(frame, fps, 14);
+  const appear = enterProgress(frame, fps, 4);
   const settle = spring({ frame: frame - DONE, fps, config: springs.settle });
   const cardY = interpolate(slide, [0, 1], [-cardH * 0.18, cardH * 0.24]) + settle * 6 * u;
 
@@ -142,7 +142,7 @@ const Stopwatch: React.FC<{ u: number }> = ({ u }) => {
           width: 96 * u,
           height: 96 * u,
           borderRadius: "50%",
-          background: colors.green,
+          background: colors.success,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -182,7 +182,7 @@ export const Scene6Benefit3: React.FC<SceneProps> = () => {
     <BenefitHeader
       number={BENEFIT_NUMBER.wallet}
       align="left"
-      title={[[{ text: "Cero" }, { text: "descargas", gradient: true, icon: (s) => <BoltIcon size={s} color={colors.blueText} /> }]]}
+      title={[[{ text: "Cero" }, { text: "descargas", gradient: true, icon: (s) => <BoltIcon size={s} color={colors.brandText} /> }]]}
     />
   );
   const badges = (

@@ -1,8 +1,14 @@
 # MiTarjetica · Comercial 40 s (Remotion)
 
 Comercial vertical de 40 s (1200 frames a 30 fps) para [mitarjetica.com](https://www.mitarjetica.com/),
-editado sobre la toma real de `public/video-base.mp4`, con look cinematográfico,
-subtítulos palabra por palabra, gráficos en React y mezcla de audio con ducking.
+editado sobre las tomas reales, con look cinematográfico, subtítulos palabra por
+palabra, gráficos en React y mezcla de audio con ducking.
+
+- **Color de marca:** verde MiTarjetica `#0E5244` (el de los logos oficiales) en
+  rellenos; `#19947B` y `#59CFB7` son el mismo matiz aclarado para gradientes y
+  texto acento sobre fondo oscuro. Tokens en `src/theme.ts`.
+- **Ritmo:** cortes secos entre planos, punch-in de 7 frames al entrar a un
+  gráfico y push lateral de 8 frames entre gráficos. Sin disolvencias.
 
 | Composición       | Formato      | Resolución  | Uso                         |
 | ----------------- | ------------ | ----------- | --------------------------- |
@@ -35,7 +41,8 @@ npm run voice:normalize
 
 | Archivo                                  | Obligatorio | Qué es |
 | ---------------------------------------- | ----------- | ------ |
-| `video-base.mp4`                         | ✅ | Toma a cámara (cualquier resolución 9:16). Su audio es la locución. |
+| `user_clips/take1_gancho.mp4` … `take8_cta_cierre.mp4` | ✅ | Las 8 tomas originales: de aquí sale la IMAGEN (cortes secos exactos, sin fotogramas residuales). Su posición está en `TAKES` (`src/data/timeline.ts`). |
+| `video-base.mp4`                         | ✅ | Montaje de las 8 tomas con su locución; solo se usa como fuente del audio. |
 | `voz-normalizada.wav`                    | ✅ | Audio de `video-base.mp4` a -14 LUFS. Se genera con `npm run voice:normalize`. |
 | `musica.mp3`                             | ✅ | Música instrumental ambiental (≥ 40 s). |
 | `sfx/whoosh.wav`                         | — | Ya no se usa (las transiciones van sin efecto de sonido). |
@@ -59,7 +66,8 @@ Los flags opcionales están al final de `src/data/timeline.ts`.
    `pip install faster-whisper && python3 scripts/transcribe-words.py` y pega la salida.
    Las palabras clave en azul se definen en `ACCENT_KEYWORDS` (mismo archivo).
 2. **Montaje / cortes** — `SEGMENTS` en `src/data/timeline.ts` (`at` = frame del
-   corte, `entry` = tipo de transición, `framing` = plano abierto o 1.15x).
+   corte, `entry` = `cut` | `punch` | `slide`, `framing` = plano abierto o 1.15x).
+   Si cambias una toma, ajusta su `start` (segundo de la locución) y su `cut` en `TAKES`.
 3. **Zoom y encuadre según tu toma** — `FRAMINGS` en `src/data/timeline.ts`:
    `originX/originY` = dónde está la cara (centro del zoom),
    `focus` = elipse que queda nítida (el resto recibe el falso desenfoque).
@@ -75,17 +83,17 @@ Los flags opcionales están al final de `src/data/timeline.ts`.
 
 | Frames      | Escena                         | Lo que se dice |
 | ----------- | ------------------------------ | -------------- |
-| 0–128       | 1 · Hook (persona)             | "No necesitas clientes nuevos, necesitas que los que ya te compraron…" |
-| 128–166     | persona 1.15x (whip pan)       | "Conseguir un cliente nuevo…" |
+| 0–130       | 1 · Hook (persona)             | "No necesitas clientes nuevos, necesitas que los que ya te compraron…" |
+| 130–166     | persona 1.15x (corte seco)     | "Conseguir un cliente nuevo…" |
 | 166–242     | 2 · Problema · gráfica 5x      | "…cuesta hasta 5 veces más que retener uno actual" |
 | 242–446     | persona (con reencuadre)       | "Si no regresan… Haz que cada compra de hoy…" |
-| 446–553     | 3 · Solución · iPhone 3D       | "Con MiTarjetica, una tarjeta digital…" |
-| 553–610     | persona 1.15x                  | "Premia la fidelidad de tus clientes…" |
-| 610–746     | Beneficio 01 · Cero descargas  | "…acumulan sellos y obtienen descuentos…" |
-| 746–883     | Beneficio 02 · Proximidad      | "Con aviso de proximidad…" |
-| 883–972     | Beneficio 03 · Base de datos   | "Y mantienes una base de datos real…" |
-| 972–1142    | 7 · CTA (persona + QR)         | "Deja de perder clientes… comenta TARJETICA…" |
-| 1142–1200   | Cierre · logo + URL            | — |
+| 446–556     | 3 · Solución · iPhone 3D       | "Con MiTarjetica, una tarjeta digital…" |
+| 556–610     | persona 1.15x                  | "Premia la fidelidad de tus clientes…" |
+| 610–749     | Beneficio 01 · Cero descargas  | "…acumulan sellos y obtienen descuentos…" |
+| 749–885     | Beneficio 02 · Proximidad      | "Con aviso de proximidad…" |
+| 885–974     | Beneficio 03 · Base de datos   | "Y mantienes una base de datos real…" |
+| 974–1142    | 7 · CTA (persona + QR)         | "Deja de perder clientes… comenta TARJETICA…" |
+| 1142–1200   | Cierre · logo + URL (corte)    | — |
 
 Los beneficios se numeran en el orden en que aparecen en la locución
 (`BENEFIT_NUMBER`); los archivos conservan los nombres del brief

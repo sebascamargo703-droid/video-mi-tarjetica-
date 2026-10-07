@@ -23,7 +23,7 @@ export const QRBadge: React.FC<{
           padding: 3 * u,
           borderRadius: 24 * u + 3 * u,
           background: gradients.brand,
-          boxShadow: `${shadows.glowBlue(u, glow)}, ${shadows.float(u)}`,
+          boxShadow: `${shadows.glowBrand(u, glow)}, ${shadows.float(u)}`,
         }}
       >
         <div

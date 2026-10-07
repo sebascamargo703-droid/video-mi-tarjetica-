@@ -8,11 +8,11 @@ import { Counter } from "./Counter";
 type Customer = { name: string; phone: string; stamps: number; hue: number };
 
 const CUSTOMERS: Customer[] = [
-  { name: "Valentina Ríos", phone: "+57 310 482 1903", stamps: 9, hue: 222 },
-  { name: "Andrés Molina", phone: "+57 300 915 2274", stamps: 6, hue: 258 },
-  { name: "Camila Herrera", phone: "+57 315 337 0841", stamps: 8, hue: 200 },
-  { name: "Santiago Pérez", phone: "+57 321 604 7712", stamps: 3, hue: 280 },
-  { name: "Laura Gómez", phone: "+57 318 270 5596", stamps: 5, hue: 235 },
+  { name: "Valentina Ríos", phone: "+57 310 482 1903", stamps: 9, hue: 168 },
+  { name: "Andrés Molina", phone: "+57 300 915 2274", stamps: 6, hue: 158 },
+  { name: "Camila Herrera", phone: "+57 315 337 0841", stamps: 8, hue: 178 },
+  { name: "Santiago Pérez", phone: "+57 321 604 7712", stamps: 3, hue: 150 },
+  { name: "Laura Gómez", phone: "+57 318 270 5596", stamps: 5, hue: 186 },
 ];
 
 /** Marco de ventana tipo macOS con cristal (glassmorphism). */
@@ -114,7 +114,7 @@ export const DashboardMock: React.FC<{
     <WindowFrame width={width} u={u} title="Panel · MiTarjetica">
       <div style={{ padding: pad }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 * u, marginBottom: 26 * u }}>
-          <BrandMark size={34 * u} color={colors.blueText} />
+          <BrandMark size={34 * u} color={colors.brandText} />
           <span style={{ fontSize: 30 * u, fontWeight: weights.bold, letterSpacing: fonts.tracking }}>
             Mis clientes
           </span>
@@ -130,8 +130,8 @@ export const DashboardMock: React.FC<{
                   ...enterStyle(p, u, 24),
                   borderRadius: 18 * u,
                   padding: `${18 * u}px ${20 * u}px`,
-                  background: s.live ? "rgba(47,107,255,0.14)" : colors.glass,
-                  boxShadow: `inset 0 0 0 ${1.5 * u}px ${s.live ? "rgba(47,107,255,0.45)" : colors.hairline}`,
+                  background: s.live ? "rgba(25,148,123,0.14)" : colors.glass,
+                  boxShadow: `inset 0 0 0 ${1.5 * u}px ${s.live ? "rgba(25,148,123,0.45)" : colors.hairline}`,
                 }}
               >
                 <div
@@ -150,7 +150,7 @@ export const DashboardMock: React.FC<{
                         width: 9 * u,
                         height: 9 * u,
                         borderRadius: "50%",
-                        background: colors.green,
+                        background: colors.success,
                         opacity: 0.55 + 0.45 * Math.sin(frame / 5),
                       }}
                     />
@@ -191,7 +191,7 @@ export const DashboardMock: React.FC<{
                     width: 58 * u,
                     height: 58 * u,
                     borderRadius: "50%",
-                    background: `linear-gradient(140deg, hsl(${c.hue} 90% 64%) 0%, hsl(${c.hue + 30} 80% 48%) 100%)`,
+                    background: `linear-gradient(140deg, hsl(${c.hue} 55% 42%) 0%, hsl(${c.hue} 72% 19%) 100%)`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

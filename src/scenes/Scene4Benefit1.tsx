@@ -85,7 +85,7 @@ const LockScreen: React.FC<{ width: number }> = ({ width }) => {
     <AbsoluteFill
       style={{
         background:
-          "radial-gradient(120% 70% at 20% 10%, #2B3C9E 0%, rgba(43,60,158,0) 60%), radial-gradient(100% 60% at 90% 90%, #5B3FD0 0%, rgba(91,63,208,0) 60%), #0B0B18",
+          "radial-gradient(120% 70% at 20% 10%, #13715E 0%, rgba(19,113,94,0) 60%), radial-gradient(100% 60% at 90% 90%, #0E5244 0%, rgba(14,82,68,0) 60%), #04110E",
         fontFamily: fonts.display,
         color: colors.white,
       }}
@@ -130,7 +130,7 @@ const Ripples: React.FC<{ size: number; u: number }> = ({ size, u }) => {
               height: d,
               borderRadius: "50%",
               border: `${2 * u}px solid rgba(92,139,255,${(1 - t) * 0.55})`,
-              background: `radial-gradient(circle, rgba(47,107,255,0) 55%, rgba(47,107,255,${(1 - t) * 0.12}) 100%)`,
+              background: `radial-gradient(circle, rgba(25,148,123,0) 55%, rgba(25,148,123,${(1 - t) * 0.12}) 100%)`,
             }}
           />
         );
@@ -181,10 +181,10 @@ export const Scene4Benefit1: React.FC<SceneProps> = () => {
             left: -48 * u,
             top: -100 * u,
             transform: `translateY(${(1 - pinIn) * -60 * u}px)`,
-            filter: `drop-shadow(0 ${14 * u}px ${24 * u}px rgba(47,107,255,0.55))`,
+            filter: `drop-shadow(0 ${14 * u}px ${24 * u}px rgba(25,148,123,0.55))`,
           }}
         >
-          <PinIcon size={96 * u} color={colors.blue} />
+          <PinIcon size={96 * u} color={colors.brandBright} />
         </div>
       </div>
 
@@ -214,7 +214,7 @@ export const Scene4Benefit1: React.FC<SceneProps> = () => {
           number={BENEFIT_NUMBER.proximity}
           title={[
             [{ text: "Notificaciones" }],
-            [{ text: "por" }, { text: "proximidad", gradient: true, icon: (s) => <PinIcon size={s} color={colors.blueText} /> }],
+            [{ text: "por" }, { text: "proximidad", gradient: true, icon: (s) => <PinIcon size={s} color={colors.brandText} /> }],
           ]}
         />
       </div>

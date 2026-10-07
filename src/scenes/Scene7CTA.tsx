@@ -25,7 +25,7 @@ const CTAButton: React.FC<{ u: number; size: number }> = ({ u, size }) => {
         padding: `${26 * u}px ${44 * u}px`,
         borderRadius: 999,
         background: gradients.brand,
-        boxShadow: `${shadows.glowBlue(u, halo)}, inset 0 ${1.5 * u}px 0 rgba(255,255,255,0.3)`,
+        boxShadow: `${shadows.glowBrand(u, halo)}, inset 0 ${1.5 * u}px 0 rgba(255,255,255,0.3)`,
         transform: `scale(${pulse})`,
         fontFamily: fonts.display,
         fontWeight: weights.bold,
@@ -119,7 +119,7 @@ export const EndCard: React.FC<SceneProps> = () => {
     <AbsoluteFill style={{ backgroundColor: colors.black, alignItems: "center", justifyContent: "center" }}>
       <AbsoluteFill
         style={{
-          background: `radial-gradient(ellipse 50% 28% at 50% 50%, rgba(47,107,255,${0.16 * glow}) 0%, rgba(0,0,0,0) 70%)`,
+          background: `radial-gradient(ellipse 50% 28% at 50% 50%, rgba(25,148,123,${0.16 * glow}) 0%, rgba(0,0,0,0) 70%)`,
         }}
       />
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 46 * u }}>

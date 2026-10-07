@@ -15,7 +15,7 @@ import { Scene5Benefit2 } from "./scenes/Scene5Benefit2";
 import { Scene6Benefit3 } from "./scenes/Scene6Benefit3";
 import { EndCard, Scene7CTA } from "./scenes/Scene7CTA";
 import type { SceneProps } from "./scenes/types";
-import { renderTransition } from "./transitions/presentations";
+import { PunchIn, renderSlide } from "./transitions/presentations";
 import { colors } from "./theme";
 
 export type MainVideoProps = {
@@ -49,12 +49,13 @@ export const MainVideo: React.FC<MainVideoProps> = ({ grain = 0.05, showSubtitle
           const Scene = SCENES[seg.scene];
           const duration = segmentDuration(i);
           const nodes: React.ReactNode[] = [];
-          if (i > 0 && seg.entry !== "cut") {
-            nodes.push(renderTransition(seg.entry, seg.entryFrames, `t${i}`));
+          if (i > 0 && seg.entry === "slide") {
+            nodes.push(renderSlide(seg.entryFrames, `t${i}`));
           }
+          const scene = <Scene startAbs={segmentStart(i)} durationInFrames={duration} framing={seg.framing} />;
           nodes.push(
             <TransitionSeries.Sequence key={`s${i}`} durationInFrames={duration} premountFor={30}>
-              <Scene startAbs={segmentStart(i)} durationInFrames={duration} framing={seg.framing} />
+              {seg.entry === "punch" ? <PunchIn frames={seg.entryFrames}>{scene}</PunchIn> : scene}
             </TransitionSeries.Sequence>,
           );
           return nodes;

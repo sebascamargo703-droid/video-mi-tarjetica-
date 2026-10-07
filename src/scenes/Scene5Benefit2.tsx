@@ -30,7 +30,7 @@ export const Scene5Benefit2: React.FC<SceneProps> = () => {
         [{ text: "Tu" }, { text: "propia" }],
         [
           { text: "base de datos", gradient: true },
-          { text: "", icon: (s) => <ChartIcon size={s} color={colors.blueText} /> },
+          { text: "", icon: (s) => <ChartIcon size={s} color={colors.brandText} /> },
         ],
       ]}
     />

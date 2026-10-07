@@ -112,7 +112,7 @@ export const WordSubtitles: React.FC = () => {
           const pop = spring({ frame: frame - wStart, fps, config: springs.settle, durationInFrames: 10 });
           const scale = active ? interpolate(pop, [0, 1], [1, 1.08]) : 1;
           const opacity = active ? 1 : 0.55;
-          const color = w.isAccent ? colors.blueText : colors.white;
+          const color = w.isAccent ? colors.brandText : colors.white;
           return (
             <span
               key={`${w.startMs}-${i}`}

@@ -87,7 +87,7 @@ export const Scene2Problem: React.FC<SceneProps> = () => {
     duration: counterStep * 4 + 1,
     stepped: true,
   });
-  const heroP = enterProgress(frame, fps, 10, springs.soft);
+  const heroP = enterProgress(frame, fps, 4, springs.smooth);
   const tick = spring({
     frame: frame - (counterStart + (n - 1) * counterStep),
     fps,
@@ -101,7 +101,7 @@ export const Scene2Problem: React.FC<SceneProps> = () => {
     <div
       style={{
         opacity: interpolate(heroP, [0, 0.6], [0, 1], clamp),
-        filter: `blur(${(1 - heroP) * 12 * u}px) drop-shadow(0 0 ${60 * u}px rgba(47,107,255,${glow}))`,
+        filter: `blur(${(1 - heroP) * 12 * u}px) drop-shadow(0 0 ${60 * u}px rgba(25,148,123,${glow}))`,
         transform: `scale(${heroScale})`,
         fontFamily: fonts.display,
         fontWeight: weights.heavy,
@@ -132,7 +132,7 @@ export const Scene2Problem: React.FC<SceneProps> = () => {
         [{ text: "Retener" }, { text: "cuesta" }],
         [
           { text: "5x", gradient: true },
-          { text: "menos", icon: (s) => <TrendDownIcon size={s} color={colors.blueText} /> },
+          { text: "menos", icon: (s) => <TrendDownIcon size={s} color={colors.brandText} /> },
         ],
       ]}
     />
@@ -159,7 +159,7 @@ export const Scene2Problem: React.FC<SceneProps> = () => {
         u={u}
         delay={counterStart + 8}
         fill={gradients.brand}
-        glow={`0 0 ${40 * u}px rgba(47,107,255,0.5)`}
+        glow={`0 0 ${40 * u}px rgba(25,148,123,0.5)`}
       />
     </div>
   );

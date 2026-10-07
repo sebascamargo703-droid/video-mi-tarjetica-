@@ -26,12 +26,20 @@ export const colors = {
   textSecondary: "rgba(255,255,255,0.62)",
   textTertiary: "rgba(255,255,255,0.38)",
 
-  blue: "#2F6BFF",
-  violet: "#7A5CFF",
-  /** Variante del azul con más luminancia para texto pequeño sobre video. */
-  blueText: "#5C8BFF",
+  /**
+   * Verde oficial de MiTarjetica (#0E5244, tomado de los logos de marca).
+   * Se usa tal cual en rellenos: botón, tarjeta, barras, ícono de app.
+   */
+  brand: "#0E5244",
+  /** Mismo matiz (168°), más oscuro: sombras y fondos de la tarjeta. */
+  brandDeep: "#072C24",
+  /** Mismo matiz, más claro: segundo stop de gradientes y brillos. */
+  brandBright: "#19947B",
+  /** Mismo matiz con más luminancia: SOLO texto acento sobre negro o video. */
+  brandText: "#59CFB7",
   red: "#FF3B30",
-  green: "#30D158",
+  /** Check de éxito: verde de marca (no un verde genérico de iOS). */
+  success: "#19947B",
 
   glass: "rgba(255,255,255,0.07)",
   glassStrong: "rgba(22,22,30,0.62)",
@@ -40,9 +48,9 @@ export const colors = {
 } as const;
 
 export const gradients = {
-  brand: `linear-gradient(135deg, ${colors.blue} 0%, ${colors.violet} 100%)`,
-  brandText: `linear-gradient(100deg, #6E98FF 0%, ${colors.blue} 38%, ${colors.violet} 100%)`,
-  card: "linear-gradient(145deg, #1B2A6B 0%, #2F3FA8 42%, #5B3FD0 100%)",
+  brand: `linear-gradient(135deg, ${colors.brand} 0%, ${colors.brandBright} 100%)`,
+  brandText: `linear-gradient(100deg, #A8E6D9 0%, ${colors.brandText} 45%, ${colors.brandBright} 100%)`,
+  card: `linear-gradient(145deg, ${colors.brandDeep} 0%, ${colors.brand} 50%, #13715E 100%)`,
 } as const;
 
 export const fonts = {
@@ -75,8 +83,8 @@ export const shadows = {
     `0 ${12 * u}px ${40 * u}px rgba(0,0,0,0.35), 0 ${2 * u}px ${8 * u}px rgba(0,0,0,0.25)`,
   float: (u: number) =>
     `0 ${40 * u}px ${90 * u}px rgba(0,0,0,0.55), 0 ${10 * u}px ${30 * u}px rgba(0,0,0,0.35)`,
-  glowBlue: (u: number, a = 0.45) =>
-    `0 0 ${60 * u}px rgba(47,107,255,${a}), 0 0 ${140 * u}px rgba(122,92,255,${a * 0.5})`,
+  glowBrand: (u: number, a = 0.45) =>
+    `0 0 ${60 * u}px rgba(25,148,123,${a}), 0 0 ${140 * u}px rgba(14,82,68,${a * 0.6})`,
   text: (u: number) =>
     `0 ${2 * u}px ${10 * u}px rgba(0,0,0,0.55), 0 ${1 * u}px ${2 * u}px rgba(0,0,0,0.35)`,
 } as const;

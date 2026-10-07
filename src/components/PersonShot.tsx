@@ -4,32 +4,52 @@ import {
   Easing,
   interpolate,
   OffthreadVideo,
+  Sequence,
   spring,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { FRAMINGS, FramingName, PUSH_INS } from "../data/timeline";
+import { FPS, FRAMINGS, FramingName, PUSH_INS, TAKES } from "../data/timeline";
 import { clamp } from "../lib/anim";
 import { rectStyle, useLayout } from "../lib/layout";
 import { radii, shadows, springs } from "../theme";
 import { CinematicGrade } from "./CinematicGrade";
 
-const VIDEO = staticFile("video-base.mp4");
-
-/** El video SIEMPRE se monta en silencio: la voz sale de <AudioMix/>. */
-const Footage: React.FC<{ trimBefore: number; style?: React.CSSProperties }> = ({
-  trimBefore,
+/**
+ * Imagen de la persona para el tramo [startAbs, startAbs + durationInFrames).
+ * Usa las tomas ORIGINALES (TAKES): en cada cambio de toma hay un corte seco
+ * al fotograma exacto, sin los fundidos de video-base.mp4, y cada toma se
+ * desmonta en cuanto deja de verse, así que ninguna capa anterior se filtra.
+ * El video SIEMPRE va en silencio: la voz sale de <AudioMix/>.
+ */
+const Footage: React.FC<{ startAbs: number; durationInFrames: number; style?: React.CSSProperties }> = ({
+  startAbs,
+  durationInFrames,
   style,
-}) => (
-  <OffthreadVideo
-    src={VIDEO}
-    trimBefore={trimBefore}
-    muted
-    pauseWhenBuffering
-    style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
-  />
-);
+}) => {
+  const endAbs = startAbs + durationInFrames;
+  return (
+    <>
+      {TAKES.map((take, i) => {
+        const from = Math.max(take.cut, startAbs);
+        const to = Math.min(TAKES[i + 1]?.cut ?? Infinity, endAbs);
+        if (to <= from) return null;
+        return (
+          <Sequence key={take.file} from={from - startAbs} durationInFrames={to - from} premountFor={15}>
+            <OffthreadVideo
+              src={staticFile(take.file)}
+              trimBefore={Math.max(0, Math.round(from - take.start * FPS))}
+              muted
+              pauseWhenBuffering
+              style={{ width: "100%", height: "100%", objectFit: "cover", ...style }}
+            />
+          </Sequence>
+        );
+      })}
+    </>
+  );
+};
 
 /**
  * Plano a cámara con cámara virtual:
@@ -80,11 +100,11 @@ export const PersonShot: React.FC<{
           </filter>
         </svg>
         <AbsoluteFill style={{ filter: `url(#${blurId})` }}>
-          <Footage trimBefore={startAbs} />
+          <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
         </AbsoluteFill>
         {/* sujeto nítido */}
         <AbsoluteFill style={{ WebkitMaskImage: mask, maskImage: mask }}>
-          <Footage trimBefore={startAbs} />
+          <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
         </AbsoluteFill>
       </AbsoluteFill>
     </CinematicGrade>
@@ -103,7 +123,7 @@ export const PersonShot: React.FC<{
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       <AbsoluteFill style={{ filter: `blur(${60 * u}px) brightness(0.35) saturate(1.2)`, transform: "scale(1.2)" }}>
-        <Footage trimBefore={startAbs} />
+        <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
       </AbsoluteFill>
       <AbsoluteFill
         style={{

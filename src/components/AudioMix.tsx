@@ -50,7 +50,7 @@ const useVoiceEnvelope = (durationInFrames: number, fps: number) => {
  *  - Voz original (normalizada a -14 LUFS) a volumen 1.
  *  - Música al 10% con ducking automático a 6% mientras se habla y leve subida
  *    en transiciones. Fade in 0.5 s · fade out 1 s.
- *  - SFX sutiles (whoosh / pop / tick / chime) en public/sfx/.
+ *  - SFX sutiles (pop / tick / chime; sin whoosh en los cortes) en public/sfx/.
  */
 export const AudioMix: React.FC = () => {
   const { fps, durationInFrames } = useVideoConfig();
