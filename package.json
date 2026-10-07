@@ -1,22 +1,19 @@
 {
-  "name": "video-tarjetica",
+  "name": "mitarjetica-promo",
   "version": "1.0.0",
-  "description": "My Remotion video",
+  "description": "Comercial de 40 s de MiTarjetica en Remotion (9:16 y 16:9, 4K)",
   "repository": {},
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@remotion/captions": "^4.0.533",
+    "@remotion/captions": "4.0.533",
     "@remotion/cli": "4.0.533",
-    "@remotion/media-utils": "^4.0.533",
-    "@remotion/tailwind-v4": "4.0.533",
-    "@remotion/transitions": "^4.0.533",
-    "@remotion/zod-types": "4.0.533",
+    "@remotion/fonts": "4.0.533",
+    "@remotion/media-utils": "4.0.533",
+    "@remotion/transitions": "4.0.533",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "remotion": "4.0.533",
-    "tailwindcss": "4.0.0",
-    "zod": "4.5.4"
+    "remotion": "4.0.533"
   },
   "devDependencies": {
     "@remotion/eslint-config-flat": "4.0.533",
@@ -28,11 +25,10 @@
   },
   "scripts": {
     "dev": "remotion studio",
-    "build": "remotion bundle",
-    "upgrade": "remotion upgrade",
+    "render:vertical": "remotion render Vertical out/mitarjetica-4k.mp4 --codec=h264 --crf=15 --audio-codec=aac --audio-bitrate=320k",
+    "render:horizontal": "remotion render Horizontal out/mitarjetica-4k-16x9.mp4 --codec=h264 --crf=15 --audio-codec=aac --audio-bitrate=320k",
+    "render:preview": "remotion render VerticalPreview out/mitarjetica-preview.mp4 --codec=h264 --crf=20",
+    "voice:normalize": "bash scripts/normalize-voice.sh",
     "lint": "eslint src && tsc"
-  },
-  "sideEffects": [
-    "*.css"
-  ]
+  }
 }

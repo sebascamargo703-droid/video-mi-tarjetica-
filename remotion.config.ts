@@ -1,12 +1,14 @@
-// See all configuration options: https://remotion.dev/docs/config
-// Each option also is available as a CLI flag: https://remotion.dev/docs/cli
-
-// Note: When using the Node.JS APIs, the config file doesn't apply. Instead, pass options directly to the APIs
-
+// Configuración de render por defecto (los flags de la CLI la sobrescriben).
+// https://www.remotion.dev/docs/config
 import { Config } from "@remotion/cli/config";
-import { enableTailwind } from '@remotion/tailwind-v4';
 
-Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
+Config.setJpegQuality(95);
 Config.setOverwriteOutput(true);
-Config.overrideBundlerConfig(enableTailwind);
+Config.setCodec("h264");
+Config.setCrf(15);
+Config.setPixelFormat("yuv420p");
+Config.setAudioCodec("aac");
+Config.setAudioBitrate("320k");
+// Renders 4K: más memoria para el caché de frames de video.
+Config.setOffthreadVideoCacheSizeInBytes(2 * 1024 * 1024 * 1024);

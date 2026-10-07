@@ -1,94 +1,203 @@
-export interface SubtitleItem {
-  text: string;
-  startFrame: number;
-  endFrame: number;
-  isKeyWord?: boolean;
-  accentColor?: string;
-}
-
 /**
- * Word-level subtitles 100% synchronized with the speaker's actual voice in video-base.mp4
+ * SUBTÍTULOS PALABRA POR PALABRA
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Tiempos en milisegundos sobre la línea de tiempo del video final
+ * (= tiempo de public/video-base.mp4, que arranca en el frame 0).
+ *
+ * ⚠️ AJUSTE MANUAL: los inicios de cada frase están medidos sobre las pausas
+ * reales de la locución; dentro de cada frase las palabras se repartieron por
+ * sílabas. Revisa en `npx remotion studio` y corrige los ms que se vean
+ * adelantados/atrasados. Para obtener tiempos exactos con Whisper:
+ *   python3 scripts/transcribe-words.py   (imprime este mismo formato)
+ *
+ * w(texto, inicioMs, finMs, acento?)  → acento = color de marca (palabra clave)
+ * Una coma o punto al final fuerza el cambio de "página" de subtítulos.
  */
-export const SUBTITLES_DATA: SubtitleItem[] = [
-  // 0 - 50: "No necesitas clientes nuevos"
-  { text: "No", startFrame: 0, endFrame: 12 },
-  { text: "necesitas", startFrame: 13, endFrame: 26 },
-  { text: "clientes", startFrame: 27, endFrame: 38, isKeyWord: true, accentColor: "#FF3B30" },
-  { text: "nuevos 🛑", startFrame: 39, endFrame: 50, isKeyWord: true, accentColor: "#FF3B30" },
+import type { Caption } from "@remotion/captions";
 
-  // 51 - 130: "Necesitas que te vuelvan a elegir"
-  { text: "Necesitas", startFrame: 51, endFrame: 72 },
-  { text: "que te vuelvan", startFrame: 73, endFrame: 98, isKeyWord: true, accentColor: "#2F6BFF" },
-  { text: "a elegir ⚡", startFrame: 99, endFrame: 130, isKeyWord: true, accentColor: "#34C759" },
+export type SubtitleWord = Caption & { accent: boolean };
 
-  // 131 - 185: "Conseguir un cliente nuevo"
-  { text: "Conseguir", startFrame: 131, endFrame: 154 },
-  { text: "un cliente", startFrame: 155, endFrame: 170 },
-  { text: "nuevo", startFrame: 171, endFrame: 185, isKeyWord: true, accentColor: "#FFCC00" },
+const w = (
+  text: string,
+  startMs: number,
+  endMs: number,
+  accent = false,
+): SubtitleWord => ({
+  text,
+  startMs,
+  endMs,
+  timestampMs: Math.round((startMs + endMs) / 2),
+  confidence: 1,
+  accent,
+});
 
-  // 186 - 241: "Cuesta hasta 5 veces más que retenerlo"
-  { text: "cuesta hasta", startFrame: 186, endFrame: 202 },
-  { text: "5 veces más 📉", startFrame: 203, endFrame: 224, isKeyWord: true, accentColor: "#FF3B30" },
-  { text: "que retenerlo", startFrame: 225, endFrame: 241, isKeyWord: true, accentColor: "#2F6BFF" },
+export const SUBTITLE_WORDS: SubtitleWord[] = [
+  // 0.24s · No necesitas clientes nuevos,
+  w("No", 240, 438),
+  w("necesitas", 438, 1007),
+  w("clientes", 1007, 1328, true),
+  w("nuevos,", 1328, 1650),
+  // 1.86s · necesitas que los que ya
+  w("necesitas", 1860, 2165),
+  w("que", 2165, 2271),
+  w("los", 2271, 2378),
+  w("que", 2378, 2484),
+  w("ya", 2484, 2590),
+  // 2.70s · te compraron
+  w("te", 2700, 2934),
+  w("compraron", 2934, 3460),
+  // 3.56s · te vuelvan a elegir.
+  w("te", 3560, 3686),
+  w("vuelvan", 3686, 3891),
+  w("a", 3891, 4017),
+  w("elegir.", 4017, 4300),
+  // 4.45s · Conseguir un cliente nuevo
+  w("Conseguir", 4450, 4855),
+  w("un", 4855, 5035),
+  w("cliente", 5035, 5328, true),
+  w("nuevo", 5328, 5620),
+  // 5.62s · cuesta hasta 5 veces más
+  w("cuesta", 5620, 5939),
+  w("hasta", 5939, 6259),
+  w("5", 6259, 6504, true),
+  w("veces", 6504, 6824, true),
+  w("más", 6824, 7020),
+  // 7.18s · que retener un actual.
+  w("que", 7180, 7311),
+  w("retener", 7311, 7606),
+  w("un", 7606, 7737),
+  w("actual.", 7737, 7950),
+  // 8.05s · Si no regresan, no es tu servicio,
+  w("Si", 8050, 8226),
+  w("no", 8226, 8402),
+  w("regresan,", 8402, 8797),
+  w("no", 8797, 8973),
+  w("es", 8973, 9149),
+  w("tu", 9149, 9324),
+  w("servicio,", 9324, 9720),
+  // 9.87s · es que no le estás dando una razón para volver.
+  w("es", 9870, 10007),
+  w("que", 10007, 10143),
+  w("no", 10143, 10280),
+  w("le", 10280, 10417),
+  w("estás", 10417, 10639),
+  w("dando", 10639, 10861),
+  w("una", 10861, 11083),
+  w("razón", 11083, 11306),
+  w("para", 11306, 11528),
+  w("volver.", 11528, 11750),
+  // 11.93s · Haz que cada compra de hoy
+  w("Haz", 11930, 12098),
+  w("que", 12098, 12267),
+  w("cada", 12267, 12540),
+  w("compra", 12540, 12813),
+  w("de", 12813, 12982),
+  w("hoy", 12982, 13150, true),
+  // 13.15s · sea una visita asegurada para mañana.
+  w("sea", 13150, 13277),
+  w("una", 13277, 13484),
+  w("visita", 13484, 13771),
+  w("asegurada", 13771, 14217),
+  w("para", 14217, 14423),
+  w("mañana.", 14423, 14710),
+  // 14.99s · Con MiTarjetica,
+  w("Con", 14990, 15163),
+  w("MiTarjetica,", 15163, 15770, true),
+  // 16.12s · una tarjeta digital que vive en el celular de tus clientes.
+  w("una", 16120, 16343),
+  w("tarjeta", 16343, 16651),
+  w("digital", 16651, 16960),
+  w("que", 16960, 17097),
+  w("vive", 17097, 17320),
+  w("en", 17320, 17457),
+  w("el", 17457, 17594),
+  w("celular", 17594, 17903),
+  w("de", 17903, 18040),
+  w("tus", 18040, 18177),
+  w("clientes.", 18177, 18400, true),
+  // 18.52s · Premia la fidelidad de tus clientes
+  w("Premia", 18520, 18835),
+  w("la", 18835, 19029),
+  w("fidelidad", 19029, 19587),
+  w("de", 19587, 19781),
+  w("tus", 19781, 19975),
+  w("clientes", 19975, 20290, true),
+  // 20.41s · con una tarjeta en la que acumulan sellos
+  w("con", 20410, 20595),
+  w("una", 20595, 20896),
+  w("tarjeta", 20896, 21312),
+  w("en", 21312, 21497),
+  w("la", 21497, 21682),
+  w("que", 21682, 21867),
+  w("acumulan", 21867, 22399),
+  w("sellos", 22399, 22700),
+  // 22.82s · y obtienen descuentos y recompensas.
+  w("y", 22820, 23033),
+  w("obtienen", 23033, 23513),
+  w("descuentos", 23513, 23993),
+  w("y", 23993, 24207),
+  w("recompensas.", 24207, 24820),
+  // 25.03s · Con aviso de proximidad,
+  w("Con", 25030, 25200),
+  w("aviso", 25200, 25582),
+  w("de", 25582, 25752),
+  w("proximidad,", 25752, 26240),
+  // 26.56s · le avisa a tu cliente
+  w("le", 26560, 26730),
+  w("avisa", 26730, 27113),
+  w("a", 27113, 27283),
+  w("tu", 27283, 27453),
+  w("cliente", 27453, 27730, true),
+  // 27.85s · cada vez que pasa cerca de tu negocio.
+  w("cada", 27850, 28076),
+  w("vez", 28076, 28216),
+  w("que", 28216, 28355),
+  w("pasa", 28355, 28581),
+  w("cerca", 28581, 28808),
+  w("de", 28808, 28947),
+  w("tu", 28947, 29087),
+  w("negocio.", 29087, 29400),
+  // 29.55s · Y mantienes una base de datos real y actualizada de tu negocio.
+  w("Y", 29550, 29698),
+  w("mantienes", 29698, 30032),
+  w("una", 30032, 30273),
+  w("base", 30273, 30514, true),
+  w("de", 30514, 30663, true),
+  w("datos", 30663, 30904, true),
+  w("real", 30904, 31052),
+  w("y", 31052, 31200),
+  w("actualizada", 31200, 31720),
+  w("de", 31720, 31868),
+  w("tu", 31868, 32016),
+  w("negocio.", 32016, 32350),
+  // 32.73s · Deja de perder clientes todos los días.
+  w("Deja", 32730, 33021),
+  w("de", 33021, 33200),
+  w("perder", 33200, 33491),
+  w("clientes", 33491, 33781, true),
+  w("todos", 33781, 34072),
+  w("los", 34072, 34251),
+  w("días.", 34251, 34430),
+  // 34.54s · Comenta la palabra TARJETICA
+  w("Comenta", 34540, 34975),
+  w("la", 34975, 35169),
+  w("palabra", 35169, 35604),
+  w("TARJETICA", 35604, 36160, true),
+  // 36.36s · y te enviamos toda la información.
+  w("y", 36360, 36506),
+  w("te", 36506, 36651),
+  w("enviamos", 36651, 36979),
+  w("toda", 36979, 37216),
+  w("la", 37216, 37361),
+  w("información.", 37361, 37780),
+];
 
-  // 242 - 295: "Si no regresan, no es tu servicio"
-  { text: "Si no regresan,", startFrame: 242, endFrame: 268 },
-  { text: "no es", startFrame: 269, endFrame: 280 },
-  { text: "tu servicio ❌", startFrame: 281, endFrame: 295, isKeyWord: true, accentColor: "#FF3B30" },
-
-  // 296 - 355: "No les estás dando un motivo para volver"
-  { text: "no les estás dando", startFrame: 296, endFrame: 322 },
-  { text: "un motivo", startFrame: 323, endFrame: 338, isKeyWord: true, accentColor: "#2F6BFF" },
-  { text: "para volver 🔄", startFrame: 339, endFrame: 355, isKeyWord: true, accentColor: "#34C759" },
-
-  // 356 - 445: "Cada compra de hoy es visita asegurada mañana"
-  { text: "Cada compra de hoy", startFrame: 356, endFrame: 395 },
-  { text: "es visita asegurada", startFrame: 396, endFrame: 424, isKeyWord: true, accentColor: "#34C759" },
-  { text: "mañana 🗓️", startFrame: 425, endFrame: 445, isKeyWord: true, accentColor: "#34C759" },
-
-  // 446 - 500: "Con MiTarjetica"
-  { text: "con", startFrame: 446, endFrame: 462 },
-  { text: "MiTarjetica 📲", startFrame: 463, endFrame: 500, isKeyWord: true, accentColor: "#2F6BFF" },
-
-  // 501 - 554: "Una tarjeta digital en el celular de tus clientes"
-  { text: "una tarjeta digital", startFrame: 501, endFrame: 526, isKeyWord: true, accentColor: "#2F6BFF" },
-  { text: "en el celular", startFrame: 527, endFrame: 540 },
-  { text: "de tus clientes", startFrame: 541, endFrame: 554 },
-
-  // 555 - 650: "Premia la fidelidad de tus clientes"
-  { text: "premia la fidelidad", startFrame: 555, endFrame: 605, isKeyWord: true, accentColor: "#34C759" },
-  { text: "de tus clientes 🎁", startFrame: 606, endFrame: 650, isKeyWord: true, accentColor: "#34C759" },
-
-  // 651 - 748: "Acumulan sellos y obtienen descuentos y recompensas"
-  { text: "acumulan sellos", startFrame: 651, endFrame: 692, isKeyWord: true, accentColor: "#FFCC00" },
-  { text: "y obtienen", startFrame: 693, endFrame: 715 },
-  { text: "descuentos y recompensas ⭐", startFrame: 716, endFrame: 748, isKeyWord: true, accentColor: "#FFCC00" },
-
-  // 749 - 815: "Con aviso de proximidad"
-  { text: "con aviso de", startFrame: 749, endFrame: 778 },
-  { text: "proximidad 📍", startFrame: 779, endFrame: 815, isKeyWord: true, accentColor: "#2F6BFF" },
-
-  // 816 - 884: "Le avisa a tu cliente cada vez que pasa cerca"
-  { text: "le avisa a tu cliente", startFrame: 816, endFrame: 848 },
-  { text: "cada vez que", startFrame: 849, endFrame: 864 },
-  { text: "pasa cerca 🔔", startFrame: 865, endFrame: 884, isKeyWord: true, accentColor: "#34C759" },
-
-  // 885 - 982: "Y mantienes una base de datos real, actualizada de tu negocio"
-  { text: "y mantienes una", startFrame: 885, endFrame: 912 },
-  { text: "base de datos real 📊", startFrame: 913, endFrame: 948, isKeyWord: true, accentColor: "#2F6BFF" },
-  { text: "actualizada de tu negocio", startFrame: 949, endFrame: 982, isKeyWord: true, accentColor: "#34C759" },
-
-  // 983 - 1045: "Deja de perder clientes todos los días"
-  { text: "deja de perder", startFrame: 983, endFrame: 1008 },
-  { text: "clientes 🛑", startFrame: 1009, endFrame: 1024, isKeyWord: true, accentColor: "#FF3B30" },
-  { text: "todos los días", startFrame: 1025, endFrame: 1045 },
-
-  // 1046 - 1140: "Comenta la palabra Tarjetica y te enviamos la información"
-  { text: "comenta la palabra", startFrame: 1046, endFrame: 1074 },
-  { text: "TARJETICA 💬", startFrame: 1075, endFrame: 1108, isKeyWord: true, accentColor: "#FFCC00" },
-  { text: "y te enviamos la información", startFrame: 1109, endFrame: 1140, isKeyWord: true, accentColor: "#2F6BFF" },
-
-  // 1141 - 1200: Cierre con logo y URL
-  { text: "Empieza hoy en", startFrame: 1141, endFrame: 1170 },
-  { text: "mitarjetica.com 🚀", startFrame: 1171, endFrame: 1200, isKeyWord: true, accentColor: "#2F6BFF" },
+/** Palabras/frases que se pintan en color acento aunque no estén marcadas. */
+export const ACCENT_KEYWORDS = [
+  "clientes",
+  "5 veces",
+  "base de datos",
+  "Apple Wallet",
+  "Google Wallet",
+  "hoy",
 ];

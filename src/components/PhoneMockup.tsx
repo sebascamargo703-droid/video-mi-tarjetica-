@@ -1,153 +1,176 @@
 import React from "react";
-import { interpolate, useCurrentFrame } from "remotion";
-import { theme } from "../theme";
-
-interface PhoneMockupProps {
-  children?: React.ReactNode;
-  width?: number;
-  height?: number;
-  rotateY?: number;
-  rotateX?: number;
-  floatY?: number;
-  scale?: number;
-}
+import { useCurrentFrame } from "remotion";
 
 /**
- * Apple Keynote 3D iPhone 15/16 Pro Chassis
- * Titanium edge gradients, Dynamic Island, glass reflection sweep, perspective transforms.
+ * iPhone 15 Pro flotando en 3D (titanio, Dynamic Island, sombra de contacto).
+ * `width` en px; el alto se deriva de la proporción real (71.6 × 146.6 mm).
  */
-export const PhoneMockup: React.FC<PhoneMockupProps> = ({
-  children,
-  width = 920,
-  height = 1860,
-  rotateY = -6,
-  rotateX = 5,
-  floatY = 0,
-  scale = 1.0,
-}) => {
+export const PhoneMockup: React.FC<{
+  width: number;
+  u: number;
+  children?: React.ReactNode;
+  /** Rotación base en grados. */
+  rotateX?: number;
+  rotateY?: number;
+  /** Amplitud de la rotación/flotación continua (0 = estático). */
+  float?: number;
+  style?: React.CSSProperties;
+}> = ({ width, u, children, rotateX = 8, rotateY = -14, float = 1, style }) => {
   const frame = useCurrentFrame();
+  const height = width * (146.6 / 71.6);
+  const bezel = width * 0.028;
+  const outerRadius = width * 0.165;
+  const innerRadius = outerRadius - bezel;
 
-  const sheenTranslate = interpolate(frame % 150, [0, 150], [-120, 240]);
+  const ry = rotateY + Math.sin(frame / 48) * 5 * float;
+  const rx = rotateX + Math.cos(frame / 61) * 2.2 * float;
+  const lift = Math.sin(frame / 40) * 12 * u * float;
 
   return (
-    <div
-      style={{
-        width,
-        height,
-        transform: `perspective(1600px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateY(${floatY}px) scale(${scale})`,
-        position: "relative",
-        boxSizing: "border-box",
-      }}
-    >
-      {/* Titanium Outer Rim */}
+    <div style={{ position: "relative", width, height, perspective: 2600 * u, ...style }}>
+      {/* sombra de contacto */}
       <div
         style={{
-          width: "100%",
-          height: "100%",
-          background:
-            "linear-gradient(135deg, #44444e 0%, #1c1c21 50%, #2e2e36 100%)",
-          borderRadius: "80px",
-          padding: "24px",
-          boxSizing: "border-box",
-          border: "4px solid rgba(255, 255, 255, 0.22)",
-          position: "relative",
-          boxShadow:
-            "inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -2px 6px rgba(0, 0, 0, 0.8)",
+          position: "absolute",
+          left: "8%",
+          right: "8%",
+          bottom: -height * 0.07,
+          height: height * 0.06,
+          borderRadius: "50%",
+          background: "rgba(0,0,0,0.85)",
+          filter: `blur(${34 * u}px)`,
+          transform: `scale(${1 - lift / (300 * u)})`,
+          opacity: 0.8,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transformStyle: "preserve-3d",
+          transform: `translateY(${lift}px) rotateX(${rx}deg) rotateY(${ry}deg)`,
         }}
       >
-        {/* Screen Bezel & Display */}
+        {/* marco de titanio */}
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "#05070D",
-            borderRadius: "62px",
-            overflow: "hidden",
-            position: "relative",
-            padding: "36px 32px 32px",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
+            position: "absolute",
+            inset: 0,
+            borderRadius: outerRadius,
+            background:
+              "linear-gradient(135deg, #8a8a8f 0%, #3a3a3e 18%, #1d1d20 50%, #3c3c40 82%, #96969b 100%)",
+            boxShadow: `0 ${50 * u}px ${110 * u}px rgba(0,0,0,0.6), inset 0 0 ${2 * u}px rgba(255,255,255,0.5)`,
+            padding: width * 0.012,
           }}
         >
-          {/* Dynamic Island */}
+          {/* bisel negro */}
           <div
             style={{
-              position: "absolute",
-              top: 18,
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: 200,
-              height: 48,
-              backgroundColor: "#000000",
-              borderRadius: "28px",
-              zIndex: 50,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 18px",
-              boxSizing: "border-box",
+              width: "100%",
+              height: "100%",
+              borderRadius: outerRadius - width * 0.012,
+              background: "#050506",
+              padding: bezel - width * 0.012,
             }}
           >
+            {/* pantalla */}
             <div
               style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                backgroundColor: "#1e1e24",
+                position: "relative",
+                width: "100%",
+                height: "100%",
+                borderRadius: innerRadius,
+                overflow: "hidden",
+                background: "#000",
               }}
-            />
-            <div
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                backgroundColor: theme.colors.successGreen,
-                boxShadow: `0 0 10px ${theme.colors.successGreen}`,
-              }}
-            />
-          </div>
-
-          {/* Status Bar */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              color: "#94a3b8",
-              fontSize: "22px",
-              fontWeight: theme.typography.weights.bold,
-              marginBottom: "20px",
-              marginTop: "24px",
-            }}
-          >
-            <span>9:41</span>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span>Apple Wallet</span>
-              <span style={{ color: theme.colors.successGreen }}>●</span>
+            >
+              {children}
+              {/* Dynamic Island */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: width * 0.03,
+                  left: "50%",
+                  width: width * 0.3,
+                  height: width * 0.088,
+                  transform: "translateX(-50%)",
+                  borderRadius: 999,
+                  background: "#000",
+                }}
+              />
+              {/* reflejo del cristal */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(115deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.04) 100%)",
+                  pointerEvents: "none",
+                }}
+              />
             </div>
           </div>
-
-          {/* Glass Specular Sheen Sweep */}
+        </div>
+        {/* botones laterales */}
+        {[0.2, 0.29, 0.38].map((t, i) => (
           <div
+            key={i}
             style={{
               position: "absolute",
-              top: "-50%",
-              left: `${sheenTranslate}%`,
-              width: "55%",
-              height: "200%",
-              background:
-                "linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.12) 50%, transparent 70%)",
-              transform: "rotate(25deg)",
-              pointerEvents: "none",
-              zIndex: 45,
+              left: -width * 0.008,
+              top: height * t,
+              width: width * 0.01,
+              height: i === 0 ? height * 0.035 : height * 0.06,
+              borderRadius: 4 * u,
+              background: "#444448",
             }}
           />
-
-          {/* Inner Content */}
-          <div style={{ flex: 1, position: "relative" }}>{children}</div>
-        </div>
+        ))}
+        <div
+          style={{
+            position: "absolute",
+            right: -width * 0.008,
+            top: height * 0.3,
+            width: width * 0.01,
+            height: height * 0.1,
+            borderRadius: 4 * u,
+            background: "#444448",
+          }}
+        />
       </div>
     </div>
   );
 };
+
+/** Barra de estado de iOS para usar dentro del mockup. */
+export const StatusBar: React.FC<{ width: number; time?: string }> = ({ width, time = "9:41" }) => (
+  <div
+    style={{
+      position: "absolute",
+      top: width * 0.045,
+      left: width * 0.1,
+      right: width * 0.085,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      color: "#fff",
+      fontWeight: 600,
+      fontSize: width * 0.045,
+      zIndex: 2,
+    }}
+  >
+    <span>{time}</span>
+    <span style={{ display: "flex", gap: width * 0.015, alignItems: "center" }}>
+      <svg width={width * 0.06} height={width * 0.04} viewBox="0 0 18 12">
+        {[0, 1, 2, 3].map((i) => (
+          <rect key={i} x={i * 4.6} y={9 - i * 3} width={3.2} height={3 + i * 3} rx={1} fill="#fff" />
+        ))}
+      </svg>
+      <svg width={width * 0.085} height={width * 0.04} viewBox="0 0 26 12">
+        <rect x="0.5" y="0.5" width="22" height="11" rx="3.2" stroke="rgba(255,255,255,0.5)" fill="none" />
+        <rect x="2" y="2" width="16" height="8" rx="2" fill="#fff" />
+        <rect x="23.5" y="4" width="1.8" height="4" rx="0.9" fill="rgba(255,255,255,0.5)" />
+      </svg>
+    </span>
+  </div>
+);

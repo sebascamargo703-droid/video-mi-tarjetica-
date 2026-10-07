@@ -1,256 +1,175 @@
 import React from "react";
-import { theme } from "../theme";
-
-interface WalletCardProps {
-  businessName?: string;
-  stampsCount?: number;
-  totalStamps?: number;
-  activeStampIndex?: number;
-}
+import { interpolate } from "remotion";
+import { clamp } from "../lib/anim";
+import { colors, fonts, gradients, weights } from "../theme";
+import { BrandMark, CoffeeIcon } from "./Icons";
 
 /**
- * Premium Apple Wallet / Google Wallet Digital Pass
- * Titanium borders, glassmorphic dark emerald backdrop, contactless waves and stamps grid.
+ * Tarjeta de fidelización digital (pase de Wallet) con diseño premium:
+ * logo, sellos que se van llenando y barra de progreso.
+ * Todas las medidas son proporcionales a `width`.
  */
-export const WalletCard: React.FC<WalletCardProps> = ({
-  businessName = "Café & Bistró",
-  stampsCount = 9,
-  totalStamps = 10,
-  activeStampIndex = 9,
+export const WalletCard: React.FC<{
+  width: number;
+  /** Sellos llenos (acepta decimales para animar el sello que entra). */
+  stamps: number;
+  total?: number;
+  merchant?: string;
+  reward?: string;
+  style?: React.CSSProperties;
+}> = ({
+  width,
+  stamps,
+  total = 10,
+  merchant = "Café Aroma",
+  reward = "Café gratis",
+  style,
 }) => {
+  const k = width / 100; // 1k = 1% del ancho
+  const height = width * 0.63;
+  const cols = 5;
+  const progress = Math.min(1, stamps / total);
+  const remaining = Math.max(0, total - Math.floor(stamps));
+
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
-        background:
-          "linear-gradient(155deg, #093325 0%, #031c14 50%, #0d121f 100%)",
-        borderRadius: "44px",
-        padding: "36px 36px 30px",
+        position: "relative",
+        width,
+        height,
+        borderRadius: 6 * k,
+        background: gradients.card,
+        overflow: "hidden",
+        fontFamily: fonts.text,
+        color: colors.white,
+        boxShadow: `0 ${4 * k}px ${10 * k}px rgba(10,16,60,0.45), inset 0 0 0 ${0.25 * k}px rgba(255,255,255,0.18)`,
+        padding: `${5.5 * k}px ${6 * k}px`,
         boxSizing: "border-box",
-        border: `2px solid rgba(52, 199, 89, 0.45)`,
-        boxShadow:
-          "0 30px 80px rgba(0, 0, 0, 0.8), inset 0 1px 3px rgba(255, 255, 255, 0.3)",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        color: "#FFFFFF",
-        position: "relative",
-        overflow: "hidden",
+        ...style,
       }}
     >
-      {/* Top Header */}
-      <div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: "20px",
-                color: "#6ee7b7",
-                fontWeight: theme.typography.weights.heavy,
-                letterSpacing: "2px",
-                textTransform: "uppercase",
-              }}
-            >
-              PROGRAMA DE LEALTAD
-            </div>
-            <div
-              style={{
-                fontSize: "44px",
-                fontWeight: theme.typography.weights.black,
-                color: theme.colors.textPrimary,
-                letterSpacing: theme.typography.letterSpacing,
-                marginTop: "4px",
-              }}
-            >
-              {businessName} ☕
-            </div>
-          </div>
-
+      {/* brillo de cristal */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(90% 70% at 10% 0%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 60%), radial-gradient(60% 60% at 100% 100%, rgba(122,92,255,0.5) 0%, rgba(122,92,255,0) 70%)",
+        }}
+      />
+      {/* cabecera */}
+      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 2.6 * k }}>
           <div
             style={{
-              background: "rgba(52, 199, 89, 0.2)",
-              border: `1.5px solid ${theme.colors.successGreen}`,
-              padding: "8px 20px",
-              borderRadius: theme.radii.full,
-              fontSize: "22px",
-              fontWeight: theme.typography.weights.black,
-              color: theme.colors.successGreen,
+              width: 9 * k,
+              height: 9 * k,
+              borderRadius: 2.4 * k,
+              background: "rgba(255,255,255,0.14)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.18)",
             }}
           >
-            NIVEL VIP ⭐️
+            <CoffeeIcon size={5.6 * k} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontWeight: weights.bold, fontSize: 4.6 * k, letterSpacing: fonts.tracking }}>
+              {merchant}
+            </span>
+            <span style={{ fontWeight: weights.medium, fontSize: 2.8 * k, opacity: 0.6 }}>Tarjeta de fidelidad</span>
           </div>
         </div>
-
-        {/* Cardholder Info */}
-        <div
-          style={{
-            marginTop: "24px",
-            padding: "16px 24px",
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-            borderRadius: theme.radii.md,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: "18px",
-                color: theme.colors.textSecondary,
-                fontWeight: theme.typography.weights.bold,
-              }}
-            >
-              TITULAR
-            </div>
-            <div
-              style={{
-                fontSize: "26px",
-                fontWeight: theme.typography.weights.heavy,
-                color: theme.colors.textPrimary,
-              }}
-            >
-              Cliente Frecuente
-            </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 2.4 * k, opacity: 0.6, fontWeight: weights.semibold, letterSpacing: "0.08em" }}>
+            SELLOS
           </div>
-          <div style={{ textAlign: "right" }}>
-            <div
-              style={{
-                fontSize: "18px",
-                color: theme.colors.textSecondary,
-                fontWeight: theme.typography.weights.bold,
-              }}
-            >
-              SELLOS
-            </div>
-            <div
-              style={{
-                fontSize: "32px",
-                fontWeight: theme.typography.weights.black,
-                color: theme.colors.warningYellow,
-              }}
-            >
-              {stampsCount} / {totalStamps}
-            </div>
+          <div style={{ fontSize: 5 * k, fontWeight: weights.bold, fontVariantNumeric: "tabular-nums" }}>
+            {Math.floor(stamps)}/{total}
           </div>
         </div>
       </div>
 
-      {/* 10 Stamps Grid */}
+      {/* sellos */}
       <div
         style={{
+          position: "relative",
+          flex: 1,
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          gap: "16px",
-          backgroundColor: "rgba(0, 0, 0, 0.45)",
-          padding: "24px 20px",
-          borderRadius: theme.radii.lg,
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          alignContent: "center",
+          justifyItems: "center",
+          rowGap: 3 * k,
         }}
       >
-        {Array.from({ length: totalStamps }).map((_, i) => {
-          const num = i + 1;
-          const isTen = num === 10;
-          const stamped = num <= activeStampIndex;
-
+        {Array.from({ length: total }).map((_, i) => {
+          const fill = interpolate(stamps - i, [0, 1], [0, 1], clamp);
+          const d = 11.5 * k;
           return (
             <div
-              key={num}
+              key={i}
               style={{
-                aspectRatio: "1",
+                width: d,
+                height: d,
                 borderRadius: "50%",
-                backgroundColor: stamped
-                  ? theme.colors.successGreen
-                  : "rgba(255, 255, 255, 0.08)",
-                border: stamped
-                  ? "3px solid #a7f3d0"
-                  : "3px dashed rgba(255, 255, 255, 0.25)",
+                boxShadow: `inset 0 0 0 ${0.35 * k}px rgba(255,255,255,${0.28 + fill * 0.2})`,
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
-                color: stamped ? "#000000" : "#64748b",
-                fontWeight: theme.typography.weights.black,
-                fontSize: isTen ? "36px" : "30px",
-                boxShadow: stamped
-                  ? "0 0 20px rgba(52, 199, 89, 0.65)"
-                  : "none",
+                justifyContent: "center",
+                position: "relative",
               }}
             >
-              {stamped ? "✓" : isTen ? "🎁" : num}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "50%",
+                  background: "linear-gradient(160deg, #FFFFFF 0%, #DCE4FF 100%)",
+                  transform: `scale(${fill})`,
+                  opacity: fill,
+                  boxShadow: `0 ${0.8 * k}px ${2 * k}px rgba(0,0,30,0.3)`,
+                }}
+              />
+              <div style={{ position: "relative", opacity: fill, transform: `scale(${0.6 + fill * 0.4})` }}>
+                <CoffeeIcon size={6 * k} color={colors.blue} />
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* NFC Contactless Wave & Barcode */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "14px",
-          padding: "20px 0",
-          backgroundColor: "rgba(0, 0, 0, 0.3)",
-          borderRadius: theme.radii.md,
-        }}
-      >
-        <div style={{ fontSize: "40px" }}>📶</div>
-        <div
-          style={{
-            fontSize: "22px",
-            fontWeight: theme.typography.weights.heavy,
-            color: "#6ee7b7",
-          }}
-        >
-          Acerca al datáfono o escanea
-        </div>
-
-        {/* Crisp vector barcode lines */}
+      {/* progreso */}
+      <div style={{ position: "relative" }}>
         <div
           style={{
             display: "flex",
-            gap: "5px",
-            height: "56px",
-            alignItems: "center",
-            opacity: 0.9,
+            justifyContent: "space-between",
+            fontSize: 2.9 * k,
+            fontWeight: weights.medium,
+            marginBottom: 1.6 * k,
           }}
         >
-          {[6, 3, 8, 3, 4, 7, 3, 5, 3, 9, 4, 3, 7, 3, 5, 4, 3, 8, 3, 5, 7, 3, 4].map(
-            (w, idx) => (
-              <div
-                key={idx}
-                style={{
-                  width: `${w * 1.5}px`,
-                  height: "100%",
-                  backgroundColor: "#FFFFFF",
-                  borderRadius: "2px",
-                }}
-              />
-            )
-          )}
+          <span style={{ opacity: 0.75 }}>
+            {remaining > 0 ? `${remaining} visitas para tu ${reward.toLowerCase()}` : `¡${reward} desbloqueado!`}
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 1.2 * k, opacity: 0.55 }}>
+            <BrandMark size={3.6 * k} /> MiTarjetica
+          </span>
         </div>
-      </div>
-
-      {/* Footer Apple & Google Wallet badge */}
-      <div
-        style={{
-          textAlign: "center",
-          fontSize: "20px",
-          color: theme.colors.textSecondary,
-          fontWeight: theme.typography.weights.bold,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "10px",
-        }}
-      >
-        <span>🔒 100% Nativo en Apple Wallet y Google Wallet</span>
+        <div style={{ height: 1.5 * k, borderRadius: 999, background: "rgba(255,255,255,0.16)" }}>
+          <div
+            style={{
+              width: `${progress * 100}%`,
+              height: "100%",
+              borderRadius: 999,
+              background: "linear-gradient(90deg, #FFFFFF 0%, #BFD0FF 100%)",
+              boxShadow: `0 0 ${2 * k}px rgba(255,255,255,0.6)`,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

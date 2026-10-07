@@ -1,141 +1,151 @@
 import React from "react";
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { theme } from "../theme";
+import { interpolate, interpolateColors, useCurrentFrame, useVideoConfig } from "remotion";
+import { enterProgress, enterStyle } from "../lib/anim";
+import { colors, fonts, gradients, weights } from "../theme";
 
-interface KineticTitleProps {
-  line1: string;
-  line2?: string;
-  icon?: React.ReactNode;
-  underlinePhrase?: string;
-  underlineProgress?: number; // 0 to 1
-  startFrame?: number;
-  highlightColor?: string;
-  badge?: string;
-}
+export type TitleToken = {
+  text: string;
+  color?: string;
+  /** Pinta la palabra con el gradiente azul → violeta. */
+  gradient?: boolean;
+  /** Ícono vectorial que reemplaza al emoji; recibe el tamaño en px. */
+  icon?: (size: number) => React.ReactNode;
+};
 
 /**
- * Editorial Apple/Linear style Kinetic Headline
- * Clean typography, blur-to-sharp entrance, high damping, optional animated line underline.
+ * Titular cinético: entra palabra por palabra con fade + translateY + blur→nítido.
+ * `lines` es un arreglo de líneas; cada línea, un arreglo de palabras.
  */
-export const KineticTitle: React.FC<KineticTitleProps> = ({
-  line1,
-  line2,
-  icon,
-  underlineProgress = 0,
-  startFrame = 0,
-  highlightColor = theme.colors.accentBlue,
-  badge,
+export const KineticTitle: React.FC<{
+  lines: TitleToken[][];
+  /** Tamaño de fuente en px. */
+  size: number;
+  u: number;
+  delay?: number;
+  stagger?: number;
+  align?: "left" | "center";
+  weight?: number;
+  lineHeight?: number;
+  style?: React.CSSProperties;
+}> = ({
+  lines,
+  size,
+  u,
+  delay = 0,
+  stagger = 4,
+  align = "center",
+  weight = weights.heavy,
+  lineHeight = 1.02,
+  style,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-
-  const relFrame = Math.max(0, frame - startFrame);
-
-  const entrance = spring({
-    frame: relFrame,
-    fps,
-    config: theme.springs.smooth,
-  });
-
-  const blurVal = interpolate(entrance, [0, 1], [16, 0]);
-  const translateY = interpolate(entrance, [0, 1], [40, 0]);
-  const opacity = interpolate(entrance, [0, 0.4, 1], [0, 0.9, 1]);
+  let index = 0;
 
   return (
     <div
       style={{
-        position: "absolute",
-        top: "14%",
-        left: "50%",
-        transform: `translateX(-50%) translateY(${translateY}px)`,
-        filter: `blur(${blurVal}px)`,
-        opacity,
+        fontFamily: fonts.display,
+        fontWeight: weight,
+        fontSize: size,
+        lineHeight,
+        letterSpacing: fonts.trackingTight,
+        color: colors.white,
+        textAlign: align,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
-        zIndex: 50,
-        width: "90%",
-        maxWidth: "1400px",
-        pointerEvents: "none",
+        alignItems: align === "center" ? "center" : "flex-start",
+        ...style,
       }}
     >
-      {/* Optional Top Badge */}
-      {badge && (
+      {lines.map((line, li) => (
         <div
+          key={li}
           style={{
-            display: "inline-flex",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: align === "center" ? "center" : "flex-start",
             alignItems: "center",
-            gap: "10px",
-            padding: "8px 24px",
-            borderRadius: theme.radii.full,
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            border: `1px solid ${theme.colors.surfaceBorder}`,
-            backdropFilter: "blur(20px)",
-            color: theme.colors.textSecondary,
-            fontSize: "26px",
-            fontWeight: theme.typography.weights.semibold,
-            letterSpacing: theme.typography.letterSpacing,
-            marginBottom: "20px",
+            columnGap: size * 0.26,
           }}
         >
-          {badge}
+          {line.map((token, ti) => {
+            const p = enterProgress(frame, fps, delay + index++ * stagger);
+            return (
+              <span
+                key={ti}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  ...enterStyle(p, u),
+                }}
+              >
+                {token.text ? (
+                  <span
+                    style={
+                      token.gradient
+                        ? {
+                            backgroundImage: gradients.brandText,
+                            WebkitBackgroundClip: "text",
+                            backgroundClip: "text",
+                            color: "transparent",
+                            paddingBottom: size * 0.08,
+                            marginBottom: -size * 0.08,
+                          }
+                        : { color: token.color ?? colors.white }
+                    }
+                  >
+                    {token.text}
+                  </span>
+                ) : null}
+                {token.icon ? (
+                  <span
+                    style={{
+                      marginLeft: token.text ? size * 0.2 : 0,
+                      display: "inline-flex",
+                      transform: `scale(${interpolate(p, [0, 1], [0.6, 1])})`,
+                    }}
+                  >
+                    {token.icon(size * 0.78)}
+                  </span>
+                ) : null}
+              </span>
+            );
+          })}
         </div>
-      )}
-
-      {/* Main Headline */}
-      <h1
-        style={{
-          margin: 0,
-          fontFamily: theme.typography.fontFamily,
-          fontSize: "76px",
-          fontWeight: theme.typography.weights.heavy,
-          letterSpacing: theme.typography.letterSpacing,
-          color: theme.colors.textPrimary,
-          lineHeight: 1.1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "18px",
-          flexWrap: "wrap",
-        }}
-      >
-        <span>{line1}</span>
-        {icon && <span style={{ display: "inline-flex" }}>{icon}</span>}
-      </h1>
-
-      {line2 && (
-        <div
-          style={{
-            position: "relative",
-            marginTop: "12px",
-            fontFamily: theme.typography.fontFamily,
-            fontSize: "64px",
-            fontWeight: theme.typography.weights.bold,
-            letterSpacing: theme.typography.letterSpacing,
-            color: theme.colors.textPrimary,
-          }}
-        >
-          <span>{line2}</span>
-
-          {/* Animated underline from left to right */}
-          {underlineProgress > 0 && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: -8,
-                left: 0,
-                width: `${underlineProgress * 100}%`,
-                height: "6px",
-                borderRadius: "3px",
-                background: highlightColor,
-                boxShadow: `0 0 16px ${highlightColor}`,
-                transition: "width 0.05s linear",
-              }}
-            />
-          )}
-        </div>
-      )}
+      ))}
     </div>
   );
 };
+
+/**
+ * Frase con subrayado que se dibuja de izquierda a derecha.
+ * `progress` 0→1 controla el trazo; el color de la frase sube a azul con él.
+ */
+export const UnderlinedPhrase: React.FC<{
+  text: string;
+  size: number;
+  u: number;
+  progress: number;
+  color?: string;
+}> = ({ text, size, u, progress, color = colors.blueText }) => (
+  <span style={{ position: "relative", display: "inline-block", whiteSpace: "nowrap" }}>
+    <span style={{ color: interpolateColors(progress, [0, 0.5], [colors.white, color]) }}>
+      {text}
+    </span>
+    <span
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: -size * 0.1,
+        height: Math.max(3, size * 0.075),
+        borderRadius: 999,
+        background: gradients.brand,
+        transformOrigin: "left center",
+        transform: `scaleX(${progress})`,
+        boxShadow: `0 0 ${18 * u}px rgba(47,107,255,0.6)`,
+      }}
+    />
+  </span>
+);

@@ -1,128 +1,95 @@
 import React from "react";
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { theme } from "../theme";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { KineticTitle, UnderlinedPhrase } from "../components/KineticTitle";
+import { StopIcon } from "../components/Icons";
+import { PersonShot } from "../components/PersonShot";
+import { clamp, enterProgress, enterStyle } from "../lib/anim";
+import { rectStyle, useLayout } from "../lib/layout";
+import { colors, fonts, shadows, weights } from "../theme";
+import type { SceneProps } from "./types";
 
-export const Scene1Hook: React.FC = () => {
+/**
+ * ESCENA 1 · HOOK
+ * Persona a cámara + titular "No necesitas más clientes 🛑" palabra por palabra.
+ * Cuando dice "los que ya te compraron" la frase se pinta de azul y se dibuja
+ * el subrayado de izquierda a derecha.
+ *
+ * ⚠️ AJUSTE: PHRASE_IN / UNDERLINE_* en frames absolutos según tu locución.
+ */
+const TITLE_DELAY = 4;
+const PHRASE_IN = 58; // "necesitas que…"
+const UNDERLINE_START = 66; // "los que ya…"
+const UNDERLINE_END = 104; // "…te compraron"
+
+export const Scene1Hook: React.FC<SceneProps> = ({ startAbs, durationInFrames, framing = "wide" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const { u, headline, isVertical } = useLayout();
+  const abs = startAbs + frame;
+  const align = isVertical ? "center" : "left";
+  const titleSize = (isVertical ? 112 : 128) * u;
+  const phraseSize = (isVertical ? 54 : 60) * u;
 
-  // Entrance spring for the hook headline
-  const titleEntrance = spring({
-    frame,
-    fps,
-    config: theme.springs.smooth,
-  });
-
-  const titleTranslateY = interpolate(titleEntrance, [0, 1], [40, 0]);
-  const titleOpacity = interpolate(titleEntrance, [0, 0.4, 1], [0, 0.9, 1]);
-
-  // Underline animation on "te vuelvan a elegir"
-  const underlineProgress = interpolate(frame, [50, 85], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+  const phraseP = enterProgress(abs, fps, PHRASE_IN);
+  const underline = interpolate(abs, [UNDERLINE_START, UNDERLINE_END], [0, 1], {
+    ...clamp,
+    easing: (t) => 1 - Math.pow(1 - t, 3),
   });
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        pointerEvents: "none",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        paddingTop: "5%", // Stays strictly in the sky, far above his head
-        zIndex: 50,
-      }}
-    >
-      {/* Category Pill */}
+    <PersonShot startAbs={startAbs} durationInFrames={durationInFrames} framing={framing}>
+      {/* degradado suave para que el titular lea sobre el cielo */}
       <div
         style={{
-          transform: `translateY(${titleTranslateY * 0.7}px)`,
-          opacity: titleOpacity,
-          padding: "10px 32px",
-          borderRadius: 9999,
-          background: "rgba(255, 59, 48, 0.95)",
-          border: "2px solid rgba(255, 255, 255, 0.3)",
-          color: "#FFFFFF",
-          fontFamily: theme.typography.fontFamily,
-          fontSize: 26,
-          fontWeight: 800,
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-          marginBottom: 16,
-          boxShadow: "0 10px 30px rgba(255, 59, 48, 0.5)",
+          position: "absolute",
+          inset: 0,
+          background: isVertical
+            ? "linear-gradient(180deg, rgba(5,8,20,0.55) 0%, rgba(5,8,20,0.25) 22%, rgba(5,8,20,0) 36%)"
+            : "linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 45%)",
         }}
-      >
-        FIDELIZACIÓN DIGITAL INTELIGENTE 🛑
-      </div>
-
-      {/* Headline in compact frosted glass scrim in the sky */}
+      />
       <div
         style={{
-          transform: `translateY(${titleTranslateY}px)`,
-          opacity: titleOpacity,
-          textAlign: "center",
-          maxWidth: "88%",
-          padding: "24px 44px",
-          borderRadius: 36,
-          backgroundColor: "rgba(10, 12, 22, 0.88)",
-          border: "1.5px solid rgba(255, 255, 255, 0.18)",
-          boxShadow: "0 20px 60px rgba(0, 0, 0, 0.8)",
+          ...rectStyle(headline),
+          display: "flex",
+          flexDirection: "column",
+          alignItems: isVertical ? "center" : "flex-start",
+          justifyContent: isVertical ? "flex-start" : "center",
+          paddingTop: 0,
+          textShadow: shadows.text(u),
         }}
       >
-        <h1
-          style={{
-            margin: 0,
-            fontFamily: theme.typography.fontFamily,
-            fontSize: 76,
-            fontWeight: 900,
-            letterSpacing: "-0.03em",
-            color: "#FFFFFF",
-            lineHeight: 1.1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 18,
-          }}
-        >
-          <span>No necesitas clientes nuevos</span>
-        </h1>
-
-        {/* Highlight Sub-phrase */}
+        <KineticTitle
+          u={u}
+          size={titleSize}
+          delay={TITLE_DELAY}
+          stagger={5}
+          align={align}
+          lines={[
+            [{ text: "No" }, { text: "necesitas" }],
+            [
+              { text: "más", color: colors.red },
+              { text: "clientes", color: colors.red, icon: (s) => <StopIcon size={s} /> },
+            ],
+          ]}
+        />
         <div
           style={{
-            position: "relative",
-            display: "inline-block",
-            marginTop: 14,
-            fontFamily: theme.typography.fontFamily,
-            fontSize: 52,
-            fontWeight: 800,
-            letterSpacing: "-0.02em",
-            color: "#70A1FF",
+            ...enterStyle(phraseP, u),
+            marginTop: 34 * u,
+            fontFamily: fonts.display,
+            fontWeight: weights.semibold,
+            fontSize: phraseSize,
+            letterSpacing: fonts.tracking,
+            color: colors.white,
+            textAlign: isVertical ? "center" : "left",
+            lineHeight: 1.3,
           }}
         >
-          <span>...necesitas que te vuelvan a elegir ⚡</span>
-
-          {underlineProgress > 0 && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: -6,
-                left: 0,
-                width: `${underlineProgress * 100}%`,
-                height: 6,
-                borderRadius: 3,
-                background: "linear-gradient(90deg, #2F6BFF 0%, #34C759 100%)",
-                boxShadow: "0 0 20px rgba(47, 107, 255, 0.8)",
-              }}
-            />
-          )}
+          <span style={{ opacity: 0.7 }}>Necesitas a </span>
+          <UnderlinedPhrase text="los que ya te compraron" size={phraseSize} u={u} progress={underline} />
         </div>
       </div>
-    </div>
+    </PersonShot>
   );
 };

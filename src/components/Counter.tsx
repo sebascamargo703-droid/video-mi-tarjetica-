@@ -1,96 +1,58 @@
 import React from "react";
-import { interpolate, useCurrentFrame } from "remotion";
-import { theme } from "../theme";
+import { Easing, interpolate, useCurrentFrame } from "remotion";
+import { clamp } from "../lib/anim";
 
-interface CounterProps {
+export type CounterProps = {
   from: number;
   to: number;
-  startFrame: number;
-  durationFrames: number;
+  /** Frame local donde arranca la cuenta. */
+  start: number;
+  duration: number;
   decimals?: number;
+  /** Cuenta en saltos enteros (1x, 2x, 3x…) en vez de continua. */
+  stepped?: boolean;
   prefix?: string;
   suffix?: string;
-  fontSize?: string;
-  gradient?: string;
-}
+  /** Separador de miles (es-CO usa punto). */
+  locale?: string;
+  style?: React.CSSProperties;
+};
 
-/**
- * High-precision animated KPI counter
- * Smooth easing, optional decimal precision, gradient and subtle glow.
- */
-export const Counter: React.FC<CounterProps> = ({
+export const useCounterValue = ({
   from,
   to,
-  startFrame,
-  durationFrames,
+  start,
+  duration,
+  stepped,
+}: Pick<CounterProps, "from" | "to" | "start" | "duration" | "stepped">) => {
+  const frame = useCurrentFrame();
+  const t = interpolate(frame, [start, start + duration], [0, 1], {
+    ...clamp,
+    easing: stepped ? (x) => x : Easing.bezier(0.16, 1, 0.3, 1),
+  });
+  const v = from + (to - from) * t;
+  return stepped ? Math.min(to, Math.floor(v + 1e-6)) : v;
+};
+
+/** Contador numérico animado con cifras tabulares (no "baila" el ancho). */
+export const Counter: React.FC<CounterProps> = ({
   decimals = 0,
   prefix = "",
   suffix = "",
-  fontSize = "160px",
-  gradient = theme.colors.gradientBrand,
+  locale = "es-CO",
+  style,
+  ...rest
 }) => {
-  const frame = useCurrentFrame();
-
-  const relFrame = Math.max(0, frame - startFrame);
-
-  const value = interpolate(relFrame, [0, durationFrames], [from, to], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+  const value = useCounterValue(rest);
+  const text = value.toLocaleString(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   });
-
-  const formattedValue =
-    decimals > 0
-      ? value.toFixed(decimals)
-      : Math.round(value).toLocaleString("en-US");
-
   return (
-    <div
-      style={{
-        display: "inline-flex",
-        alignItems: "baseline",
-        fontFamily: theme.typography.fontFamily,
-        fontWeight: theme.typography.weights.black,
-        fontSize,
-        letterSpacing: "-0.04em",
-        lineHeight: 0.9,
-      }}
-    >
-      {prefix && (
-        <span
-          style={{
-            fontSize: "0.55em",
-            fontWeight: theme.typography.weights.heavy,
-            color: theme.colors.textSecondary,
-            marginRight: "8px",
-          }}
-        >
-          {prefix}
-        </span>
-      )}
-      <span
-        style={{
-          background: gradient,
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          filter: "drop-shadow(0 0 45px rgba(47, 107, 255, 0.45))",
-        }}
-      >
-        {formattedValue}
-      </span>
-      {suffix && (
-        <span
-          style={{
-            fontSize: "0.55em",
-            fontWeight: theme.typography.weights.heavy,
-            background: gradient,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            marginLeft: "6px",
-          }}
-        >
-          {suffix}
-        </span>
-      )}
-    </div>
+    <span style={{ fontVariantNumeric: "tabular-nums", ...style }}>
+      {prefix}
+      {text}
+      {suffix}
+    </span>
   );
 };

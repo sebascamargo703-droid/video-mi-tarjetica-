@@ -1,67 +1,45 @@
-import "./index.css";
 import React from "react";
 import { Composition } from "remotion";
+import { DURATION, FPS } from "./data/timeline";
 import { MainVideo, MainVideoProps } from "./MainVideo";
 
-export const RemotionRoot: React.FC = () => {
-  return (
-    <>
-      {/* Vertical 9:16 at native source resolution (1080x1920, 30 fps, 40s).
-          For a 4K file use: --scale=2 (scales video + graphics uniformly) */}
-      <Composition
-        id="Vertical"
-        component={MainVideo}
-        durationInFrames={1200}
-        fps={30}
-        width={1080}
-        height={1920}
-        defaultProps={{
-          width: 1080,
-          height: 1920,
-        } as MainVideoProps}
-      />
+const defaultProps: MainVideoProps = { grain: 0.05, showSubtitles: true };
 
-      {/* Zero-Lag Fast Studio Preview (1080x1920, 30 fps, 40s) */}
-      <Composition
-        id="VerticalPreview"
-        component={MainVideo}
-        durationInFrames={1200}
-        fps={30}
-        width={1080}
-        height={1920}
-        defaultProps={{
-          width: 1080,
-          height: 1920,
-        } as MainVideoProps}
-      />
-
-      {/* Landscape Horizontal Composition (3840x2160, 30 fps, 40s) */}
-      <Composition
-        id="Horizontal"
-        component={MainVideo}
-        durationInFrames={1200}
-        fps={30}
-        width={3840}
-        height={2160}
-        defaultProps={{
-          width: 3840,
-          height: 2160,
-        } as MainVideoProps}
-      />
-
-      {/* Compatibility Alias */}
-      <Composition
-        id="MiTarjeticaPromo"
-        component={MainVideo}
-        durationInFrames={1200}
-        fps={30}
-        width={2160}
-        height={3840}
-        defaultProps={{
-          width: 2160,
-          height: 3840,
-        } as MainVideoProps}
-      />
-    </>
-  );
-};
+/**
+ * Composiciones. Todo el diseño escala con el lado corto del lienzo, así que
+ * puedes cambiar width/height libremente (p. ej. 1080x1920 para pruebas).
+ */
+export const RemotionRoot: React.FC = () => (
+  <>
+    {/* Principal · 9:16 · 4K */}
+    <Composition
+      id="Vertical"
+      component={MainVideo}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={2160}
+      height={3840}
+      defaultProps={defaultProps}
+    />
+    {/* 16:9 · 4K (persona en panel 9:16 a la derecha, gráficos a la izquierda) */}
+    <Composition
+      id="Horizontal"
+      component={MainVideo}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={3840}
+      height={2160}
+      defaultProps={defaultProps}
+    />
+    {/* Previsualización ligera 1080x1920 (mismo diseño, ¼ de píxeles) */}
+    <Composition
+      id="VerticalPreview"
+      component={MainVideo}
+      durationInFrames={DURATION}
+      fps={FPS}
+      width={1080}
+      height={1920}
+      defaultProps={defaultProps}
+    />
+  </>
+);

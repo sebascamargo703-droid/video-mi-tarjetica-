@@ -1,65 +1,85 @@
 /**
- * Design Tokens for MiTarjetica Commercial
- * Inspired by Apple, Stripe and Linear design aesthetics.
+ * SISTEMA DE DISEÑO · MiTarjetica
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Todas las medidas de diseño están pensadas en "unidades" (u) sobre un lienzo
+ * de 1080 px de lado corto. En 4K (2160 px de lado corto) 1u = 2 px, así que
+ * el radio de 24u = 48 px en 4K, un titular de 104u = 208 px, etc.
+ * Usa `useLayout()` (src/lib/layout.ts) para obtener `u` en cada componente.
  */
+import { loadFont } from "@remotion/fonts";
+import { Easing, staticFile } from "remotion";
 
-export const theme = {
-  colors: {
-    background: "#000000",
-    backgroundSubtle: "#0A0A0F",
-    surfaceDark: "rgba(18, 18, 26, 0.75)",
-    surfaceGlass: "rgba(255, 255, 255, 0.06)",
-    surfaceBorder: "rgba(255, 255, 255, 0.14)",
-    surfaceBorderActive: "rgba(255, 255, 255, 0.32)",
-    
-    textPrimary: "#FFFFFF",
-    textSecondary: "rgba(255, 255, 255, 0.65)",
-    textTertiary: "rgba(255, 255, 255, 0.40)",
+// Inter variable (100–900) servida localmente desde public/fonts: no depende
+// de internet al renderizar. Remotion espera a que cargue antes de cada frame.
+const inter = "Inter";
+loadFont({
+  family: inter,
+  url: staticFile("fonts/Inter-Variable.woff2"),
+  weight: "100 900",
+  format: "woff2",
+});
 
-    // Brand Linear / Stripe accents
-    accentBlue: "#2F6BFF",
-    accentViolet: "#7A5CFF",
-    gradientBrand: "linear-gradient(135deg, #2F6BFF 0%, #7A5CFF 100%)",
-    gradientBrandGlow: "linear-gradient(135deg, rgba(47, 107, 255, 0.45) 0%, rgba(122, 92, 255, 0.45) 100%)",
+export const colors = {
+  black: "#000000",
+  ink: "#0A0A0F",
+  white: "#FFFFFF",
+  textSecondary: "rgba(255,255,255,0.62)",
+  textTertiary: "rgba(255,255,255,0.38)",
 
-    // Functional accents
-    alertRed: "#FF3B30",
-    successGreen: "#34C759",
-    warningYellow: "#FFCC00",
-  },
+  blue: "#2F6BFF",
+  violet: "#7A5CFF",
+  /** Variante del azul con más luminancia para texto pequeño sobre video. */
+  blueText: "#5C8BFF",
+  red: "#FF3B30",
+  green: "#30D158",
 
-  typography: {
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif",
-    letterSpacing: "-0.02em",
-    weights: {
-      regular: 400,
-      medium: 500,
-      semibold: 600,
-      bold: 700,
-      heavy: 800,
-      black: 900,
-    },
-  },
+  glass: "rgba(255,255,255,0.07)",
+  glassStrong: "rgba(22,22,30,0.62)",
+  hairline: "rgba(255,255,255,0.12)",
+  hairlineStrong: "rgba(255,255,255,0.22)",
+} as const;
 
-  radii: {
-    sm: "16px",
-    md: "28px",
-    lg: "40px",
-    xl: "48px",
-    full: "9999px",
-  },
+export const gradients = {
+  brand: `linear-gradient(135deg, ${colors.blue} 0%, ${colors.violet} 100%)`,
+  brandText: `linear-gradient(100deg, #6E98FF 0%, ${colors.blue} 38%, ${colors.violet} 100%)`,
+  card: "linear-gradient(145deg, #1B2A6B 0%, #2F3FA8 42%, #5B3FD0 100%)",
+} as const;
 
-  springs: {
-    // Apple-style smooth, high damping, zero harsh bounce
-    smooth: { damping: 20, mass: 0.8, stiffness: 100 },
-    gentle: { damping: 24, mass: 1.0, stiffness: 85 },
-    punchy: { damping: 14, mass: 0.5, stiffness: 160 },
-    float: { damping: 30, mass: 1.2, stiffness: 45 },
-  },
+export const fonts = {
+  // SF Pro Display solo existe en macOS; Inter es el fallback garantizado.
+  display: `"SF Pro Display", ${inter}, system-ui, sans-serif`,
+  text: `${inter}, system-ui, sans-serif`,
+  tracking: "-0.02em",
+  trackingTight: "-0.035em",
+} as const;
 
-  safeArea: {
-    bottomPercent: 12, // 12% bottom safe margin for TikTok/Reels UI
-    horizontalPercent: 8, // 8% lateral margins
-  },
-};
+export const weights = { medium: 500, semibold: 600, bold: 700, heavy: 800 } as const;
+
+/** Springs con damping alto: suaves, sin rebote exagerado. */
+export const springs = {
+  soft: { damping: 200, stiffness: 90, mass: 1 },
+  smooth: { damping: 26, stiffness: 120, mass: 0.9 },
+  settle: { damping: 18, stiffness: 140, mass: 0.8 },
+  slow: { damping: 200, stiffness: 40, mass: 1.4 },
+} as const;
+
+/** cubic-bezier(0.22, 1, 0.36, 1) · "ease-out-quint" usado en slides. */
+export const easeOutQuint = Easing.bezier(0.22, 1, 0.36, 1);
+export const easeInOut = Easing.bezier(0.65, 0, 0.35, 1);
+
+/** Medidas en unidades u (ver arriba). */
+export const radii = { sm: 12, md: 18, lg: 24, xl: 36, full: 9999 } as const;
+
+export const shadows = {
+  soft: (u: number) =>
+    `0 ${12 * u}px ${40 * u}px rgba(0,0,0,0.35), 0 ${2 * u}px ${8 * u}px rgba(0,0,0,0.25)`,
+  float: (u: number) =>
+    `0 ${40 * u}px ${90 * u}px rgba(0,0,0,0.55), 0 ${10 * u}px ${30 * u}px rgba(0,0,0,0.35)`,
+  glowBlue: (u: number, a = 0.45) =>
+    `0 0 ${60 * u}px rgba(47,107,255,${a}), 0 0 ${140 * u}px rgba(122,92,255,${a * 0.5})`,
+  text: (u: number) =>
+    `0 ${2 * u}px ${10 * u}px rgba(0,0,0,0.55), 0 ${1 * u}px ${2 * u}px rgba(0,0,0,0.35)`,
+} as const;
+
+/** Márgenes seguros para Reels/TikTok/Shorts (porcentajes del lienzo). */
+export const safeArea = { bottom: 0.12, side: 0.08, top: 0.06 } as const;

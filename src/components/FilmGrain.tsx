@@ -1,29 +1,39 @@
 import React from "react";
-
-interface FilmGrainProps {
-  opacity?: number;
-}
+import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { useLayout } from "../lib/layout";
 
 /**
- * High-performance 35mm grain overlay.
- * Uses hardware-accelerated CSS pattern instead of per-frame SVG filter to eliminate playback lag.
+ * Grano de película fino y constante. Ruido fractal SVG con semilla distinta
+ * en cada frame, renderizado a la mitad de resolución en 4K (grano "1080p",
+ * más orgánico) y fusionado en overlay.
  */
-export const FilmGrain: React.FC<FilmGrainProps> = ({ opacity = 0.04 }) => {
+export const FilmGrain: React.FC<{ opacity?: number }> = ({ opacity = 0.05 }) => {
+  const frame = useCurrentFrame();
+  const { W, H, u } = useLayout();
+  const scale = Math.max(1, u);
+  const w = Math.ceil(W / scale);
+  const h = Math.ceil(H / scale);
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
-        zIndex: 90,
-        opacity,
-        mixBlendMode: "overlay",
-        backgroundImage:
-          "radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 0)",
-        backgroundSize: "6px 6px",
-      }}
-    />
+    <AbsoluteFill style={{ mixBlendMode: "overlay", opacity, pointerEvents: "none" }}>
+      <svg
+        width={w}
+        height={h}
+        viewBox={`0 0 ${w} ${h}`}
+        style={{ width: W, height: H, display: "block" }}
+      >
+        <filter id="film-grain">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.85"
+            numOctaves={2}
+            seed={frame % 97}
+            stitchTiles="stitch"
+          />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width={w} height={h} filter="url(#film-grain)" />
+      </svg>
+    </AbsoluteFill>
   );
 };

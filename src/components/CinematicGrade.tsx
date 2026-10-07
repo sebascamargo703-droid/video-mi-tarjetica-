@@ -1,65 +1,61 @@
-import React from "react";
-
-interface CinematicGradeProps {
-  children?: React.ReactNode;
-}
+import React, { useId } from "react";
+import { AbsoluteFill } from "remotion";
 
 /**
- * High-End Cinema Color Grading
- * Subtle S-curve contrast, lifted blacks, teal shadows and warm highlights,
- * saturation at 105%, with soft radial depth-of-field emulation.
+ * Look cinematográfico aplicado al video real.
+ *  1. Curva S por canal (SVG feComponentTransfer):
+ *     - negros ligeramente elevados (el canal nunca baja de ~3-5%)
+ *     - sombras frías: el azul/verde arrancan un poco más alto que el rojo
+ *     - altas luces cálidas: el rojo llega a 1.0, el azul se queda en 0.96
+ *  2. filter CSS: contraste, saturación 105% y brillo.
+ *  3. Overlays con mix-blend-mode para redondear el split-toning.
  */
-export const CinematicGrade: React.FC<CinematicGradeProps> = ({ children }) => {
+export const CinematicGrade: React.FC<{
+  children: React.ReactNode;
+  /** 0 = sin grade, 1 = grade completo. */
+  intensity?: number;
+}> = ({ children, intensity = 1 }) => {
+  const id = useId().replace(/:/g, "");
+  const mix = (a: number[], b: number[]) =>
+    a.map((v, i) => (v + (b[i] - v) * intensity).toFixed(3)).join(" ");
+  const linear = [0, 0.25, 0.5, 0.75, 1];
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
-        zIndex: 5,
-      }}
-    >
-      {/* 1. Warm Highlights & Key Light (Soft Amber Ambient on Subject) */}
-      <div
+    <AbsoluteFill>
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <filter id={`grade-${id}`} colorInterpolationFilters="sRGB">
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues={mix(linear, [0.03, 0.225, 0.5, 0.79, 1.0])} />
+            <feFuncG type="table" tableValues={mix(linear, [0.045, 0.235, 0.5, 0.775, 0.985])} />
+            <feFuncB type="table" tableValues={mix(linear, [0.06, 0.25, 0.495, 0.755, 0.955])} />
+          </feComponentTransfer>
+        </filter>
+      </svg>
+      <AbsoluteFill
         style={{
-          position: "absolute",
-          top: "38%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "55%",
-          height: "55%",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(255, 210, 150, 0.08) 0%, rgba(255, 185, 90, 0.02) 50%, transparent 75%)",
+          filter: `url(#grade-${id}) contrast(${1 + 0.04 * intensity}) saturate(${
+            1 + 0.05 * intensity
+          }) brightness(${1 + 0.01 * intensity})`,
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+      {/* sombras frías (teal) */}
+      <AbsoluteFill
+        style={{
+          backgroundColor: "#0d3b48",
           mixBlendMode: "screen",
-          filter: "blur(60px)",
+          opacity: 0.1 * intensity,
         }}
       />
-
-      {/* 2. Cool Teal Shadows in Perimeter / Background */}
-      <div
+      {/* altas luces cálidas */}
+      <AbsoluteFill
         style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse at 50% 42%, transparent 42%, rgba(12, 28, 44, 0.45) 85%, rgba(6, 14, 24, 0.75) 100%)",
-          mixBlendMode: "multiply",
+          background: "radial-gradient(120% 80% at 50% 20%, #ffd7a8 0%, rgba(255,215,168,0) 70%)",
+          mixBlendMode: "soft-light",
+          opacity: 0.18 * intensity,
         }}
       />
-
-      {/* 3. Lifted Blacks (Cinematic Film Tone Curve) */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundColor: "rgba(10, 14, 22, 0.08)",
-          mixBlendMode: "screen",
-        }}
-      />
-
-      {children}
-    </div>
+    </AbsoluteFill>
   );
 };
