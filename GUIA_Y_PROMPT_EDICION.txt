@@ -1,0 +1,82 @@
+# PROMPT Y GUÍA MAESTRA DE EDICIÓN PARA MITARJETICA.COM
+# Formato: 9:16 (Vertical - 1080x1920) | Duración: 20 Segundos | Ritmo: Alto impacto / Retención máxima
+
+---
+
+## 🎯 OBJETIVO DEL VIDEO
+Captar inmediatamente la atención de dueños de negocios locales (cafeterías, barberías, restaurantes, retail) en los primeros 3 segundos, explicar la solución digital sin aplicaciones de www.mitarjetica.com y lograr que comenten "TARJETICA" o visiten el perfil.
+
+---
+
+## 🎬 TOMAS SELECCIONADAS (Incluidas en el ZIP)
+1. `01_Gancho_IMG_1044.mov` -> El gancho perfecto: "No necesitas clientes nuevos..."
+2. `02_Proximidad_Wallet_IMG_1082.mov` -> Propuesta de valor: Aviso de proximidad y Wallet.
+3. `03_Cierre_CTA_IMG_1092.mov` -> Llamado a la acción: "Deja de perder clientes... Comenta TARJETICA".
+4. `04_Extra_Cierre_Alternativo_IMG_1064.mov` -> Toma corta de apoyo / transición hacia el link del perfil ("Déjame y te explico cómo").
+
+---
+
+## ⏱️ CRONOGRAMA SEGUNDO A SEGUNDO (Edición, Animación y SFX)
+
+### [0:00 - 0:04] | BLOQUE 1: EL GANCHO (HOOK)
+- **Toma:** `01_Gancho_IMG_1044.mov` (Cortar justo al inicio en 0:01.8 eliminando la voz de fondo).
+- **Voz:** "No necesitas clientes nuevos, necesitas que los que ya te compraron te vuelvan a elegir."
+- **Edición & Cámara:**
+  * Punch-in (Zoom digital suave del 100% al 108%) al decir "vuelvan a elegir".
+- **Animaciones en Pantalla:**
+  * Texto flotante con tipografía sans-serif gruesa (tipo Montserrat o The Bold Font): 
+    **"NO NECESITAS MÁS CLIENTES"** con una animación de rebote y un emoji de señal de alto (🛑).
+  * En "vuelvan a elegir", resaltar la palabra con fondo amarillo fosforescente o verde neón.
+- **Efectos de Sonido (SFX):**
+  * Sub-bass impact o "Boom" cinematográfico al segundo 0:00.
+  * Sonido "Whoosh" rápido al hacer el zoom.
+
+---
+
+### [0:04 - 0:10] | BLOQUE 2: LA SOLUCIÓN Y BENEFICIOS (B-ROLL / MOCKUP 3D)
+- **Visual:** Mockup 3D flotante de iPhone mostrando la tarjeta de lealtad de mitarjetica.com interactiva.
+- **Acción Animada:**
+  * Un dedo táctil o un destello sella el último casillero: ¡Sello 10 de 10!
+  * Animación de confeti o pulso brillante desbloqueando: **"¡Premio Desbloqueado: 20% OFF o Café Gratis!"**.
+- **Texto en Pantalla:**
+  * **"Sellos, premios y recompensas 🎁"** (animación de entrada tipo typewriter o pop).
+- **Efectos de Sonido (SFX):**
+  * Sonido de "Sello / Stamp" húmedo y satisfactorio (plop/thud).
+  * Sonido de campanilla de éxito / desbloqueo ("Ding!" mágico / chime).
+  * Partículas sonoras tipo pop.
+
+---
+
+### [0:10 - 0:15] | BLOQUE 3: LA TECNOLOGÍA (WALLET + NOTIFICACIÓN GEOLOCALIZADA)
+- **Toma:** `02_Proximidad_Wallet_IMG_1082.mov` (Inicia en 0:01.0).
+- **Voz:** "Con aviso de proximidad, le avisa a tu cliente cada vez que pasa cerca de tu negocio."
+- **Visual & Animación:**
+  * A la derecha o sobre el video, aparece la animación de una notificación nativa estilo iOS / Apple Wallet:
+    * Icono de ubicación parpadeando en rojo/azul (📍).
+    * Mensaje emergente: *"Estás a 50m de [Tu Local]. ¡Pasa y canjea tu premio!"*.
+  * Tag destacado en esquina: **"CERO APPS: Directo en Apple & Google Wallet"**.
+- **Efectos de Sonido (SFX):**
+  * Sonido clásico y nítido de notificación push móvil ("Pop / Ding de iPhone").
+  * Whoosh sutil al entrar la tarjeta en la pantalla.
+
+---
+
+### [0:15 - 0:20] | BLOQUE 4: CIERRE Y LLAMADO A LA ACCIÓN (CTA)
+- **Toma:** `03_Cierre_CTA_IMG_1092.mov` (Inicia en 0:01.0).
+- **Voz:** "Deja de perder clientes todos los días. Comenta la palabra tarjetica y te enviamos toda la información."
+- **Visual & Animación:**
+  * Botón animado pulsante en la parte inferior: **Comenta "TARJETICA" 👇**.
+  * Aparición del logo y enlace web: **www.mitarjetica.com**.
+  * Flechas animadas apuntando a la caja de comentarios / perfil.
+- **Efectos de Sonido (SFX):**
+  * Sonido de "Mouse Click" o "Notificación de mensaje directo (DM)".
+  * Impacto de cierre suave con música que decae limpiamente.
+
+---
+
+## 🎨 GUÍA DE COLOR, ESTILO Y AUDIO
+- **Música de fondo:** Pista electrónica moderna, Lo-Fi upbeat o Corporate Tech elegante (volumen a -24 dB durante la voz, subiendo ligeramente en la transición del segundo 4 al 6).
+- **Subtítulos automáticos:**
+  * Fuente: Montserrat ExtraBold / Komika Axis.
+  * Color: Blanco con reborde negro y palabras clave en Verde (#00E676) o Amarillo (#FFE600).
+  * Animación palabra por palabra (karaoke style).

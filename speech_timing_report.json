@@ -1,0 +1,80 @@
+[
+  {
+    "clip": "IMG_1044.MOV",
+    "duration": 7.43,
+    "speech_start": 2.3,
+    "speech_end": 6.4
+  },
+  {
+    "clip": "IMG_1045.MOV",
+    "duration": 6.77,
+    "speech_start": 1.6,
+    "speech_end": 5.2
+  },
+  {
+    "clip": "IMG_1046.MOV",
+    "duration": 5.33,
+    "speech_start": 0.7,
+    "speech_end": 4.4
+  },
+  {
+    "clip": "IMG_1053.MOV",
+    "duration": 9.17,
+    "speech_start": 1.4,
+    "speech_end": 8.3
+  },
+  {
+    "clip": "IMG_1055.MOV",
+    "duration": 11.44,
+    "speech_start": 2.7,
+    "speech_end": 10.6
+  },
+  {
+    "clip": "IMG_1056.MOV",
+    "duration": 8.3,
+    "speech_start": 0.9,
+    "speech_end": 7.5
+  },
+  {
+    "clip": "IMG_1076.MOV",
+    "duration": 8.8,
+    "speech_start": 1.1,
+    "speech_end": 8.7
+  },
+  {
+    "clip": "IMG_1079.MOV",
+    "duration": 6.17,
+    "speech_start": 0.1,
+    "speech_end": 5.6
+  },
+  {
+    "clip": "IMG_1082.MOV",
+    "duration": 6.57,
+    "speech_start": 1.1,
+    "speech_end": 5.6
+  },
+  {
+    "clip": "IMG_1084.MOV",
+    "duration": 6.07,
+    "speech_start": 0.0,
+    "speech_end": 5.2
+  },
+  {
+    "clip": "IMG_1088.MOV",
+    "duration": 4.67,
+    "speech_start": 0.7,
+    "speech_end": 3.6
+  },
+  {
+    "clip": "IMG_1092.MOV",
+    "duration": 6.57,
+    "speech_start": 0.8,
+    "speech_end": 5.6
+  },
+  {
+    "clip": "IMG_1094.MOV",
+    "duration": 7.27,
+    "speech_start": 0.6,
+    "speech_end": 6.8
+  }
+]
