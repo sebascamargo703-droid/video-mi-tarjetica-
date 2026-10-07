@@ -164,10 +164,7 @@ const sceneStart = (scene: SceneKind) => segmentStart(segmentIndex(scene));
 const T = SCENE_TIMING;
 
 export const SFX: SfxCue[] = [
-  // whoosh muy suave en slides / match cuts (no en cortes ni disolvencias)
-  ...SEGMENTS.filter((s) => s.entry !== "cut" && s.entry !== "dissolve").map(
-    (s) => ({ at: s.at - 7, file: "whoosh.wav", volume: 0.2 }),
-  ),
+  // (sin whoosh en las transiciones: los cambios de plano van en silencio)
   // contador 1x → 5x: un tick por número
   ...[1, 2, 3, 4].map((i) => ({
     at: sceneStart("problem") + T.problem.counterStart + i * T.problem.counterStep,

@@ -38,7 +38,7 @@ npm run voice:normalize
 | `video-base.mp4`                         | ✅ | Toma a cámara (cualquier resolución 9:16). Su audio es la locución. |
 | `voz-normalizada.wav`                    | ✅ | Audio de `video-base.mp4` a -14 LUFS. Se genera con `npm run voice:normalize`. |
 | `musica.mp3`                             | ✅ | Música instrumental ambiental (≥ 40 s). |
-| `sfx/whoosh.wav`                         | ✅ | Whoosh suave para transiciones. |
+| `sfx/whoosh.wav`                         | — | Ya no se usa (las transiciones van sin efecto de sonido). |
 | `sfx/pop.wav`                            | ✅ | "Pop" de la notificación. |
 | `sfx/tick.wav`                           | ✅ | "Tick" de contadores / cronómetro. |
 | `sfx/chime.wav`                          | ✅ | Chime corto del check verde. |
