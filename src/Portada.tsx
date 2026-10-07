@@ -18,8 +18,8 @@ export const Portada: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: colors.black }}>
       {/* foto original, sin filtros */}
       <Img
-        src={staticFile("assets/portada-foto.png")}
-        style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scale(1.06)", transformOrigin: "50% 30%" }}
+        src={staticFile("assets/portada-foto.jpg")}
+        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "50% 40%" }}
       />
       {/* degradados para legibilidad (arriba logo, abajo titular) */}
       <AbsoluteFill
