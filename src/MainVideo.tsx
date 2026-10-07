@@ -5,7 +5,7 @@ import { AudioMix } from "./components/AudioMix";
 import { FilmGrain } from "./components/FilmGrain";
 import { Vignette } from "./components/Vignette";
 import { WordSubtitles } from "./components/WordSubtitles";
-import { SceneKind, SEGMENTS, segmentDuration, segmentStart } from "./data/timeline";
+import { SceneKind, SEGMENTS, segmentDuration, segmentStart, VIDEO_EFFECTS } from "./data/timeline";
 import { PersonScene } from "./scenes/PersonScene";
 import { Scene1Hook } from "./scenes/Scene1Hook";
 import { Scene2Problem } from "./scenes/Scene2Problem";
@@ -62,9 +62,9 @@ export const MainVideo: React.FC<MainVideoProps> = ({ grain = 0.05, showSubtitle
         })}
       </TransitionSeries>
 
-      <Vignette />
+      {VIDEO_EFFECTS.vignette ? <Vignette /> : null}
       {showSubtitles ? <WordSubtitles /> : null}
-      <FilmGrain opacity={grain} />
+      {VIDEO_EFFECTS.filmGrain ? <FilmGrain opacity={grain} /> : null}
       <AudioMix />
     </AbsoluteFill>
   );

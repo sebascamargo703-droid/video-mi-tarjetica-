@@ -10,7 +10,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { FPS, FRAMINGS, FramingName, PUSH_INS, TAKES } from "../data/timeline";
+import { FPS, FRAMINGS, FramingName, PUSH_INS, TAKES, VIDEO_EFFECTS } from "../data/timeline";
 import { clamp } from "../lib/anim";
 import { rectStyle, useLayout } from "../lib/layout";
 import { radii, shadows, springs } from "../theme";
@@ -56,8 +56,7 @@ const Footage: React.FC<{ startAbs: number; durationInFrames: number; style?: Re
  *  - zoom lento continuo 1.00 → 1.06 durante todo el plano
  *  - push-in de +3.5% en las frases de PUSH_INS
  *  - encuadre base (1x / 1.15x) para simular segundo ángulo
- *  - falso desenfoque de fondo: capa desenfocada + capa nítida con máscara radial
- *  - color grade cinematográfico
+ *  - opcionales (VIDEO_EFFECTS): falso desenfoque de fondo y color grade
  */
 export const PersonShot: React.FC<{
   /** Frame absoluto del video base en el que arranca este segmento. */
@@ -85,30 +84,35 @@ export const PersonShot: React.FC<{
 
   const mask = `radial-gradient(ellipse ${f.focus.rx}% ${f.focus.ry}% at ${f.focus.x}% ${f.focus.y}%, #000 62%, transparent 100%)`;
 
-  const shot = (
-    <CinematicGrade>
-      <AbsoluteFill
-        style={{
-          transform: `scale(${scale})`,
-          transformOrigin: `${f.originX}% ${f.originY}%`,
-        }}
-      >
-        {/* fondo desenfocado (edgeMode="duplicate" evita el halo en los bordes) */}
-        <svg width="0" height="0" style={{ position: "absolute" }}>
-          <filter id={blurId} x="0" y="0" width="100%" height="100%">
-            <feGaussianBlur stdDeviation={9 * u} edgeMode="duplicate" />
-          </filter>
-        </svg>
-        <AbsoluteFill style={{ filter: `url(#${blurId})` }}>
-          <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
-        </AbsoluteFill>
-        {/* sujeto nítido */}
-        <AbsoluteFill style={{ WebkitMaskImage: mask, maskImage: mask }}>
-          <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
-        </AbsoluteFill>
-      </AbsoluteFill>
-    </CinematicGrade>
+  const camera = (children: React.ReactNode) => (
+    <AbsoluteFill style={{ transform: `scale(${scale})`, transformOrigin: `${f.originX}% ${f.originY}%` }}>
+      {children}
+    </AbsoluteFill>
   );
+
+  // Imagen original, sin filtros (ver VIDEO_EFFECTS en timeline.ts).
+  const plain = camera(<Footage startAbs={startAbs} durationInFrames={durationInFrames} />);
+
+  const withBlur = camera(
+    <>
+      {/* fondo desenfocado (edgeMode="duplicate" evita el halo en los bordes) */}
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <filter id={blurId} x="0" y="0" width="100%" height="100%">
+          <feGaussianBlur stdDeviation={9 * u} edgeMode="duplicate" />
+        </filter>
+      </svg>
+      <AbsoluteFill style={{ filter: `url(#${blurId})` }}>
+        <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
+      </AbsoluteFill>
+      {/* sujeto nítido */}
+      <AbsoluteFill style={{ WebkitMaskImage: mask, maskImage: mask }}>
+        <Footage startAbs={startAbs} durationInFrames={durationInFrames} />
+      </AbsoluteFill>
+    </>,
+  );
+
+  const footage = VIDEO_EFFECTS.backgroundBlur ? withBlur : plain;
+  const shot = VIDEO_EFFECTS.colorGrade ? <CinematicGrade>{footage}</CinematicGrade> : footage;
 
   if (isVertical) {
     return (

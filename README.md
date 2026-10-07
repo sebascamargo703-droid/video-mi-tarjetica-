@@ -7,6 +7,9 @@ palabra, gráficos en React y mezcla de audio con ducking.
 - **Color de marca:** verde MiTarjetica `#0E5244` (el de los logos oficiales) en
   rellenos; `#19947B` y `#59CFB7` son el mismo matiz aclarado para gradientes y
   texto acento sobre fondo oscuro. Tokens en `src/theme.ts`.
+- **Imagen sin efectos:** el video de la persona va tal cual (sin desenfoque,
+  etalonado, grano ni viñeta). Se pueden reactivar en `VIDEO_EFFECTS`
+  (`src/data/timeline.ts`).
 - **Ritmo:** cortes secos entre planos, punch-in de 7 frames al entrar a un
   gráfico y push lateral de 8 frames entre gráficos. Sin disolvencias.
 
@@ -41,6 +44,7 @@ npm run voice:normalize
 
 | Archivo                                  | Obligatorio | Qué es |
 | ---------------------------------------- | ----------- | ------ |
+| `user_clips_sdr/take1…take8.mp4` | ✅ | Las tomas convertidas de HDR (iPhone) a SDR con `bash scripts/hdr-to-sdr.sh`; son las que se usan en el video. |
 | `user_clips/take1_gancho.mp4` … `take8_cta_cierre.mp4` | ✅ | Las 8 tomas originales: de aquí sale la IMAGEN (cortes secos exactos, sin fotogramas residuales). Su posición está en `TAKES` (`src/data/timeline.ts`). |
 | `video-base.mp4`                         | ✅ | Montaje de las 8 tomas con su locución; solo se usa como fuente del audio. |
 | `voz-normalizada.wav`                    | ✅ | Audio de `video-base.mp4` a -14 LUFS. Se genera con `npm run voice:normalize`. |

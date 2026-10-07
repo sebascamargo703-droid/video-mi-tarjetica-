@@ -59,6 +59,9 @@ export type TransitionKind = "cut" | "punch" | "slide";
 
 /**
  * Tomas originales y su posición en la locución.
+ * Se leen de public/user_clips_sdr/: las mismas tomas del iPhone convertidas de
+ * HDR (HLG/BT.2020) a SDR BT.709 con scripts/hdr-to-sdr.sh. Sin esa conversión
+ * el render interpreta el HDR como SDR y la piel sale saturada/anaranjada.
  * `start` = segundo de la locución en el que empieza la toma (medido: cada
  * toma coincide al fotograma con video-base.mp4, PSNR ≈ 54 dB).
  * `cut`   = frame donde la imagen pasa a esta toma (centro del antiguo fundido).
@@ -66,14 +69,14 @@ export type TransitionKind = "cut" | "punch" | "slide";
 export type Take = { file: string; start: number; cut: number };
 
 export const TAKES: Take[] = [
-  { file: "user_clips/take1_gancho.mp4", start: 0, cut: 0 },
-  { file: "user_clips/take2_costo5x.mp4", start: 4.254, cut: 130 },
-  { file: "user_clips/take3_razon_volver.mp4", start: 8.008, cut: 242 },
-  { file: "user_clips/take4_solucion_celular.mp4", start: 11.762, cut: 355 },
-  { file: "user_clips/take5_sellos_premios.mp4", start: 18.452, cut: 556 },
-  { file: "user_clips/take6_proximidad.mp4", start: 24.876, cut: 749 },
-  { file: "user_clips/take7_base_datos.mp4", start: 29.431, cut: 885 },
-  { file: "user_clips/take8_cta_cierre.mp4", start: 32.384, cut: 974 },
+  { file: "user_clips_sdr/take1_gancho.mp4", start: 0, cut: 0 },
+  { file: "user_clips_sdr/take2_costo5x.mp4", start: 4.254, cut: 130 },
+  { file: "user_clips_sdr/take3_razon_volver.mp4", start: 8.008, cut: 242 },
+  { file: "user_clips_sdr/take4_solucion_celular.mp4", start: 11.762, cut: 355 },
+  { file: "user_clips_sdr/take5_sellos_premios.mp4", start: 18.452, cut: 556 },
+  { file: "user_clips_sdr/take6_proximidad.mp4", start: 24.876, cut: 749 },
+  { file: "user_clips_sdr/take7_base_datos.mp4", start: 29.431, cut: 885 },
+  { file: "user_clips_sdr/take8_cta_cierre.mp4", start: 32.384, cut: 974 },
 ];
 
 export type SceneKind =
@@ -240,3 +243,18 @@ export const USE_DASHBOARD_SCREENSHOT = false;
  * false → usa directamente el audio de public/video-base.mp4.
  */
 export const USE_NORMALIZED_VOICE = true;
+
+/**
+ * EFECTOS SOBRE EL VIDEO DE LA PERSONA (desactivados: imagen original limpia).
+ * Pon true para recuperar cada uno.
+ */
+export const VIDEO_EFFECTS = {
+  /** Etalonado: curva S, sombras frías, altas luces cálidas, saturación 105%. */
+  colorGrade: false,
+  /** Falso desenfoque de fondo (la persona nítida, el fondo borroso). */
+  backgroundBlur: false,
+  /** Grano de película sobre todo el video. */
+  filmGrain: false,
+  /** Viñeta en las esquinas. */
+  vignette: false,
+};
