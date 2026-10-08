@@ -7,7 +7,9 @@ Proyecto nuevo, hecho desde cero. Dos composiciones con la misma narrativa:
 | `MiTarjeticaHero` | 1920×1080 · 60 fps · 45 s | Web, YouTube, presentaciones |
 | `MiTarjeticaVertical` | 1080×1920 · 60 fps · 45 s | Reels, TikTok, Stories (el layout se recompone, no se recorta) |
 
-Además: 6 historias (1080×1920) y 6 publicaciones (1080×1350), en las carpetas *Historias* y *Publicaciones* del Studio. Se exportan a `../historias-y-publicaciones/`.
+Además, en `../historias-y-publicaciones/`:
+- **Serie de 8 historias para Instagram con voz** (carpeta *Instagram* del Studio → `historias-instagram/`, con `GUIA.md` de publicación y stickers).
+- 6 historias sin voz (carpeta *Historias*) y 6 publicaciones 4:5 (carpeta *Publicaciones*).
 
 ## Guion (45 s)
 

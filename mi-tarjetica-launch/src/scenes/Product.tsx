@@ -242,7 +242,7 @@ export const StampsScene: React.FC<SceneProps> = ({ dur, out }) => {
 };
 
 /** Ondas de geocerca alrededor del teléfono. */
-const GeoRings: React.FC<{ size: number; color: string }> = ({ size, color }) => {
+export const GeoRings: React.FC<{ size: number; color: string }> = ({ size, color }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const period = fps * 2.4;

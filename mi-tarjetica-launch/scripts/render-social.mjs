@@ -1,10 +1,12 @@
-// Exporta historias (PNG + MP4) y publicaciones (PNG; MP4 con --mp4) a ../historias-y-publicaciones
+// Exporta historias (PNG + MP4), la serie de Instagram con voz (MP4 + portada PNG)
+// y publicaciones (PNG; MP4 con --mp4) a ../historias-y-publicaciones
 // Uso: npm run render:social           (todo)
 //      node scripts/render-social.mjs --mp4   (publicaciones también en video)
 import { bundle } from "@remotion/bundler";
 import { getCompositions, renderMedia, renderStill } from "@remotion/renderer";
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const OUT = path.resolve("../historias-y-publicaciones");
 const postsAsVideo = process.argv.includes("--mp4");
@@ -18,9 +20,10 @@ const comps = await getCompositions(serveUrl, { browserExecutable, envVariables 
 for (const composition of comps) {
   const isStory = composition.id.startsWith("Historia");
   const isPost = composition.id.startsWith("Post");
-  if (!isStory && !isPost) continue;
+  const isIG = composition.id.startsWith("IG");
+  if (!isStory && !isPost && !isIG) continue;
   if (only && !composition.id.includes(only)) continue;
-  const dir = path.join(OUT, isStory ? "historias" : "publicaciones");
+  const dir = path.join(OUT, isIG ? "historias-instagram" : isStory ? "historias" : "publicaciones");
   fs.mkdirSync(dir, { recursive: true });
   const base = path.join(dir, composition.id);
   await renderStill({
@@ -33,7 +36,20 @@ for (const composition of comps) {
     envVariables,
   });
   console.log(`✓ ${base}.png`);
-  if (isStory || postsAsVideo) {
+  if (isIG) {
+    await renderMedia({
+      composition,
+      serveUrl,
+      codec: "h264",
+      crf: 18,
+      audioBitrate: "192k",
+      outputLocation: `${base}.mp4`,
+      browserExecutable,
+      envVariables,
+    });
+    execFileSync("bash", ["scripts/master-audio.sh", `${base}.mp4`], { stdio: "inherit" });
+    console.log(`✓ ${base}.mp4`);
+  } else if (isStory || postsAsVideo) {
     await renderMedia({
       composition,
       serveUrl,

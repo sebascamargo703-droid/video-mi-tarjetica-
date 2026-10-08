@@ -11,6 +11,7 @@ Instalación (una sola vez):
 
 Uso (desde mi-tarjetica-launch/):
     .venv-voz/bin/python scripts/make-voice.py --models /ruta/a/los/modelos
+    .venv-voz/bin/python scripts/make-voice.py --models ... --stories   (historias de Instagram)
 
 Escribe public/voz/<id>.wav, guarda la duración de cada frase en
 src/voiceover.json y revisa que ninguna frase se pise con la siguiente.
@@ -52,7 +53,7 @@ def master(x, sr):
     """Limpieza ligera: recorta silencios, quita graves de sobra, comprime suave y normaliza."""
     thr = 0.004 * np.max(np.abs(x))
     idx = np.where(np.abs(x) > thr)[0]
-    x = x[max(0, idx[0] - int(0.02 * sr)) : idx[-1] + int(0.18 * sr)]
+    x = x[max(0, idx[0] - int(0.06 * sr)) : idx[-1] + int(0.18 * sr)]
     # Filtro paso alto de 1er orden (~80 Hz)
     a = np.exp(-2 * np.pi * 80 / sr)
     y = np.zeros_like(x)
@@ -74,11 +75,14 @@ def master(x, sr):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", default=".", help="carpeta con kokoro-v1.0.onnx y voices-v1.0.bin")
+    ap.add_argument("--stories", action="store_true", help="genera la voz de las historias de Instagram")
     args = ap.parse_args()
     models = Path(args.models)
     onnx = next(models.glob("kokoro*.onnx"))
     voices = next(models.glob("voices*.bin"))
     kokoro = Kokoro(str(onnx), str(voices))
+    if args.stories:
+        return make_stories(kokoro)
 
     data = json.loads(VO_JSON.read_text())
     OUT.mkdir(parents=True, exist_ok=True)
@@ -105,6 +109,34 @@ def main():
             warn += "  ⚠ pasa del final"
         print(f"{line['id']:<18}{start:8.2f}{end:9.2f}  {line['text']}{warn}")
         prev_end, prev_id = end, line["id"]
+
+
+STORIES_JSON = ROOT / "src" / "social" / "instagram" / "voice.json"
+STORIES_OUT = ROOT / "public" / "voz-ig"
+
+
+def make_stories(kokoro):
+    """Historias: cada una tiene su duración y sus frases con segundo absoluto."""
+    data = json.loads(STORIES_JSON.read_text())
+    STORIES_OUT.mkdir(parents=True, exist_ok=True)
+    for story in data["stories"]:
+        prev_end, prev_id = 0.0, None
+        for line in story["lines"]:
+            audio, sr = kokoro.create(
+                line["text"], voice=data["voice"], speed=line.get("speed", 1.0), lang=data["lang"]
+            )
+            audio = master(audio, sr)
+            sf.write(STORIES_OUT / f"{story['id']}-{line['id']}.wav", audio, sr)
+            line["durationSec"] = round(len(audio) / sr, 3)
+            end = line["at"] + line["durationSec"]
+            warn = ""
+            if prev_id and line["at"] < prev_end + 0.15:
+                warn = f"  ⚠ se pisa con {prev_id}"
+            if end > story["duration"] - 0.8:
+                warn += "  ⚠ muy cerca del final de la historia"
+            print(f"{story['id']:<20}{line['id']:<3}{line['at']:6.2f}{end:7.2f}  {line['text']}{warn}")
+            prev_end, prev_id = end, line["id"]
+    STORIES_JSON.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
 
 
 if __name__ == "__main__":

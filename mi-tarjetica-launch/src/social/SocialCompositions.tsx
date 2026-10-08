@@ -17,7 +17,31 @@ import {
   StoryTrio,
 } from "./Stories";
 
+import {
+  IG01Pregunta,
+  IG02Recordatorio,
+  IG03ComoFunciona,
+  IG04Sellos,
+  IG05Control,
+  IG06Mito,
+  IG07Gratis,
+  IG08Link,
+} from "./instagram/InstagramStories";
+import { storyData } from "./instagram/StoryAudio";
+
 const FPS = 30;
+
+/** Serie de historias para Instagram con voz; la duración sale de instagram/voice.json. */
+export const INSTAGRAM = [
+  { id: "IG01-Pregunta", component: IG01Pregunta },
+  { id: "IG02-Recordatorio", component: IG02Recordatorio },
+  { id: "IG03-ComoFunciona", component: IG03ComoFunciona },
+  { id: "IG04-Sellos", component: IG04Sellos },
+  { id: "IG05-Control", component: IG05Control },
+  { id: "IG06-Mito", component: IG06Mito },
+  { id: "IG07-Gratis", component: IG07Gratis },
+  { id: "IG08-Link", component: IG08Link },
+] as const;
 
 /** Historias animadas (MP4) — también se exportan como PNG en su último frame. */
 export const STORIES = [
@@ -48,6 +72,19 @@ export const SocialCompositions: React.FC = () => (
           id={st.id}
           component={st.component}
           durationInFrames={st.sec * FPS}
+          fps={FPS}
+          width={1080}
+          height={1920}
+        />
+      ))}
+    </Folder>
+    <Folder name="Instagram">
+      {INSTAGRAM.map((st) => (
+        <Composition
+          key={st.id}
+          id={st.id}
+          component={st.component}
+          durationInFrames={Math.round(storyData(st.id).duration * FPS)}
           fps={FPS}
           width={1080}
           height={1920}
