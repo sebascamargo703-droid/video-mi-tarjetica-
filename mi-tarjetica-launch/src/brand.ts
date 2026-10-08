@@ -77,12 +77,18 @@ export const tones: Record<
 };
 
 /**
- * Audio. Los efectos se generan con scripts/make-sfx.py.
- * Para música: pon un archivo con licencia en /public (p. ej. "music.mp3")
- * y escribe su nombre aquí.
+ * Audio.
+ *  - Voz: frases en src/voiceover.json → scripts/make-voice.py → public/voz/
+ *  - Efectos: scripts/make-sfx.py → public/sfx/
+ *  - Música: cama sintetizada con scripts/make-music.py. Para usar una canción
+ *    con licencia, ponla en /public y cambia `music` (o `null` para quitarla).
  */
 export const audio = {
-  music: null as string | null,
-  musicVolume: 0.5,
-  sfxVolume: 1,
+  voice: true,
+  voiceVolume: 1,
+  music: "music/cama.mp3" as string | null,
+  musicVolume: 0.22,
+  /** Cuánto baja la música mientras habla la voz (0–1). */
+  musicDuck: 0.55,
+  sfxVolume: 0.6,
 };

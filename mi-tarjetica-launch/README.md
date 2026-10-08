@@ -52,6 +52,26 @@ Sin internet: `REMOTION_LOCAL_FONTS=1 npm run render:hero` usa las copias de Int
 
 Sacados pixel a pixel de los archivos oficiales del logo: verde `#0E5244` y tinta `#1B1613`. Derivados del mismo tono: menta `#69D3BE` (acento sobre negro), verde profundo `#083A30`, verde medio `#16705D` y papel `#F6F2EA`.
 
-## Sonido
+## Voz, música y sonido
 
-`scripts/make-sfx.py` sintetiza los efectos (sello, notificación, premio, whoosh, tap) en `public/sfx/`. No hay música incluida: pon un archivo con licencia en `public/` y escribe su nombre en `audio.music` (en `src/brand.ts`).
+**Locución femenina** en español latino (voz "ef_dora" del modelo abierto Kokoro, fonética `es-419`, sin la "z" española), sincronizada frase por frase con cada escena:
+
+| Escena | Frase |
+|---|---|
+| Gancho | ¿Tu cliente perdió otra vez la tarjeta de sellos? |
+| Problema | Y con ella... su próxima visita. |
+| Revelación | Por eso creamos Mi Tarjetica. Tu tarjeta de sellos, ahora en el celular. |
+| Wallet | Vive en el Wallet de tu cliente. / No tiene que descargar ninguna app. / Y no se pierde. ¡Nunca! |
+| Sellos | Cada visita, un sello. / Y al décimo... ¡premio! / Todo se actualiza solo. |
+| Cercanía | Y cuando pasa cerca de tu negocio, le llega un aviso directo a su celular. |
+| Antifraude | Cada sello queda firmado: cajero, hora y caja. ¡Cero trampa! |
+| Negocios | Barberías, cafeterías, spas... hecho para tu negocio. |
+| Mensaje | ¿El resultado? Tus clientes vuelven más seguido. |
+| Cierre | Empieza gratis hoy, sin tarjeta de crédito, en mitarjetica.com. |
+
+- Cambiar una frase: edita `src/voiceover.json` (texto, escena, segundo `at` y velocidad) y corre `npm run voice` (instrucciones de instalación al inicio de `scripts/make-voice.py`). El script avisa si una frase se pisa con la siguiente. Algunas palabras están escritas como suenan ("Uálet", "espás", "mi tarjetica punto com") para que la voz las pronuncie bien.
+- ¿Prefieres una locutora profesional o una voz de ElevenLabs? Graba cada frase con el mismo nombre de archivo en `public/voz/` y actualiza `durationSec`: el video la usa sin tocar nada más.
+- **Música**: cama suave sintetizada (`npm run music`) que baja automáticamente cuando habla la voz. Para una canción con licencia, cambia `audio.music` en `src/brand.ts`.
+- **Efectos**: `scripts/make-sfx.py` (sello, notificación, premio, whoosh, tap).
+- **Volumen final**: los renders pasan por `scripts/master-audio.sh` (−14 LUFS, el estándar de Instagram/TikTok/YouTube).
+- Volúmenes y on/off de voz, música y efectos: objeto `audio` en `src/brand.ts`.
