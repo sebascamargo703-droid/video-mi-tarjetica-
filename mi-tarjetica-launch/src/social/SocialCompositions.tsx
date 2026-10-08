@@ -1,5 +1,7 @@
 import React from "react";
 import { Composition, Folder } from "remotion";
+import { CarouselSlide } from "./carousel/Carousel";
+import { carousels } from "./carousel/data";
 import {
   PostBusiness,
   PostCompare,
@@ -30,6 +32,9 @@ import {
 import { storyData } from "./instagram/StoryAudio";
 
 const FPS = 30;
+
+export const carouselId = (day: number, index: number) =>
+  `Carrusel-D${day}-${String(index + 1).padStart(2, "0")}`;
 
 /** Serie de historias para Instagram con voz; la duración sale de instagram/voice.json. */
 export const INSTAGRAM = [
@@ -91,6 +96,22 @@ export const SocialCompositions: React.FC = () => (
         />
       ))}
     </Folder>
+    {carousels.map((c) => (
+      <Folder key={c.day} name={`Carrusel-Dia-${c.day}`}>
+        {c.slides.map((_, i) => (
+          <Composition
+            key={i}
+            id={carouselId(c.day, i)}
+            component={CarouselSlide}
+            defaultProps={{ day: c.day, index: i }}
+            durationInFrames={1}
+            fps={FPS}
+            width={1080}
+            height={1350}
+          />
+        ))}
+      </Folder>
+    ))}
     <Folder name="Publicaciones">
       {POSTS.map((p) => (
         <Composition

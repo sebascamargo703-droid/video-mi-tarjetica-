@@ -8,6 +8,7 @@ Proyecto nuevo, hecho desde cero. Dos composiciones con la misma narrativa:
 | `MiTarjeticaVertical` | 1080×1920 · 60 fps · 45 s | Reels, TikTok, Stories (el layout se recompone, no se recorta) |
 
 Además, en `../historias-y-publicaciones/`:
+- **5 carruseles de Instagram (plan de 5 días)** → `carruseles/` con `PLAN-5-DIAS.md` (carpetas *Carrusel-Dia-N* del Studio).
 - **Serie de 8 historias para Instagram con voz** (carpeta *Instagram* del Studio → `historias-instagram/`, con `GUIA.md` de publicación y stickers).
 - 6 historias sin voz (carpeta *Historias*) y 6 publicaciones 4:5 (carpeta *Publicaciones*).
 

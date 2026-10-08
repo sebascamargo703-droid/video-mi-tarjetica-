@@ -14,6 +14,14 @@ const only = process.argv.find((a) => a.startsWith("--only="))?.slice(7);
 const browserExecutable = process.env.REMOTION_BROWSER ?? null;
 const envVariables = { REMOTION_LOCAL_FONTS: process.env.REMOTION_LOCAL_FONTS ?? "" };
 
+// Nombres de carpeta de cada día (deben coincidir con src/social/carousel/data.ts)
+const carouselFolders = {
+  1: "dia-1-lunes-la-cuenta",
+  2: "dia-2-martes-tarjeta-de-papel",
+  3: "dia-3-miercoles-como-funciona",
+  4: "dia-4-jueves-ideas-de-premios",
+  5: "dia-5-viernes-empieza-gratis",
+};
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
 const comps = await getCompositions(serveUrl, { browserExecutable, envVariables });
 
@@ -21,8 +29,26 @@ for (const composition of comps) {
   const isStory = composition.id.startsWith("Historia");
   const isPost = composition.id.startsWith("Post");
   const isIG = composition.id.startsWith("IG");
-  if (!isStory && !isPost && !isIG) continue;
+  const isCarousel = composition.id.startsWith("Carrusel");
+  if (!isStory && !isPost && !isIG && !isCarousel) continue;
   if (only && !composition.id.includes(only)) continue;
+  if (isCarousel) {
+    // Carrusel-D1-03 → carruseles/dia-1-<slug>/03.png
+    const [, d, n] = composition.id.match(/Carrusel-D(\d+)-(\d+)/);
+    const folder = path.join(OUT, "carruseles", carouselFolders[d] ?? `dia-${d}`);
+    fs.mkdirSync(folder, { recursive: true });
+    await renderStill({
+      composition,
+      serveUrl,
+      output: path.join(folder, `${n}.png`),
+      frame: 0,
+      imageFormat: "png",
+      browserExecutable,
+      envVariables,
+    });
+    console.log(`✓ ${folder}/${n}.png`);
+    continue;
+  }
   const dir = path.join(OUT, isIG ? "historias-instagram" : isStory ? "historias" : "publicaciones");
   fs.mkdirSync(dir, { recursive: true });
   const base = path.join(dir, composition.id);

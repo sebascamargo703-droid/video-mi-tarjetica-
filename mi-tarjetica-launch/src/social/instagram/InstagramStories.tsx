@@ -157,7 +157,7 @@ export const IG02Recordatorio: React.FC = () => {
   );
 };
 
-const AddToWallet: React.FC = () => (
+export const AddToWallet: React.FC = () => (
   <div
     style={{
       background: brand.colors.black,
