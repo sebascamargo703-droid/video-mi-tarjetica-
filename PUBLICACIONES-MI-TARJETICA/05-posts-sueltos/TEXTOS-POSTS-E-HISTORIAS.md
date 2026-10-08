@@ -1,11 +1,9 @@
-# Historias y publicaciones — Mi Tarjetica
+# Textos: posts sueltos e historias animadas sin voz
 
 Todas las piezas usan los colores del logo oficial: **verde `#0E5244`**, **tinta `#1B1613`**, papel `#F6F2EA`, menta `#69D3BE` (tinte del verde para acentos sobre fondos oscuros), negro `#0A0A0A` y blanco.
 
-- `carruseles/` → **5 carruseles de 7 imágenes (plan de lunes a viernes)** con textos, horarios y fuentes en `carruseles/PLAN-5-DIAS.md`.
-- `historias-instagram/` → **serie de 8 historias con voz y música** lista para Instagram. Ver `historias-instagram/GUIA.md` (orden, stickers y consejos).
-- `historias/` → 1080×1920. Cada historia viene en **MP4 animado** (para subir como video) y en **PNG** (fija).
-- `publicaciones/` → 1080×1350 (4:5, el formato que más espacio ocupa en el feed), en PNG.
+- `../04-historias-animadas-sin-voz/` → 1080×1920. Cada historia viene en **MP4 animado** (para subir como video) y en **PNG** (fija).
+- Esta carpeta (`05-posts-sueltos/`) → 1080×1350 (4:5, el formato que más espacio ocupa en el feed), en PNG.
 
 Para editar textos: `mi-tarjetica-launch/src/copy.ts` (sección `social`). Para volver a exportar: `npm run render:social` dentro de `mi-tarjetica-launch/`.
 

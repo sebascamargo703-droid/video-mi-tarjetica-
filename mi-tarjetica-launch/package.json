@@ -7,9 +7,9 @@
   "scripts": {
     "dev": "remotion studio",
     "lint": "tsc --noEmit",
-    "render:hero": "remotion render MiTarjeticaHero out/mi-tarjetica-hero.mp4 --codec=h264 --crf=18 --audio-bitrate=192k && bash scripts/master-audio.sh out/mi-tarjetica-hero.mp4",
-    "render:vertical": "remotion render MiTarjeticaVertical out/mi-tarjetica-vertical.mp4 --codec=h264 --crf=18 --audio-bitrate=192k && bash scripts/master-audio.sh out/mi-tarjetica-vertical.mp4",
-    "render:hero:4k": "remotion render MiTarjeticaHero out/mi-tarjetica-hero-4k.mp4 --scale=2 --codec=h264 --crf=18 --audio-bitrate=192k && bash scripts/master-audio.sh out/mi-tarjetica-hero-4k.mp4",
+    "render:hero": "remotion render MiTarjeticaHero ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/video-horizontal-16x9.mp4 --codec=h264 --crf=18 --audio-bitrate=192k && bash scripts/master-audio.sh ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/video-horizontal-16x9.mp4",
+    "render:vertical": "remotion render MiTarjeticaVertical ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/reel-vertical-9x16.mp4 --codec=h264 --crf=18 --audio-bitrate=192k && bash scripts/master-audio.sh ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/reel-vertical-9x16.mp4",
+    "render:hero:4k": "remotion render MiTarjeticaHero ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/video-horizontal-4k.mp4 --scale=2 --codec=h264 --crf=18 --audio-bitrate=192k && bash scripts/master-audio.sh ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/video-horizontal-4k.mp4",
     "render:social": "node scripts/render-social.mjs",
     "voice": "python3 scripts/make-voice.py --models .",
     "music": "python3 scripts/make-music.py && remotion ffmpeg -y -i public/music/cama.wav -b:a 192k public/music/cama.mp3 && rm public/music/cama.wav"

@@ -1,5 +1,5 @@
 // Exporta historias (PNG + MP4), la serie de Instagram con voz (MP4 + portada PNG)
-// y publicaciones (PNG; MP4 con --mp4) a ../historias-y-publicaciones
+// y publicaciones (PNG; MP4 con --mp4) a ../PUBLICACIONES-MI-TARJETICA
 // Uso: npm run render:social           (todo)
 //      node scripts/render-social.mjs --mp4   (publicaciones también en video)
 import { bundle } from "@remotion/bundler";
@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 
-const OUT = path.resolve("../historias-y-publicaciones");
+const OUT = path.resolve("../PUBLICACIONES-MI-TARJETICA");
 const postsAsVideo = process.argv.includes("--mp4");
 const only = process.argv.find((a) => a.startsWith("--only="))?.slice(7);
 const browserExecutable = process.env.REMOTION_BROWSER ?? null;
@@ -35,7 +35,7 @@ for (const composition of comps) {
   if (isCarousel) {
     // Carrusel-D1-03 → carruseles/dia-1-<slug>/03.png
     const [, d, n] = composition.id.match(/Carrusel-D(\d+)-(\d+)/);
-    const folder = path.join(OUT, "carruseles", carouselFolders[d] ?? `dia-${d}`);
+    const folder = path.join(OUT, "02-carruseles-plan-5-dias", carouselFolders[d] ?? `dia-${d}`);
     fs.mkdirSync(folder, { recursive: true });
     await renderStill({
       composition,
@@ -49,7 +49,10 @@ for (const composition of comps) {
     console.log(`✓ ${folder}/${n}.png`);
     continue;
   }
-  const dir = path.join(OUT, isIG ? "historias-instagram" : isStory ? "historias" : "publicaciones");
+  const dir = path.join(
+    OUT,
+    isIG ? "03-historias-instagram-con-voz" : isStory ? "04-historias-animadas-sin-voz" : "05-posts-sueltos",
+  );
   fs.mkdirSync(dir, { recursive: true });
   const base = path.join(dir, composition.id);
   await renderStill({

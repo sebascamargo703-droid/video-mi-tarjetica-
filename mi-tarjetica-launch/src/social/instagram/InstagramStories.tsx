@@ -21,7 +21,7 @@ import { StoryAudio } from "./StoryAudio";
 /*
  * Serie de 8 historias para Instagram (1080×1920, con voz).
  * Zonas libres para stickers nativos (encuesta, cuestionario, cuenta
- * regresiva, link): ver historias-y-publicaciones/historias-instagram/GUIA.md
+ * regresiva, link): ver PUBLICACIONES-MI-TARJETICA/03-historias-instagram-con-voz/GUIA.md
  */
 
 const Person: React.FC<{ size: number; color: string }> = ({ size, color }) => (

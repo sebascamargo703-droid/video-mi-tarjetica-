@@ -7,10 +7,11 @@ Proyecto nuevo, hecho desde cero. Dos composiciones con la misma narrativa:
 | `MiTarjeticaHero` | 1920×1080 · 60 fps · 45 s | Web, YouTube, presentaciones |
 | `MiTarjeticaVertical` | 1080×1920 · 60 fps · 45 s | Reels, TikTok, Stories (el layout se recompone, no se recorta) |
 
-Además, en `../historias-y-publicaciones/`:
-- **5 carruseles de Instagram (plan de 5 días)** → `carruseles/` con `PLAN-5-DIAS.md` (carpetas *Carrusel-Dia-N* del Studio).
-- **Serie de 8 historias para Instagram con voz** (carpeta *Instagram* del Studio → `historias-instagram/`, con `GUIA.md` de publicación y stickers).
-- 6 historias sin voz (carpeta *Historias*) y 6 publicaciones 4:5 (carpeta *Publicaciones*).
+**Todo lo exportado está en una sola carpeta: [`../PUBLICACIONES-MI-TARJETICA/`](../PUBLICACIONES-MI-TARJETICA/LEEME.md)**
+- `01-video-lanzamiento/` → reel vertical y video horizontal (con voz).
+- `02-carruseles-plan-5-dias/` → 5 carruseles de Instagram con `PLAN-5-DIAS.md` (carpetas *Carrusel-Dia-N* del Studio).
+- `03-historias-instagram-con-voz/` → 8 historias con voz y `GUIA.md` (carpeta *Instagram* del Studio).
+- `04-historias-animadas-sin-voz/` y `05-posts-sueltos/` (carpetas *Historias* y *Publicaciones* del Studio).
 
 ## Guion (45 s)
 
@@ -32,8 +33,8 @@ Además, en `../historias-y-publicaciones/`:
 ```bash
 npm install
 npm run dev               # Remotion Studio
-npm run render:hero       # out/mi-tarjetica-hero.mp4
-npm run render:vertical   # out/mi-tarjetica-vertical.mp4
+npm run render:hero       # ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/video-horizontal-16x9.mp4
+npm run render:vertical   # ../PUBLICACIONES-MI-TARJETICA/01-video-lanzamiento/reel-vertical-9x16.mp4
 npm run render:hero:4k    # 3840×2160 (todo está hecho con código, se ve nítido)
 npm run render:social     # historias (PNG + MP4) y publicaciones (PNG)
 ```

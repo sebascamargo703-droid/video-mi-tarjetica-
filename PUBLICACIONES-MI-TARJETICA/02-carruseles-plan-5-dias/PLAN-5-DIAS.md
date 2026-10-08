@@ -31,7 +31,7 @@ Todos comparten un hilo de "sellos" en la parte inferior que cruza de una imagen
 | **Jueves** | 8 ideas de premios por negocio | Valor · que lo compartan | 12:30 p. m. |
 | **Viernes** | Empieza gratis | Conversión · link en la bio | 11:30 a. m. |
 
-Complemento: el mismo día, comparte el carrusel en tus historias (o usa las historias de `historias-instagram/`) para empujar el alcance de las primeras horas.
+Complemento: el mismo día, comparte el carrusel en tus historias (o usa las historias de `../03-historias-instagram-con-voz/`) para empujar el alcance de las primeras horas.
 
 ---
 
