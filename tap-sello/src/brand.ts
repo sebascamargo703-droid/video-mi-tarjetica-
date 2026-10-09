@@ -21,6 +21,12 @@ export const brand = {
     white: "#FFFFFF",
     /** Texto secundario sobre negro (contraste 5.5:1). */
     gray: "#86868B",
+    /** Fondo verde para láminas (reemplaza al negro en los carruseles). */
+    greenBg: "#145B44",
+    /** Acento sobre greenBg (5.1:1 AA). La menta normal queda en 4.47:1. */
+    mintOnGreen: "#7FE0C9",
+    /** Texto secundario sobre greenBg (6.2:1 AA). El gris #86868B no pasa (2.2:1). */
+    subOnGreen: "#C9E9E1",
     /** Texto secundario sobre blanco: #86868B no pasa AA en blanco (3.6:1); este sí (5.1:1). */
     grayOnLight: "#6E6E73",
     appBg: "#F5F5F7",

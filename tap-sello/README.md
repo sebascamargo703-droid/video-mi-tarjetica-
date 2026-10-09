@@ -63,7 +63,7 @@ Agrega un objeto al arreglo `carousels`:
 ```ts
 {
   id: "mi-carrusel",            // minúsculas y guiones: será la carpeta y el id de cada lámina
-  theme: "dark",                // "dark" (negro) o "light" (blanco)
+  theme: "green",               // "green" (verde #145B44), "light" (blanco) o "dark" (negro)
   caption: "Texto de la publicación 👇",
   slides: [
     { type: "cover", title: "Titular de\nhasta 4 líneas con\nuna palabra *clave*", subtitle: "Opcional" },
@@ -89,4 +89,4 @@ Listo: aparece en Studio (`npx remotion studio`, una carpeta por carrusel) y el 
 
 Reglas de texto: `*palabra*` = color de marca, `\n` = salto de línea.
 
-Diseño (en `src/carousel/CarouselSlide.tsx`): márgenes de 96 px, logo arriba a la izquierda, puntos de página abajo, misma escala tipográfica por tipo de lámina. Contraste AA: sobre negro el gris es `#86868B` (5.5:1) y el acento menta (11:1); sobre blanco el gris es `#6E6E73` (5.1:1) y el acento verde de marca (9.1:1).
+Diseño (en `src/carousel/CarouselSlide.tsx`): márgenes de 96 px, logo arriba a la izquierda, puntos de página abajo, misma escala tipográfica por tipo de lámina. Contraste AA: sobre verde `#145B44` el texto secundario es `#C9E9E1` (6.2:1) y el acento `#7FE0C9` (5.1:1); sobre negro el gris es `#86868B` (5.5:1) y el acento menta (11:1); sobre blanco el gris es `#6E6E73` (5.1:1) y el acento verde de marca (9.1:1).

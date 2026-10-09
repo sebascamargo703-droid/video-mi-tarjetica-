@@ -11,7 +11,8 @@
  * Este archivo es solo datos (sin imports) para que el script de render pueda leerlo.
  */
 
-export type SlideTone = "dark" | "light";
+/** "green" = verde de marca #145B44 · "light" = blanco · "dark" = negro #0A0A0A */
+export type SlideTone = "green" | "light" | "dark";
 
 export type Slide =
   | { type: "cover"; title: string; subtitle?: string }
@@ -23,7 +24,7 @@ export type Slide =
 
 export type Carousel = {
   id: string;
-  /** Fondo de todas las láminas del carrusel. */
+  /** Fondo de todas las láminas del carrusel: "green", "light" o "dark". */
   theme: SlideTone;
   caption: string;
   slides: Slide[];
@@ -32,7 +33,7 @@ export type Carousel = {
 export const carousels: Carousel[] = [
   {
     id: "cuanto-vale-un-cliente",
-    theme: "dark",
+    theme: "green",
     caption: "Haz la cuenta con tu propio negocio 👇 ¿Cuánto te deja un cliente fiel al año?",
     slides: [
       { type: "cover", title: "¿Cuánto vale\nun cliente\nque *vuelve?*" },
@@ -64,7 +65,7 @@ export const carousels: Carousel[] = [
   },
   {
     id: "cartoncito-vs-mitarjetica",
-    theme: "dark",
+    theme: "green",
     caption: "Tu competencia sigue repartiendo cartoncitos. Tú no tienes por qué.",
     slides: [
       { type: "cover", title: "Cartoncito\nvs. *Mi Tarjetica*" },

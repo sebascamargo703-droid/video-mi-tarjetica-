@@ -34,6 +34,14 @@ const TYPE = {
 
 type Palette = { bg: string; fg: string; sub: string; accent: string; hairline: string; logo: string };
 const palettes: Record<SlideTone, Palette> = {
+  green: {
+    bg: brand.colors.greenBg,
+    fg: brand.colors.white,
+    sub: brand.colors.subOnGreen,
+    accent: brand.colors.mintOnGreen,
+    hairline: "rgba(255,255,255,0.2)",
+    logo: brand.colors.white,
+  },
   dark: {
     bg: brand.colors.black,
     fg: brand.colors.white,
@@ -314,7 +322,7 @@ export const CarouselSlide: React.FC<CarouselSlideProps> = ({ slide, tone, index
                 color: before ? p.sub : p.accent,
                 textDecoration: before ? "line-through" : undefined,
                 textDecorationThickness: before ? 4 : undefined,
-                textDecorationColor: before ? (tone === "dark" ? "rgba(134,134,139,0.7)" : "rgba(110,110,115,0.7)") : undefined,
+                textDecorationColor: before ? (tone === "light" ? "rgba(110,110,115,0.7)" : tone === "green" ? "rgba(201,233,225,0.6)" : "rgba(134,134,139,0.7)") : undefined,
               }}
             >
               {before ? slide.before : slide.after}
