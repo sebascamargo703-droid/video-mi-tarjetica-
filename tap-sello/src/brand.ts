@@ -19,8 +19,10 @@ export const brand = {
     /** Fondo del video: el primer y el último frame son exactamente este color (loop). */
     black: "#0A0A0A",
     white: "#FFFFFF",
-    /** Texto secundario. */
+    /** Texto secundario sobre negro (contraste 5.5:1). */
     gray: "#86868B",
+    /** Texto secundario sobre blanco: #86868B no pasa AA en blanco (3.6:1); este sí (5.1:1). */
+    grayOnLight: "#6E6E73",
     appBg: "#F5F5F7",
     hairline: "rgba(0,0,0,0.08)",
   },
