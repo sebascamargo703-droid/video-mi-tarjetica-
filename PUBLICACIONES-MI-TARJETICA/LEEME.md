@@ -5,13 +5,13 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 
 | Carpeta | Qué hay | Formato | Dónde se publica |
 |---|---|---|---|
-| `01-video-lanzamiento/` | `reel-vertical-9x16.mp4` (45 s, con voz) y `video-horizontal-16x9.mp4` | MP4 | Reels / TikTok / YouTube Shorts · YouTube, web y presentaciones |
+| `01-video-lanzamiento/` | `reel-vertical-9x16.mp4` (45 s, con voz), `tap-sello-reel-9x16.mp4` (18 s, loop "Mira lo que le pasa al celular de tu cliente") y `video-horizontal-16x9.mp4` | MP4 | Reels / TikTok / YouTube Shorts · YouTube, web y presentaciones |
 | `02-carruseles-plan-5-dias/` | 5 carruseles × 7 imágenes (lunes a viernes) + `PLAN-5-DIAS.md` con textos, horarios y fuentes + `vista-general.jpg` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 | `03-historias-instagram-con-voz/` | 8 historias con voz y música (+ portada PNG) + `GUIA.md` con stickers | MP4 1080×1920 | Historias de Instagram |
 | `04-historias-animadas-sin-voz/` | 6 historias animadas (MP4 + PNG) | MP4/PNG 1080×1920 | Historias (con música de Instagram si quieres) |
 | `05-posts-sueltos/` | 6 posts de una imagen + `TEXTOS-POSTS-E-HISTORIAS.md` | PNG 1080×1350 | Feed de Instagram / Facebook |
 
-**En total:** 2 videos, 35 imágenes de carrusel, 14 historias y 6 posts.
+**En total:** 3 videos, 35 imágenes de carrusel, 14 historias y 6 posts.
 
 ## Calendario sugerido (2 semanas)
 
@@ -25,6 +25,8 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | Miércoles | Carrusel día 3 · Así funciona | IG03 Cómo funciona + IG04 Sellos |
 | Jueves | Carrusel día 4 · Ideas de premios | IG05 Control |
 | Viernes | Carrusel día 5 · Empieza gratis | IG07 Gratis + IG08 Link (con sticker de link) |
+
+Extra: publica `tap-sello-reel-9x16.mp4` como Reel/TikTok el miércoles o jueves en la noche; es un video corto en loop pensado para verse dos veces.
 
 **Semana 2 — refuerzo**
 
@@ -42,4 +44,5 @@ Las historias con voz también se pueden subir **las 8 seguidas el mismo día** 
 ## Volver a exportar
 Todo se genera desde el proyecto `../mi-tarjetica-launch/` (Remotion):
 - `npm run render:vertical` / `npm run render:hero` → `01-video-lanzamiento/`
+- TapSello: proyecto `../tap-sello/` → `npx remotion render TapSello out/tap-sello.mp4 --codec=h264 --crf=16`
 - `npm run render:social` → carpetas 02 a 05 (o `node scripts/render-social.mjs --only=Carrusel`, `--only=IG`, etc.)
