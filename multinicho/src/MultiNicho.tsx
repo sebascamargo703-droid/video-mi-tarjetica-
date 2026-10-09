@@ -51,8 +51,11 @@ const LAYOUT = {
 } as const;
 type Layout = (typeof LAYOUT)[Format];
 
-/** Halo de color del nicho + categoría + tarjeta. `frameOffset` = dibujar dentro de un <Sequence> (motion blur). */
-const CardScene: React.FC<{ L: Layout; frameOffset?: number }> = ({ L, frameOffset = 0 }) => {
+/**
+ * Halo de color del nicho + categoría + tarjeta. `frameOffset` = dibujar dentro de un <Sequence> (motion blur).
+ * `glow`: dibuja solo el halo (va fuera del motion blur para que el degradado no haga bandas).
+ */
+const CardScene: React.FC<{ L: Layout; frameOffset?: number; glow?: boolean }> = ({ L, frameOffset = 0, glow = false }) => {
   const frame = useCurrentFrame() + frameOffset;
   const { fps } = useVideoConfig();
   const beat = useBeat();
@@ -79,20 +82,27 @@ const CardScene: React.FC<{ L: Layout; frameOffset?: number }> = ({ L, frameOffs
   const labelIn = ease(frame, inAt + 4, 24);
   const float = Math.sin((frame / fps) * 1.5) * 1.6;
 
+  if (glow) {
+    // halo del color del nicho (máx. 25 %)
+    return (
+      <AbsoluteFill style={{ opacity: 1 - out }}>
+        <div
+          style={{
+            position: "absolute",
+            left: L.cx - L.cardW,
+            top: L.cardY - L.cardW,
+            width: L.cardW * 2,
+            height: L.cardW * 2,
+            background: `radial-gradient(circle, ${s.glowColor} 0%, ${fade(s.glowColor, 0)} 62%)`,
+            opacity: s.glowOpacity * enter,
+          }}
+        />
+      </AbsoluteFill>
+    );
+  }
+
   return (
     <AbsoluteFill style={{ opacity: 1 - out, filter: out > 0.01 ? `blur(${out * 10}px)` : undefined }}>
-      {/* halo del color del nicho (máx. 25 %) */}
-      <div
-        style={{
-          position: "absolute",
-          left: L.cx - L.cardW,
-          top: L.cardY - L.cardW,
-          width: L.cardW * 2,
-          height: L.cardW * 2,
-          background: `radial-gradient(circle, ${s.glowColor} 0%, ${fade(s.glowColor, 0)} 62%)`,
-          opacity: s.glowOpacity * enter,
-        }}
-      />
       {/* categoría */}
       <div
         style={{
@@ -169,7 +179,7 @@ export const MultiNicho: React.FC<{ format: Format }> = ({ format }) => {
   const loopFade = interpolate(frame, [durationInFrames - 10, durationInFrames - 1], [0, 1], clamp);
 
   // Efectos: todos colocados con beat(n)
-  const swipes = card.slice(1, -1).map((c) => c.beat);
+  const swipes = card.slice(1, -1).map((c) => c.beat).filter((b) => b < B.drop); // el drop queda en silencio
   const pops = [...Array.from({ length: colorCycle.niches.length + 1 }, (_, j) => B.colors + j * colorCycle.step), B.reward];
   const sparkles = [B.cardIn, B.logo, B.cta + 1.5];
   const logoDots = [18, 26, 34].map((d) => ctaAt + 4 + d);
@@ -186,6 +196,7 @@ export const MultiNicho: React.FC<{ format: Format }> = ({ format }) => {
       ) : null}
 
       {/* 2–15 s · La tarjeta (con motion blur solo en el repaso ultrarrápido) */}
+      <CardScene L={L} glow />
       {frame >= blurFrom && frame < blurTo ? (
         <Sequence from={blurFrom} layout="none">
           <CameraMotionBlur shutterAngle={180} samples={8}>

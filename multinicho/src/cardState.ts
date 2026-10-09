@@ -32,8 +32,10 @@ export const getCardState = (frame: number, fps: number) => {
   const p = prev ? ease(frame, at, CHANGE) : 1;
 
   /* ---- color (con el ciclo de "Tus colores" encima) ---- */
-  let bg = interpolateColors(frame, [at, at + 8], [from.color, cur.niche.color]);
-  let ink = interpolateColors(frame, [at, at + 8], [inkFor(from), inkFor(cur.niche)]);
+  // el aterrizaje en "Tu negocio" es seco (3 frames); los demás cambios, 8 frames
+  const colorDur = isFinal ? 3 : 8;
+  let bg = interpolateColors(frame, [at, at + colorDur], [from.color, cur.niche.color]);
+  let ink = interpolateColors(frame, [at, at + colorDur], [inkFor(from), inkFor(cur.niche)]);
   const cyc = [yourBusiness, ...colorCycle.niches.map((n) => niches[n]), yourBusiness];
   const cycAt = cyc.slice(1).map((_, j) => beat(colorCycle.from + j * colorCycle.step));
   if (isFinal && frame >= cycAt[0] && frame <= cycAt[cycAt.length - 1] + 4) {
