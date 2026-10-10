@@ -5,13 +5,13 @@
 export const copy = {
   business: "Lavadero Brillo",
   customer: "Andrés Pérez",
-  reward: "Un lavado gratis",
+  reward: "10\u00a0% de descuento",
   stampsTotal: 10,
   labels: { stamps: "SELLOS", visit: "Visita", customer: "CLIENTE", reward: "PREMIO", week: "Semana" },
   prizeTitle: "¡PREMIO DISPONIBLE!",
 
   /** 0:00–0:02 (completo antes de 2 s). */
-  hook: "El *décimo*\nlavado va\npor la casa.",
+  hook: "Al *décimo*\nlavado, 10\u00a0%\nde descuento.",
   firstPass: "Cada lavado,\nun sello.",
   montage: "Y tu cliente\nvuelve.",
   comeback: "Y vuelve por\nsu premio.",
