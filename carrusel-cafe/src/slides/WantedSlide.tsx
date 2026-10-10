@@ -12,8 +12,8 @@ const Storefront: React.FC<{ w: number; h: number }> = ({ w, h }) => {
   const c = palette.coffee;
   return (
     <svg width={w} height={h} viewBox="0 0 440 480" preserveAspectRatio="xMidYMax slice" style={{ display: "block" }}>
-      <rect width={440} height={480} fill="#F2E8DB" />
-      <circle cx={220} cy={190} r={170} fill="#F7EFE5" />
+      <rect width={440} height={480} fill={palette.latte} />
+      <circle cx={220} cy={190} r={170} fill="#F0E6D8" />
       {/* piso */}
       <path d="M0 436 H440" stroke={c} strokeWidth={3} />
       {/* fachada */}

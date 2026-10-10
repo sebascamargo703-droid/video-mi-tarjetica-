@@ -72,7 +72,7 @@ export const carousels: Carousel[] = [
     slides: [
       {
         type: "wanted",
-        bg: "latte",
+        bg: "light",
         title: "SE BUSCA",
         business: fake.name.toUpperCase(),
         text: "Usaste todo lo que te dimos y nunca nos pagaste. Van tres meses. Lo intentamos por las buenas.",
