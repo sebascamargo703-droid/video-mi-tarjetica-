@@ -4,7 +4,7 @@ import React from "react";
 export const Phone: React.FC<{ w: number; h: number; screen: string; children: React.ReactNode; style?: React.CSSProperties }> = ({ w, h, screen, children, style }) => {
   const pad = w * 0.04;
   return (
-    <div style={{ position: "relative", width: w, height: h, borderRadius: w * 0.15, background: "#241A14", padding: pad, boxSizing: "border-box", boxShadow: "0 40px 80px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255,255,255,0.08)", ...style }}>
+    <div style={{ position: "relative", width: w, height: h, borderRadius: w * 0.15, background: "#241A14", padding: pad, boxSizing: "border-box", boxShadow: "0 40px 80px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(246, 244, 235, 0.08)", ...style }}>
       <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: w * 0.115, background: screen, overflow: "hidden" }}>
         <div style={{ position: "absolute", left: "50%", top: w * 0.03, width: w * 0.28, height: w * 0.075, marginLeft: -w * 0.14, borderRadius: w * 0.04, background: "#120C09", zIndex: 5 }} />
         {children}

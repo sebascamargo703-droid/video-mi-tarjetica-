@@ -6,6 +6,7 @@ import { CoffeeCard } from "../components/CoffeeCard";
 import { Beans, CoffeeBranch, SteamCup } from "../components/Ornaments";
 import { ChargeHeader, Note, Title } from "../components/SlideFrame";
 import { display, sans } from "../fonts";
+import { WithEmoji } from "../components/Emoji";
 
 const corner = (opacity = 0.25) => (
   <>
@@ -14,7 +15,7 @@ const corner = (opacity = 0.25) => (
   </>
 );
 
-/** Lámina 4 · 03 · Sus clientes. */
+/** Lámina 5 · 04 · Sus clientes (panel light dentro de un arco, sobre latte). */
 export const ClientsSlide: React.FC<{ s: Extract<Slide, { type: "clients" }>; header: string }> = ({ s, header }) => {
   const panelTop = 640;
   const rowH = 140;
@@ -25,7 +26,7 @@ export const ClientsSlide: React.FC<{ s: Extract<Slide, { type: "clients" }>; he
       <Title bg={s.bg} text={s.title} />
       {/* arco latte con rama de café; el panel blanco se monta encima */}
       <div style={{ position: "absolute", left: (1080 - 700) / 2, top: grid.visualTop - 20 }}>
-        <Arch w={700} h={560} fill={palette.latte}>
+        <Arch w={700} h={560} fill="rgba(107, 68, 35, 0.07)" border={`2px solid ${palette.caramel}`}>
           <CoffeeBranch color={palette.coffee} opacity={0.35} size={230} style={{ position: "absolute", left: 236, top: 22 }} rotate={-14} />
         </Arch>
       </div>
@@ -36,7 +37,7 @@ export const ClientsSlide: React.FC<{ s: Extract<Slide, { type: "clients" }>; he
           right: grid.m,
           top: panelTop,
           borderRadius: 32,
-          background: palette.white,
+          background: palette.light,
           boxShadow: `0 40px 90px ${palette.shadow}, 0 2px 0 ${palette.latte}`,
           padding: "30px 36px 14px",
           fontFamily: sans,
@@ -44,7 +45,7 @@ export const ClientsSlide: React.FC<{ s: Extract<Slide, { type: "clients" }>; he
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
           <span style={{ ...display, fontWeight: 600, fontSize: 40, color: palette.ink, letterSpacing: "-0.01em" }}>{s.panelTitle}</span>
-          <span style={{ fontSize: 20, fontWeight: 600, color: palette.inkSecondary, padding: "8px 16px", borderRadius: 999, background: palette.bgCream, border: `1.5px solid ${palette.latte}` }}>
+          <span style={{ fontSize: 20, fontWeight: 600, color: palette.inkSecondary, padding: "8px 16px", borderRadius: 999, background: palette.latte }}>
             {s.badge}
           </span>
         </div>
@@ -91,7 +92,7 @@ const Op: React.FC<{ size: number; children: React.ReactNode }> = ({ size, child
   <span style={{ fontFamily: sans, fontWeight: 400, fontSize: size, marginRight: size * 0.35, verticalAlign: "0.06em" }}>{children}</span>
 );
 
-/** Lámina 5 · 04 · Lo que ganaste (cuenta alineada). */
+/** Lámina 6 · 05 · Lo que ganaste (cuenta alineada). */
 export const MathSlide: React.FC<{ s: Extract<Slide, { type: "math" }>; header: string }> = ({ s, header }) => {
   const valueW = 290;
   return (
@@ -101,7 +102,7 @@ export const MathSlide: React.FC<{ s: Extract<Slide, { type: "math" }>; header: 
       <Title bg={s.bg} text={s.title} style={{ right: 360 }} />
       {/* taza humeante en arco */}
       <div style={{ position: "absolute", right: grid.m, top: 240 }}>
-        <Arch w={250} h={300} fill={palette.bgCream} border={`2px solid ${palette.caramel}`}>
+        <Arch w={250} h={300} fill={palette.latte} border={`2px solid ${palette.caramel}`}>
           <SteamCup color={palette.coffee} opacity={0.75} size={170} style={{ position: "absolute", left: 38, top: 92 }} />
         </Arch>
       </div>
@@ -135,12 +136,12 @@ export const MathSlide: React.FC<{ s: Extract<Slide, { type: "math" }>; header: 
 
 /** Tarjetas genéricas del Wallet (sin marcas). */
 const BankCard: React.FC<{ w: number }> = ({ w }) => (
-  <div style={{ width: w, height: w * 0.62, borderRadius: w * 0.06, background: "linear-gradient(135deg, #3A4652 0%, #232C35 100%)", padding: w * 0.065, boxSizing: "border-box", color: "#FFFFFF", fontFamily: sans, position: "relative", boxShadow: `0 20px 40px ${palette.shadow}` }}>
+  <div style={{ width: w, height: w * 0.62, borderRadius: w * 0.06, background: "linear-gradient(135deg, #3A4652 0%, #232C35 100%)", padding: w * 0.065, boxSizing: "border-box", color: palette.light, fontFamily: sans, position: "relative", boxShadow: `0 20px 40px ${palette.shadow}` }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <div style={{ width: w * 0.12, height: w * 0.09, borderRadius: 8, background: "linear-gradient(135deg, #E2C48A, #B8924E)" }} />
       <div style={{ display: "flex" }}>
-        <span style={{ width: w * 0.08, height: w * 0.08, borderRadius: "50%", background: "rgba(255,255,255,0.55)" }} />
-        <span style={{ width: w * 0.08, height: w * 0.08, borderRadius: "50%", background: "rgba(255,255,255,0.3)", marginLeft: -w * 0.03 }} />
+        <span style={{ width: w * 0.08, height: w * 0.08, borderRadius: "50%", background: "rgba(246, 244, 235, 0.55)" }} />
+        <span style={{ width: w * 0.08, height: w * 0.08, borderRadius: "50%", background: "rgba(246, 244, 235, 0.3)", marginLeft: -w * 0.03 }} />
       </div>
     </div>
     <div style={{ marginTop: w * 0.06, fontSize: w * 0.05, fontWeight: 600, letterSpacing: "0.12em" }}>•••• 4821</div>
@@ -148,8 +149,8 @@ const BankCard: React.FC<{ w: number }> = ({ w }) => (
 );
 
 const BoardingPass: React.FC<{ w: number }> = ({ w }) => (
-  <div style={{ width: w, height: w * 0.62, borderRadius: w * 0.06, background: "#EEF3F7", padding: w * 0.065, boxSizing: "border-box", fontFamily: sans, color: palette.ink, boxShadow: `0 20px 40px ${palette.shadow}` }}>
-    <div style={{ display: "flex", justifyContent: "space-between", fontSize: w * 0.034, fontWeight: 600, color: "#4A5560", letterSpacing: "0.08em" }}>
+  <div style={{ width: w, height: w * 0.62, borderRadius: w * 0.06, background: "#DDE6EE", padding: w * 0.065, boxSizing: "border-box", fontFamily: sans, color: palette.ink, boxShadow: `0 20px 40px ${palette.shadow}` }}>
+    <div style={{ display: "flex", justifyContent: "space-between", fontSize: w * 0.034, fontWeight: 600, color: "#3F4A55", letterSpacing: "0.08em" }}>
       <span>PASABORDO</span>
       <span>PUERTA 7</span>
     </div>
@@ -163,7 +164,7 @@ const BoardingPass: React.FC<{ w: number }> = ({ w }) => (
   </div>
 );
 
-/** Lámina 6 · 05 · Dónde vivía (pila de tarjetas en un Wallet genérico). */
+/** Lámina 7 · 06 · Dónde vivía (pila de tarjetas en un Wallet genérico). */
 export const WalletSlide: React.FC<{ s: Extract<Slide, { type: "wallet" }>; header: string }> = ({ s, header }) => {
   const archW = 720;
   const cardW = 470;
@@ -175,7 +176,7 @@ export const WalletSlide: React.FC<{ s: Extract<Slide, { type: "wallet" }>; head
       <ChargeHeader bg={s.bg} label={header} number={s.number} />
       <Title bg={s.bg} text={s.title} />
       <div style={{ position: "absolute", left: (1080 - archW) / 2, top: archTop }}>
-        <Arch w={archW} h={grid.visualBottom - archTop} fill={palette.latte}>
+        <Arch w={archW} h={grid.visualBottom - archTop} fill={palette.light}>
           <div style={{ position: "absolute", left, top: 150 }}>
             <BankCard w={cardW} />
           </div>
@@ -192,7 +193,7 @@ export const WalletSlide: React.FC<{ s: Extract<Slide, { type: "wallet" }>; head
   );
 };
 
-/** Lámina 7 · Lo intentamos en privado (chat genérico). */
+/** Lámina 8 · Lo intentamos en privado (chat genérico sobre latte, en lámina light). */
 export const ChatSlide: React.FC<{ s: Extract<Slide, { type: "chat" }> }> = ({ s }) => {
   const archW = 760;
   return (
@@ -200,7 +201,7 @@ export const ChatSlide: React.FC<{ s: Extract<Slide, { type: "chat" }> }> = ({ s
       {corner(0.3)}
       <Title bg={s.bg} text={s.title} top={grid.chargeY} />
       <div style={{ position: "absolute", left: (1080 - archW) / 2, top: 300 }}>
-        <Arch w={archW} h={890} fill={palette.white} shadow={`0 40px 90px ${palette.shadow}`}>
+        <Arch w={archW} h={890} fill={palette.latte} shadow={`0 40px 90px ${palette.shadow}`}>
           <div style={{ position: "absolute", left: 0, right: 0, top: 96, display: "flex", flexDirection: "column", alignItems: "center", gap: 14, fontFamily: sans }}>
             <div style={{ width: 84, height: 84, borderRadius: 42, background: palette.coffee, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width={34} height={44} viewBox="0 0 28 36">
@@ -211,19 +212,19 @@ export const ChatSlide: React.FC<{ s: Extract<Slide, { type: "chat" }> }> = ({ s
               </svg>
             </div>
             <div style={{ fontSize: 28, fontWeight: 600, color: palette.ink }}>{s.contact}</div>
-            <div style={{ width: 560, height: 1.5, background: palette.latte, marginTop: 10 }} />
+            <div style={{ width: 560, height: 1.5, background: "#D6C4AE", marginTop: 10 }} />
           </div>
           <div style={{ position: "absolute", left: 48, right: 48, top: 300, display: "flex", flexDirection: "column", alignItems: "flex-end", fontFamily: sans }}>
             {s.messages.map((m, i) => (
               <React.Fragment key={m.day}>
-                <div style={{ alignSelf: "center", fontSize: 20, fontWeight: 600, color: palette.inkSecondary, background: palette.bgCream, padding: "6px 16px", borderRadius: 999, margin: `${i ? 30 : 0}px 0 16px`, textTransform: "capitalize" }}>
+                <div style={{ alignSelf: "center", fontSize: 20, fontWeight: 600, color: palette.inkSecondary, background: palette.light, padding: "6px 16px", borderRadius: 999, margin: `${i ? 30 : 0}px 0 16px`, textTransform: "capitalize" }}>
                   {m.day}
                 </div>
                 <div
                   style={{
                     maxWidth: 520,
                     background: palette.brand,
-                    color: palette.white,
+                    color: palette.light,
                     fontSize: 29,
                     lineHeight: 1.32,
                     padding: "18px 26px",
@@ -231,7 +232,7 @@ export const ChatSlide: React.FC<{ s: Extract<Slide, { type: "chat" }> }> = ({ s
                     boxShadow: "0 8px 20px rgba(20, 91, 68, 0.18)",
                   }}
                 >
-                  {m.text}
+                  <WithEmoji text={m.text} />
                 </div>
               </React.Fragment>
             ))}

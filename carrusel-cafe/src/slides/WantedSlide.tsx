@@ -17,7 +17,7 @@ const Storefront: React.FC<{ w: number; h: number }> = ({ w, h }) => {
       {/* piso */}
       <path d="M0 436 H440" stroke={c} strokeWidth={3} />
       {/* fachada */}
-      <rect x={70} y={168} width={300} height={268} rx={6} fill={palette.bgCream} stroke={c} strokeWidth={3} />
+      <rect x={70} y={168} width={300} height={268} rx={6} fill={palette.light} stroke={c} strokeWidth={3} />
       {/* letrero con grano */}
       <rect x={160} y={118} width={120} height={40} rx={20} fill={c} />
       <g transform="translate(220 138) rotate(-20)">
@@ -27,15 +27,15 @@ const Storefront: React.FC<{ w: number; h: number }> = ({ w, h }) => {
       {/* toldo a rayas */}
       {Array.from({ length: 8 }).map((_, i) => (
         <g key={i}>
-          <rect x={58 + i * 40.5} y={176} width={40.5} height={46} fill={i % 2 ? palette.bgCream : c} stroke={c} strokeWidth={2} />
-          <path d={`M${58 + i * 40.5} 222 a20.25 16 0 0 0 40.5 0`} fill={i % 2 ? palette.bgCream : c} stroke={c} strokeWidth={2} />
+          <rect x={58 + i * 40.5} y={176} width={40.5} height={46} fill={i % 2 ? palette.light : c} stroke={c} strokeWidth={2} />
+          <path d={`M${58 + i * 40.5} 222 a20.25 16 0 0 0 40.5 0`} fill={i % 2 ? palette.light : c} stroke={c} strokeWidth={2} />
         </g>
       ))}
       {/* ventana con taza */}
       <rect x={98} y={262} width={146} height={120} rx={8} fill={palette.latte} stroke={c} strokeWidth={3} />
       <path d="M98 300 H244" stroke={c} strokeWidth={2} opacity={0.4} />
       <g transform="translate(171 330)" fill="none" stroke={c} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M-26 -6 H26 V8 C26 24 14 32 0 32 C-14 32 -26 24 -26 8 Z" fill={palette.bgCream} />
+        <path d="M-26 -6 H26 V8 C26 24 14 32 0 32 C-14 32 -26 24 -26 8 Z" fill={palette.light} />
         <path d="M26 0 H31 C38 0 40 5 40 9 C40 15 35 18 29 18 H25" />
         <path d="M-12 -16 C-17 -24 -7 -28 -12 -38 M0 -16 C-5 -26 5 -30 0 -42 M12 -16 C7 -24 17 -28 12 -38" stroke={palette.caramel} />
       </g>
@@ -51,8 +51,8 @@ const Storefront: React.FC<{ w: number; h: number }> = ({ w, h }) => {
             <path d={`M0 -30 C${i ? -4 : 4} -60 ${i ? 6 : -6} -80 0 -110`} />
             {[-48, -70, -92].map((y, k) => (
               <g key={k}>
-                <path d={`M0 ${y} C-14 ${y - 6} -24 ${y - 2} -28 ${y + 6} C-18 ${y + 10} -8 ${y + 6} 0 ${y}`} fill={palette.bgCream} />
-                <path d={`M0 ${y - 6} C14 ${y - 12} 24 ${y - 8} 28 ${y} C18 ${y + 4} 8 ${y} 0 ${y - 6}`} fill={palette.bgCream} />
+                <path d={`M0 ${y} C-14 ${y - 6} -24 ${y - 2} -28 ${y + 6} C-18 ${y + 10} -8 ${y + 6} 0 ${y}`} fill={palette.light} />
+                <path d={`M0 ${y - 6} C14 ${y - 12} 24 ${y - 8} 28 ${y} C18 ${y + 4} 8 ${y} 0 ${y - 6}`} fill={palette.light} />
               </g>
             ))}
             <circle cx={6} cy={-58} r={5} fill={palette.caramel} stroke="none" />

@@ -45,6 +45,8 @@ const slideWords = (s, header) => {
       return countWords(header, s.number, s.title, s.note, s.text);
     case "notification":
       return countWords(header, s.number, s.title, s.note);
+    case "nearby":
+      return countWords(header, s.number, s.title, s.text, s.note);
     case "clients":
       return countWords(header, s.number, s.title);
     case "math":

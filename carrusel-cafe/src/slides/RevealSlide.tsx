@@ -6,7 +6,7 @@ import { Beans, CoffeeBranch, SteamCup } from "../components/Ornaments";
 import { Title } from "../components/SlideFrame";
 import { sans } from "../fonts";
 
-/** Lámina 8 · revelación + CTA. */
+/** Lámina 9 · revelación + CTA. */
 export const RevealSlide: React.FC<{ s: Extract<Slide, { type: "reveal" }> }> = ({ s }) => (
   <>
     <SteamCup color={palette.caramel} opacity={0.6} size={150} style={{ position: "absolute", right: 84, top: 60 }} />
@@ -35,8 +35,8 @@ export const RevealSlide: React.FC<{ s: Extract<Slide, { type: "reveal" }> }> = 
       {s.cta}
     </div>
     <div style={{ position: "absolute", left: grid.m, top: 910, display: "flex", alignItems: "center", gap: 26 }}>
-      <BrandLogo variant="white" height={52} color={palette.onGreen} />
-      <span style={{ width: 2, height: 36, background: "rgba(255,255,255,0.35)" }} />
+      <BrandLogo variant="light" height={52} color={palette.onGreen} />
+      <span style={{ width: 2, height: 36, background: "rgba(246, 244, 235, 0.35)" }} />
       <span style={{ fontFamily: sans, fontWeight: 600, fontSize: 34, color: palette.onGreen }}>{s.url}</span>
     </div>
     <div style={{ position: "absolute", left: grid.m, top: 994, fontFamily: sans, fontSize: 25, color: palette.onGreenSecondary }}>{s.sub}</div>

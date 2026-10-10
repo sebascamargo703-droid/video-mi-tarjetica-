@@ -3,6 +3,7 @@ import { type Carousel, carousels } from "./carousels";
 import { SlideFrame } from "./components/SlideFrame";
 import { ClientsSlide, ChatSlide, MathSlide, WalletSlide } from "./slides/LightSlides";
 import { CardSlide, NotificationSlide } from "./slides/PhoneSlides";
+import { NearbySlide } from "./slides/NearbySlide";
 import { RevealSlide } from "./slides/RevealSlide";
 import { WantedSlide } from "./slides/WantedSlide";
 
@@ -17,6 +18,8 @@ export const SlideStill: React.FC<{ carouselId: string; index: number }> = ({ ca
         return <WantedSlide s={s} />;
       case "card":
         return <CardSlide s={s} header={header} />;
+      case "nearby":
+        return <NearbySlide s={s} header={header} />;
       case "notification":
         return <NotificationSlide s={s} header={header} />;
       case "clients":

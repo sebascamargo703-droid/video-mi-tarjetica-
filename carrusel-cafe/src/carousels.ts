@@ -25,11 +25,24 @@ export const math = {
 /** "$12.000" con separador de miles colombiano. */
 export const cop = (n: number) => `$${n.toLocaleString("es-CO").replace(/,/g, ".")}`;
 
-export type Bg = "green" | "cream" | "latte";
+export type Bg = "green" | "light" | "latte";
 
 export type Slide =
   | { type: "wanted"; bg: Bg; title: string; business: string; text: string; swipe: string }
   | { type: "card"; bg: Bg; number: string; title: string; note: string }
+  | {
+      type: "nearby";
+      bg: Bg;
+      number: string;
+      title: string;
+      pinLabel: string;
+      time: string;
+      app: string;
+      when: string;
+      message: string;
+      text: string;
+      note: string;
+    }
   | { type: "notification"; bg: Bg; number: string; title: string; date: string; time: string; app: string; when: string; message: string; note: string }
   | {
       type: "clients";
@@ -52,9 +65,9 @@ const yearly = math.ticket * math.visitsPerWeek * math.weeks;
 export const carousels: Carousel[] = [
   {
     id: "cafe-no-pagaste",
-    /** Encabezado fijo de las láminas 2 a 6 (se leen como una lista de cargos). */
+    /** Encabezado fijo de las láminas 2 a 7 (se leen como una lista de cargos). */
     chargeHeader: "Lo que usaste:",
-    caption: `${fake.name} no existe y nadie nos debe nada ☕ Pero todo lo que usó sí es real: una tarjeta de sellos que vive en el celular de tus clientes, mensajes que les llegan solos y el nombre de cada cliente que vuelve. Créala gratis en 5 minutos 👉 mitarjetica.com
+    caption: `${fake.name} no existe y nadie nos debe nada ☕ Pero todo lo que usó sí es real: una tarjeta de sellos que vive en el celular de tus clientes, un aviso cuando pasan cerca de tu local, mensajes de cumpleaños que llegan solos y el nombre de cada cliente que vuelve. Créala gratis en 5 minutos 👉 mitarjetica.com
 #cafeteria #cafecolombiano #cafedeespecialidad #fidelizaciondeclientes #barranquilla #emprendimiento`,
     slides: [
       {
@@ -73,10 +86,23 @@ export const carousels: Carousel[] = [
         note: "Sin apps. Sin cartón. Escanean un QR y queda en su celular.",
       },
       {
+        type: "nearby",
+        bg: "latte",
+        number: "02",
+        title: "Les avisaba cuando pasaban cerca.",
+        pinLabel: `${fake.name} ☕`,
+        time: "4:12",
+        app: fake.name,
+        when: "ahora",
+        message: `☕ Estás a media cuadra. Te faltan ${fake.total - fake.stamps} sellos para tu café gratis.`,
+        text: "En la pantalla de bloqueo, sin abrir ninguna app.",
+        note: "Aviso por cercanía desde el plan Emprendedor.",
+      },
+      {
         type: "notification",
         bg: "green",
-        number: "02",
-        title: "Mensajes que les llegaban solos.",
+        number: "03",
+        title: "Y les escribía solo el día de su cumpleaños.",
         date: "miércoles 14 de octubre",
         time: "9:00",
         app: fake.name,
@@ -86,8 +112,8 @@ export const carousels: Carousel[] = [
       },
       {
         type: "clients",
-        bg: "cream",
-        number: "03",
+        bg: "latte",
+        number: "04",
         title: "El nombre y teléfono de cada cliente.",
         panelTitle: "Clientes",
         badge: "Datos de ejemplo",
@@ -99,8 +125,8 @@ export const carousels: Carousel[] = [
       },
       {
         type: "math",
-        bg: "latte",
-        number: "04",
+        bg: "light",
+        number: "05",
         title: "Clientes que volvían más seguido.",
         lines: [
           { value: cop(math.ticket), label: "por visita" },
@@ -112,14 +138,14 @@ export const carousels: Carousel[] = [
       },
       {
         type: "wallet",
-        bg: "cream",
-        number: "05",
+        bg: "latte",
+        number: "06",
         title: "Y todo vivía en el celular de tus clientes.",
         text: "En el mismo Wallet donde guardan lo importante. iPhone y Android.",
       },
       {
         type: "chat",
-        bg: "latte",
+        bg: "light",
         title: "Lo intentamos en privado.",
         contact: fake.name,
         messages: [

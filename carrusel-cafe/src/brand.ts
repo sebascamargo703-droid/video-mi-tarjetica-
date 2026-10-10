@@ -1,21 +1,28 @@
 /**
  * Paleta del carrusel (café de especialidad + verde Mi Tarjetica).
  *
+ * No hay #FFFFFF en ninguna parte: el color más claro es siempre `light` #F6F4EB (fondos claros,
+ * paneles, texto claro sobre verde y logo claro). Paneles y burbujas claras van sobre latte o
+ * verde, nunca `light` sobre `light`.
+ *
  * Contraste AA verificado (texto):
- *   brand #145B44 sobre bgCream 7.54 · sobre latte 5.96
- *   ink #2B1D14 sobre latte 12.1 · inkSecondary #6E5B4E sobre latte 4.76, sobre crema 6.02, sobre blanco 6.42
- *   sobre verde: blanco 8.05 · #A7D7C5 5.05 · #8FE3C0 5.33
- *   blanco sobre coffee #6B4423 8.48 · latte sobre coffee 6.29
+ *   brand #145B44 sobre light 7.3 · sobre latte 5.96
+ *   ink #2B1D14 sobre light 14.8 · sobre latte 12.1
+ *   inkSecondary #6E5B4E sobre light 5.83 · sobre latte 4.76
+ *   sobre verde: light 7.3 (10.1 en los bordes) · #A7D7C5 5.05 · #8FE3C0 5.33
+ *   light sobre coffee #6B4423 7.7 · light sobre burbuja #145B44 7.3
  *   alerta #B42318 sobre #FDE2DE 5.36
  *
  * El caramelo #C8963E no llega a AA como texto sobre fondos claros (2.5 sobre crema, 1.97 sobre
- * latte): se usa tal cual solo en líneas finas y adornos. Para los números "01"–"05" se usa
- * `caramelText` (#7A531A, 5.05 sobre latte) en láminas claras y `caramelOnGreen` (#E4C17E) en verdes.
+ * latte): se usa tal cual solo en líneas finas y adornos. Para los números "01"–"06" se usa
+ * `caramelText` (#7A531A: 6.19 sobre light, 5.05 sobre latte) en láminas claras y
+ * `caramelOnGreen` (#E4C17E, 4.69) en las verdes.
  */
 export const palette = {
   /** Verde Mi Tarjetica: único color de marca. Nunca directo sobre el fondo verde. */
   brand: "#145B44",
-  bgCream: "#FAF7F5",
+  /** El color más claro de todo el carrusel (no se usa #FFFFFF). */
+  light: "#F6F4EB",
   latte: "#E9DCCB",
   coffee: "#6B4423",
   caramel: "#C8963E",
@@ -23,12 +30,11 @@ export const palette = {
   caramelOnGreen: "#E4C17E",
   ink: "#2B1D14",
   inkSecondary: "#6E5B4E",
-  white: "#FFFFFF",
 
   /* Fondo verde */
   green: "#145B44",
   greenDeep: "#0E4433",
-  onGreen: "#FFFFFF",
+  onGreen: "#F6F4EB",
   onGreenSecondary: "#A7D7C5",
   onGreenAccent: "#8FE3C0",
 
@@ -41,6 +47,9 @@ export const palette = {
 
 import type { Bg } from "./carousels";
 export type { Bg };
+
+/** `light` con transparencia (para vidrios, bordes y brillos). */
+export const lightA = (a: number) => `rgba(246, 244, 235, ${a})`;
 
 /** Colores según el fondo de la lámina. */
 export const onBg = (bg: Bg) =>

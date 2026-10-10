@@ -31,7 +31,7 @@ export const CoffeeCard: React.FC<{ w: number; style?: React.CSSProperties }> = 
         background: `linear-gradient(155deg, #7A4E2A 0%, ${palette.coffee} 55%, #5A381C 100%)`,
         padding: P,
         boxSizing: "border-box",
-        color: "#FFFFFF",
+        color: palette.light,
         fontFamily: sans,
         boxShadow: `0 ${w * 0.08}px ${w * 0.16}px ${palette.shadowStrong}`,
         overflow: "hidden",

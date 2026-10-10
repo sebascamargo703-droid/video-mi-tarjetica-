@@ -7,7 +7,7 @@ import { Dots } from "./Dots";
 
 const backgrounds: Record<Bg, string> = {
   green: `radial-gradient(ellipse 85% 70% at 50% 45%, ${palette.green} 0%, ${palette.green} 30%, ${palette.greenDeep} 100%)`,
-  cream: palette.bgCream,
+  light: palette.light,
   latte: palette.latte,
 };
 
@@ -19,7 +19,7 @@ export const SlideFrame: React.FC<{ bg: Bg; index: number; total: number; showLo
       {children}
       {showLogo ? (
         <div style={{ position: "absolute", left: grid.m, top: grid.m - 8 }}>
-          <BrandLogo variant={bg === "green" ? "white" : "color"} height={40} color={c.logo} />
+          <BrandLogo variant={bg === "green" ? "light" : "color"} height={40} color={c.logo} />
         </div>
       ) : null}
       <Dots total={total} active={index} color={bg === "green" ? palette.onGreen : palette.brand} y={grid.dotsY} />
