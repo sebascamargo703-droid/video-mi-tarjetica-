@@ -11,9 +11,10 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | `04-historias-animadas-sin-voz/` | 6 historias animadas (MP4 + PNG) | MP4/PNG 1080×1920 | Historias (con música de Instagram si quieres) |
 | `05-posts-sueltos/` | 6 posts de una imagen + `TEXTOS-POSTS-E-HISTORIAS.md` | PNG 1080×1350 | Feed de Instagram / Facebook |
 | `07-carrusel-cafe-no-pagaste/` | Carrusel "SE BUSCA: Café Tres Granos" (bait-and-switch para cafeterías): 9 láminas + `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
+| `08-historias-precios/` | Historias para la destacada "Precios": 8 historias (planes Gratis, Emprendedor, Profesional, Empresa, mensual vs. anual, a la medida y cierre) + `portada.png` de la destacada | PNG 1080×1920 | Historias de Instagram → destacada "Precios" (en la 8, pon el sticker de enlace en el espacio libre de abajo) |
 | `06-carruseles-editoriales/` | 4 carruseles editoriales (verde #145B44 / blanco): cuánto vale un cliente, premios que funcionan, cartoncito vs. Mi Tarjetica, cómo funciona — cada uno con `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 
-**En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts.
+**En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts, más 8 historias de precios con su portada de destacada.
 
 ## Calendario sugerido (2 semanas)
 
@@ -46,6 +47,7 @@ Las historias con voz también se pueden subir **las 8 seguidas el mismo día** 
 ## Volver a exportar
 Todo se genera desde el proyecto `../mi-tarjetica-launch/` (Remotion):
 - `npm run render:vertical` / `npm run render:hero` → `01-video-lanzamiento/`
+- Historias de precios: proyecto `../historias-precios/` → cambia los precios en `src/pricing.ts` y corre `node scripts/render-stories.mjs` (copiar `out/stories/precios/` a `08-historias-precios/`)
 - Carrusel Café Tres Granos: proyecto `../carrusel-cafe/` → `node scripts/render-carousels.mjs` (y copiar `out/carousels/cafe-no-pagaste/` a `07-carrusel-cafe-no-pagaste/`)
 - Lavadero: proyecto `../lavadero/` → `npx remotion render Lavadero out/lavadero-vertical.mp4 --codec=h264 --crf=16` y `npx remotion render LavaderoFeed out/lavadero-feed.mp4 --codec=h264 --crf=16` + `bash scripts/master-audio.sh <archivo>`
 - Panel: proyecto `../panel/` → `npx remotion render Panel out/panel-vertical.mp4 --codec=h264 --crf=16` y `npx remotion render PanelFeed out/panel-feed.mp4 --codec=h264 --crf=16` + `bash scripts/master-audio.sh <archivo>`
