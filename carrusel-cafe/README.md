@@ -24,7 +24,7 @@ Fraunces es la variable con eje óptico). Navegador propio: `REMOTION_BROWSER=/r
 | Quiero cambiar… | Dónde |
 |---|---|
 | Nombre de la cafetería ficticia, cliente, premio, sellos | `fake` en `src/carousels.ts` (los textos que lo mencionan se arman solos, incluido "Te faltan 2 sellos") |
-| Cifras de la lámina 4 (ticket, visitas por semana, semanas) | `math` en `src/carousels.ts` (el total se calcula solo) |
+| Cifras de la lámina 6 (ticket, visitas por semana, semanas) | `math` en `src/carousels.ts` (el total se calcula solo) |
 | Cualquier texto o el caption | `slides` y `caption` en `src/carousels.ts` |
 | Colores | `palette` en `src/brand.ts` |
 | Márgenes, posiciones de título, notas y puntos | `grid` en `src/brand.ts` |
