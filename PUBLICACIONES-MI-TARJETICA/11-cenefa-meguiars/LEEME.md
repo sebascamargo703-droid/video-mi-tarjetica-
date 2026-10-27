@@ -11,11 +11,19 @@ logo a la izquierda, "DE VENTA AQUÍ · Aquí puedes comprar **tus productos Meg
 mensajes con íconos (Calidad profesional · Los mismos que usamos en tu carro · Pídelos en caja)
 y los productos en vitrina con reflejo. Archivos: `cenefa-venta-meguiars-*`.
 
+## Versión sin texto (`CenefaLogo`)
+Solo el logo y los productos, sin ninguna palabra: luz de estudio, rayos dorados detrás del logo,
+cintas de "cera líquida" dorada y roja que cruzan la cenefa, bokeh dorado, destellos y vitrina
+con reflejo. El logo y los productos van recortados del fondo negro
+(`public/meguiars-logo-cutout.png`, `public/meguiars-productos-cutout.png`).
+Archivos: `cenefa-solo-logo-meguiars-*`.
+
 ## Exportar
 ```bash
 npm install
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts Cenefa out/cenefa-meguiars.png --image-format=png
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaVenta out/cenefa-venta.png --image-format=png
+REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaLogo out/cenefa-logo.png --image-format=png
 ```
 Textos: `src/copy.ts` (`copy` y `venta`). Diseño: `src/Cenefa.tsx` y `src/CenefaVenta.tsx`.
 
