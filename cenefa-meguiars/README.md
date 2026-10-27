@@ -24,7 +24,7 @@ Logo al centro con rayos dorados y una vitrina de dos niveles a cada lado:
   Endurance Tire Gel; adelante, la Cleaner Wax en pasta.
 - Derecha: la línea de limpieza (Wash & Wax, Quik Detailer, Quik Wax, Interior, Hot Rims, Glass)
   y Ultimate Compound; adelante, Air Re-Fresher y los ambientadores Little Joe.
-Los productos están en `public/productos/`, recortados de su fondo. Archivos: `cenefa-productos-meguiars-*`.
+Los productos están en `public/productos/`, recortados con IA (BiRefNet vía `rembg`), con los bordes descontaminados (sin halo blanco ni amarillo) y nitidez: `pip install rembg onnxruntime opencv-python && python3 scripts/recortar-productos.py <carpeta-fotos>`. Archivos: `cenefa-productos-meguiars-*`.
 
 ## Exportar
 ```bash

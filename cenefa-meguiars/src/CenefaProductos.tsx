@@ -28,14 +28,14 @@ const Flare: React.FC<{ x: number; y: number; size: number; opacity?: number; id
 const FLOOR = 1340;
 const BACK = 1105;
 const PRODUCTS: Record<string, { w: number; h: number }> = {
-  "kit-pulido": { w: 1182, h: 1230 },
-  "all-wheel-cleaner": { w: 435, h: 1221 },
-  "cleaner-wax": { w: 495, h: 1281 },
-  "linea-limpieza": { w: 1284, h: 813 },
-  "ultimate-compound": { w: 510, h: 1248 },
-  "endurance-tire-gel": { w: 489, h: 1272 },
-  "cleaner-wax-pasta": { w: 1479, h: 1512 },
-  "little-joe": { w: 975, h: 729 },
+  "kit-pulido": { w: 1157, h: 1222 },
+  "all-wheel-cleaner": { w: 437, h: 1220 },
+  "cleaner-wax": { w: 496, h: 1277 },
+  "linea-limpieza": { w: 1279, h: 808 },
+  "ultimate-compound": { w: 509, h: 1248 },
+  "endurance-tire-gel": { w: 495, h: 1274 },
+  "cleaner-wax-pasta": { w: 1499, h: 1515 },
+  "little-joe": { w: 967, h: 713 },
   "air-refresher": { w: 1012, h: 738 },
 };
 /** Producto recortado, apoyado en `floor`, con sombra y reflejo. */
