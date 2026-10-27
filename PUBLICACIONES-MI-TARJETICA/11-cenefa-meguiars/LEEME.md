@@ -18,12 +18,19 @@ con reflejo. El logo y los productos van recortados del fondo negro
 (`public/meguiars-logo-cutout.png`, `public/meguiars-productos-cutout.png`).
 Archivos: `cenefa-solo-logo-meguiars-*`.
 
+## Versión sin texto con los productos de referencia (`CenefaProductos`)
+Logo al centro con rayos dorados; a la izquierda All Wheel Cleaner, Cleaner Wax y el kit
+Polish + Compound + Hybrid Ceramic Wax; a la derecha la línea de limpieza (Wash & Wax, Quik
+Detailer, Quik Wax, Interior, Hot Rims, Glass) y Ultimate Compound. Los productos están en
+`public/productos/` recortados de su fondo blanco. Archivos: `cenefa-productos-meguiars-*`.
+
 ## Exportar
 ```bash
 npm install
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts Cenefa out/cenefa-meguiars.png --image-format=png
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaVenta out/cenefa-venta.png --image-format=png
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaLogo out/cenefa-logo.png --image-format=png
+REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaProductos out/cenefa-productos.png --image-format=png
 ```
 Textos: `src/copy.ts` (`copy` y `venta`). Diseño: `src/Cenefa.tsx` y `src/CenefaVenta.tsx`.
 
