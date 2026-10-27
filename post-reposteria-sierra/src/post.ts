@@ -9,8 +9,8 @@ export const business = {
   /** Tarjeta de ejemplo (confirma el premio real con el negocio antes de publicar). */
   customer: "Tu nombre",
   reward: "Un brownie gratis",
-  stamps: 7,
-  total: 10,
+  stamps: 3,
+  total: 5,
 };
 
 export const slides = {
@@ -29,7 +29,7 @@ export const slides = {
     note: "Apple Wallet o Google Wallet · Gratis · Sin apps",
   },
   table: {
-    title: "Al décimo sello, el brownie va por nuestra cuenta.",
+    title: "Al quinto sello, el brownie va por nuestra cuenta.",
     text: "Sin cartón que se pierda: tus sellos quedan guardados.",
   },
   cta: {

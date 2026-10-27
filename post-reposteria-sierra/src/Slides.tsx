@@ -100,8 +100,8 @@ export const Table: React.FC = () => (
     <TopBar dark />
     <div style={{ position: "absolute", left: M - 36, right: M - 36, bottom: 150, borderRadius: 40, background: palette.light, padding: "52px 56px 56px", boxShadow: "0 40px 90px rgba(0,0,0,0.4)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 22 }}>
-        {Array.from({ length: 10 }).map((_, i) => (
-          <svg key={i} width={46} height={46} viewBox="0 0 40 40">
+        {Array.from({ length: business.total }).map((_, i) => (
+          <svg key={i} width={64} height={64} viewBox="0 0 40 40">
             <rect x={4} y={6} width={32} height={28} rx={7} fill={palette.cocoa} />
             <path d="M9 14 C14 11 19 16 24 12 C27 10 30 12 31 13" fill="none" stroke={palette.butter} strokeWidth={2.2} strokeLinecap="round" />
           </svg>
