@@ -16,6 +16,7 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | `10-cartel-mostrador-reposteria-sierra/` | Cartel para el mostrador de Repostería Sierra con su QR real para registrarse y tener la tarjeta de sellos | PNG + PDF A5 (148×210 mm, 300 ppp) | Imprimir y poner en el mostrador |
 | `11-cenefa-meguiars/` | Tres cenefas para lavadero: "En este lavadero usamos Meguiar's", la de venta "Aquí puedes comprar tus productos Meguiar's" y dos sin texto (solo logo y productos; la última con los productos de referencia) (ver `LEEME.md` de la carpeta: logo en alta y permiso de marca) | PNG/JPG 6000×1500 + PDF 200×50 cm | Impresión gran formato |
 | `12-banner-youtube-meguiars/` | Banner de canal de YouTube con el logo y los productos Meguiar's (zona segura de celular respetada) + guía de recorte por dispositivo | JPG/PNG 2560×1440 (0.6 MB) | Banner de YouTube |
+| `13-foto-grupo-whatsapp/` | Foto del grupo de WhatsApp de Mi Tarjetica: ícono + nombre, y versión solo ícono | PNG/JPG 1080×1080 (se ve en círculo) | Foto de grupo de WhatsApp |
 | `06-carruseles-editoriales/` | 4 carruseles editoriales (verde #145B44 / blanco): cuánto vale un cliente, premios que funcionan, cartoncito vs. Mi Tarjetica, cómo funciona — cada uno con `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 
 **En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts, más 8 historias de precios con su portada de destacada.
@@ -52,6 +53,7 @@ Las historias con voz también se pueden subir **las 8 seguidas el mismo día** 
 Todo se genera desde el proyecto `../mi-tarjetica-launch/` (Remotion):
 - `npm run render:vertical` / `npm run render:hero` → `01-video-lanzamiento/`
 - Cenefa Meguiar's: proyecto `../cenefa-meguiars/` → `npx remotion still src/index.ts Cenefa out/cenefa-meguiars.png`
+- Foto de grupo de WhatsApp: `python3 ../whatsapp-grupo/make.py` (y copiar `whatsapp-grupo/out/` a `13-foto-grupo-whatsapp/`)
 - Banner YouTube Meguiar's: proyecto `../cenefa-meguiars/` → `npx remotion still src/index.ts BannerYouTube out/banner-youtube.png` → `12-banner-youtube-meguiars/`
 - Post Repostería Sierra: proyecto `../post-reposteria-sierra/` → `node scripts/render-post.mjs` (copiar `out/post/reposteria-sierra/` a `09-post-reposteria-sierra/`)
 - Historias de precios: proyecto `../historias-precios/` → cambia los precios en `src/pricing.ts` y corre `node scripts/render-stories.mjs` (copiar `out/stories/precios/` a `08-historias-precios/`)
