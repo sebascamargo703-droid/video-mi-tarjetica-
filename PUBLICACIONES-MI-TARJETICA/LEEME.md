@@ -13,6 +13,7 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | `07-carrusel-cafe-no-pagaste/` | Carrusel "SE BUSCA: Café Tres Granos" (bait-and-switch para cafeterías): 9 láminas + `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 | `08-historias-precios/` | Historias para la destacada "Precios": 8 historias (planes Gratis, Emprendedor, Profesional, Empresa, mensual vs. anual, a la medida y cierre) + `portada.png` de la destacada | PNG 1080×1920 | Historias de Instagram → destacada "Precios" (en la 8, pon el sticker de enlace en el espacio libre de abajo) |
 | `09-post-reposteria-sierra/` | Post para que Repostería Sierra lo publique a sus clientes ("Tu brownie favorito ahora te da premio"): fotos editadas, 5 láminas + `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
+| `10-cartel-mostrador-reposteria-sierra/` | Cartel para el mostrador de Repostería Sierra con su QR real para registrarse y tener la tarjeta de sellos | PNG + PDF A5 (148×210 mm, 300 ppp) | Imprimir y poner en el mostrador |
 | `06-carruseles-editoriales/` | 4 carruseles editoriales (verde #145B44 / blanco): cuánto vale un cliente, premios que funcionan, cartoncito vs. Mi Tarjetica, cómo funciona — cada uno con `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 
 **En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts, más 8 historias de precios con su portada de destacada.

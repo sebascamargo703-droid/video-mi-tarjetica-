@@ -26,3 +26,13 @@ Sin internet: `REMOTION_LOCAL_FONTS=1`. Navegador propio: `REMOTION_BROWSER=/rut
 - Colores: `src/brand.ts`. Fotos: reemplaza los archivos de `public/photos/` con el mismo nombre.
 - Logo de Mi Tarjetica: si existen `public/logo.svg` / `public/logo-light.svg` se usan; si no,
   se ve el wordmark provisional "MiTarjetica" en Inter 800.
+
+## Cartel de mostrador (A5 para imprimir)
+`Still` `mostrador` (1748×2480 = A5 a 300 ppp): foto del red velvet, "Junta 5 visitas y llévate un
+brownie gratis.", 4 sellos + regalo, el **QR real** del comercio y 3 pasos para registrarse.
+- El QR está en `src/qr.ts` como matriz de módulos, sacada del "Cartel para imprimir — Mi Tarjetica.pdf"
+  y verificada: abre `https://app.mitarjetica.com/reposteria-sierra`. Si cambia el enlace, reemplázala
+  con la del nuevo cartel.
+- El logo de Mi Tarjetica (`public/mitarjetica-logo.png`) también sale de ese PDF.
+- Textos: `src/mostrador.ts`. Diseño: `src/Mostrador.tsx`.
+- PDF para imprenta: `python3 -c "from PIL import Image; Image.open('out/mostrador.png').convert('RGB').save('out/mostrador.pdf','PDF',resolution=300.0)"`
