@@ -1,0 +1,24 @@
+{
+  "name": "cenefa-meguiars",
+  "version": "1.0.0",
+  "description": "Cenefa para lavadero: aquí usamos Meguiar's",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "remotion studio",
+    "lint": "tsc --noEmit",
+    "render": "remotion still Cenefa out/cenefa-meguiars.png --image-format=png"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.534",
+    "@remotion/google-fonts": "4.0.534",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}
