@@ -28,8 +28,10 @@ Sin internet: `REMOTION_LOCAL_FONTS=1`. Navegador propio: `REMOTION_BROWSER=/rut
   se ve el wordmark provisional "MiTarjetica" en Inter 800.
 
 ## Cartel de mostrador (A5 para imprimir)
-`Still` `mostrador` (1748×2480 = A5 a 300 ppp): foto del red velvet, "Junta 5 visitas y llévate un
-brownie gratis.", 4 sellos + regalo, el **QR real** del comercio y 3 pasos para registrarse.
+`Still` `mostrador` (1748×2480 = A5 a 300 ppp), estilo "pop retro" que combina con la etiqueta de
+Sierra: fondo cacao con rayos de sol, fotos como stickers circulares, sello estrellado "5 visitas = 1
+gratis", "BROWNIE ¡GRATIS!" gigante con sombra sólida, ticket de 5 sellos, el **QR real** del
+comercio y 3 pasos para registrarse.
 - El QR está en `src/qr.ts` como matriz de módulos, sacada del "Cartel para imprimir — Mi Tarjetica.pdf"
   y verificada: abre `https://app.mitarjetica.com/reposteria-sierra`. Si cambia el enlace, reemplázala
   con la del nuevo cartel.

@@ -1,10 +1,12 @@
 /** Copy del cartel de mostrador de Repostería Sierra (A5 vertical, para imprimir). */
 export const mostrador = {
-  headline: "Junta 5 visitas y llévate un brownie gratis.",
-  scan: "Escanéame",
-  steps: ["Apunta la cámara de tu celular al código.", "Guarda tu tarjeta en el celular.", "Suma un sello en cada visita."],
-  free: "¡GRATIS!",
-  reassurance: "Es gratis y no tienes que instalar ninguna aplicación.",
-  poweredBy: "Tarjeta de sellos con",
+  kicker: "JUNTA 5 VISITAS Y LLÉVATE UN",
+  big1: "BROWNIE",
+  big2: "¡GRATIS!",
+  badge: ["5", "VISITAS", "= 1 GRATIS"],
+  scan: "¡Escanéame!",
+  steps: ["Apunta la cámara al código", "Guarda tu tarjeta en el celular", "Suma un sello en cada visita"],
+  free: "GRATIS",
+  reassurance: "Es gratis y no instalas ninguna app.",
   url: "app.mitarjetica.com/reposteria-sierra",
 };
