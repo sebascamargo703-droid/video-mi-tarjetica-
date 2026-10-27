@@ -7,9 +7,9 @@ import { SIZE } from "./Cenefa";
  * logo al centro con rayos dorados y, a cada lado, una vitrina de dos niveles (repisa de atrás con
  * filo dorado y piso de adelante) con sombra y reflejo. Cintas de "cera líquida", bokeh y destellos.
  */
-const C = { gold: "#F2C230", goldLight: "#FFE69A", goldDeep: "#9C6B06", red: "#D0101F", redDeep: "#6E050C" };
+export const C = { gold: "#F2C230", goldLight: "#FFE69A", goldDeep: "#9C6B06", red: "#D0101F", redDeep: "#6E050C" };
 
-const Flare: React.FC<{ x: number; y: number; size: number; opacity?: number; id: string }> = ({ x, y, size, opacity = 1, id }) => (
+export const Flare: React.FC<{ x: number; y: number; size: number; opacity?: number; id: string }> = ({ x, y, size, opacity = 1, id }) => (
   <svg style={{ position: "absolute", left: x - size / 2, top: y - size / 2, opacity, overflow: "visible" }} width={size} height={size} viewBox="-50 -50 100 100">
     <defs>
       <radialGradient id={id}>
@@ -39,7 +39,7 @@ const PRODUCTS: Record<string, { w: number; h: number }> = {
   "air-refresher": { w: 1012, h: 738 },
 };
 /** Producto recortado, apoyado en `floor`, con sombra y reflejo. */
-const Product: React.FC<{ name: keyof typeof PRODUCTS; x: number; height: number; z?: number; floor?: number }> = ({ name, x, height, z = 1, floor = FLOOR }) => {
+export const Product: React.FC<{ name: keyof typeof PRODUCTS; x: number; height: number; z?: number; floor?: number; reflect?: number }> = ({ name, x, height, z = 1, floor = FLOOR, reflect }) => {
   const p = PRODUCTS[name];
   const width = (p.w / p.h) * height;
   const src = staticFile(`productos/${name}.png`);
@@ -47,7 +47,7 @@ const Product: React.FC<{ name: keyof typeof PRODUCTS; x: number; height: number
     <>
       <div style={{ position: "absolute", left: x + width * 0.08, top: floor - 26, width: width * 0.84, height: 52, borderRadius: "50%", background: "rgba(0,0,0,0.85)", filter: "blur(14px)", zIndex: z }} />
       <Img src={src} style={{ position: "absolute", left: x, top: floor - height, width, height, zIndex: z + 1, filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.7))" }} />
-      <div style={{ position: "absolute", left: x, top: floor + 4, width, height: floor === FLOOR ? 150 : 90, overflow: "hidden", opacity: 0.22, zIndex: z, WebkitMaskImage: "linear-gradient(180deg, black, transparent 85%)" }}>
+      <div style={{ position: "absolute", left: x, top: floor + 4, width, height: reflect ?? (floor === FLOOR ? 150 : 90), overflow: "hidden", opacity: 0.22, zIndex: z, WebkitMaskImage: "linear-gradient(180deg, black, transparent 85%)" }}>
         <Img src={src} style={{ width, height, transform: "scaleY(-1)", transformOrigin: "50% 0", marginTop: height - 4 }} />
       </div>
     </>

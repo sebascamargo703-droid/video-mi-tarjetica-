@@ -26,6 +26,15 @@ Logo al centro con rayos dorados y una vitrina de dos niveles a cada lado:
   y Ultimate Compound; adelante, Air Re-Fresher y los ambientadores Little Joe.
 Los productos están en `public/productos/`, recortados con IA (BiRefNet vía `rembg`), con los bordes descontaminados (sin halo blanco ni amarillo) y nitidez: `pip install rembg onnxruntime opencv-python && python3 scripts/recortar-productos.py <carpeta-fotos>`. Archivos: `cenefa-productos-meguiars-*`.
 
+## Banner de canal de YouTube (`BannerYouTube`)
+La cenefa de productos adaptada al banner de YouTube: 2560×1440 px (recomendado; el mínimo es
+2048×1152 y máximo 6 MB). YouTube muestra un recorte distinto en cada dispositivo, así que el logo,
+el kit de pulido, la Cleaner Wax en pasta, el Ultimate Compound y los Air Re-Fresher van en la
+**zona segura central de 1546×423** (lo único que se ve en celular). Los demás productos completan
+la franja de 2560×423 del computador, y el fondo (rayos, cintas, marco) llena la pantalla completa en TV.
+Archivos en `PUBLICACIONES-MI-TARJETICA/12-banner-youtube-meguiars/` (subir el `.jpg`, 0.6 MB) y
+`guia-recorte-youtube.jpg` con las tres zonas marcadas.
+
 ## Exportar
 ```bash
 npm install
@@ -33,6 +42,7 @@ REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts Cenefa out/cenefa-meguiar
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaVenta out/cenefa-venta.png --image-format=png
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaLogo out/cenefa-logo.png --image-format=png
 REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts CenefaProductos out/cenefa-productos.png --image-format=png
+REMOTION_LOCAL_FONTS=1 npx remotion still src/index.ts BannerYouTube out/banner-youtube.png --image-format=png
 ```
 Textos: `src/copy.ts` (`copy` y `venta`). Diseño: `src/Cenefa.tsx` y `src/CenefaVenta.tsx`.
 
