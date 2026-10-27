@@ -19,10 +19,12 @@ con reflejo. El logo y los productos van recortados del fondo negro
 Archivos: `cenefa-solo-logo-meguiars-*`.
 
 ## Versión sin texto con los productos de referencia (`CenefaProductos`)
-Logo al centro con rayos dorados; a la izquierda All Wheel Cleaner, Cleaner Wax y el kit
-Polish + Compound + Hybrid Ceramic Wax; a la derecha la línea de limpieza (Wash & Wax, Quik
-Detailer, Quik Wax, Interior, Hot Rims, Glass) y Ultimate Compound. Los productos están en
-`public/productos/` recortados de su fondo blanco. Archivos: `cenefa-productos-meguiars-*`.
+Logo al centro con rayos dorados y una vitrina de dos niveles a cada lado:
+- Izquierda: All Wheel Cleaner, Cleaner Wax, el kit Polish + Compound + Hybrid Ceramic Wax y
+  Endurance Tire Gel; adelante, la Cleaner Wax en pasta.
+- Derecha: la línea de limpieza (Wash & Wax, Quik Detailer, Quik Wax, Interior, Hot Rims, Glass)
+  y Ultimate Compound; adelante, Air Re-Fresher y los ambientadores Little Joe.
+Los productos están en `public/productos/`, recortados de su fondo. Archivos: `cenefa-productos-meguiars-*`.
 
 ## Exportar
 ```bash

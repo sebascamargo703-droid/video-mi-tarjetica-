@@ -3,9 +3,9 @@ import { AbsoluteFill, Img, random, staticFile } from "remotion";
 import { SIZE } from "./Cenefa";
 
 /**
- * Versión sin texto con los productos de referencia (public/productos/, recortados de su fondo
- * blanco): logo al centro con rayos dorados y, a cada lado, los productos en vitrina con sombra y
- * reflejo. Cintas de "cera líquida" dorada y roja, bokeh y destellos.
+ * Versión sin texto con los productos de referencia (public/productos/, recortados de su fondo):
+ * logo al centro con rayos dorados y, a cada lado, una vitrina de dos niveles (repisa de atrás con
+ * filo dorado y piso de adelante) con sombra y reflejo. Cintas de "cera líquida", bokeh y destellos.
  */
 const C = { gold: "#F2C230", goldLight: "#FFE69A", goldDeep: "#9C6B06", red: "#D0101F", redDeep: "#6E050C" };
 
@@ -24,24 +24,30 @@ const Flare: React.FC<{ x: number; y: number; size: number; opacity?: number; id
   </svg>
 );
 
-/** Producto recortado, apoyado en el piso (y = FLOOR) con sombra y reflejo. */
-const FLOOR = 1335;
+/** Vitrina de dos niveles: repisa de atrás (BACK) y piso de adelante (FLOOR). */
+const FLOOR = 1340;
+const BACK = 1105;
 const PRODUCTS: Record<string, { w: number; h: number }> = {
   "kit-pulido": { w: 1182, h: 1230 },
   "all-wheel-cleaner": { w: 435, h: 1221 },
   "cleaner-wax": { w: 495, h: 1281 },
   "linea-limpieza": { w: 1284, h: 813 },
   "ultimate-compound": { w: 510, h: 1248 },
+  "endurance-tire-gel": { w: 489, h: 1272 },
+  "cleaner-wax-pasta": { w: 1479, h: 1512 },
+  "little-joe": { w: 975, h: 729 },
+  "air-refresher": { w: 1012, h: 738 },
 };
-const Product: React.FC<{ name: keyof typeof PRODUCTS; x: number; height: number; z?: number }> = ({ name, x, height, z = 1 }) => {
+/** Producto recortado, apoyado en `floor`, con sombra y reflejo. */
+const Product: React.FC<{ name: keyof typeof PRODUCTS; x: number; height: number; z?: number; floor?: number }> = ({ name, x, height, z = 1, floor = FLOOR }) => {
   const p = PRODUCTS[name];
   const width = (p.w / p.h) * height;
   const src = staticFile(`productos/${name}.png`);
   return (
     <>
-      <div style={{ position: "absolute", left: x + width * 0.08, top: FLOOR - 26, width: width * 0.84, height: 52, borderRadius: "50%", background: "rgba(0,0,0,0.85)", filter: "blur(14px)", zIndex: z }} />
-      <Img src={src} style={{ position: "absolute", left: x, top: FLOOR - height, width, height, zIndex: z + 1, filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.7))" }} />
-      <div style={{ position: "absolute", left: x, top: FLOOR + 4, width, height: 150, overflow: "hidden", opacity: 0.22, zIndex: z, WebkitMaskImage: "linear-gradient(180deg, black, transparent 85%)" }}>
+      <div style={{ position: "absolute", left: x + width * 0.08, top: floor - 26, width: width * 0.84, height: 52, borderRadius: "50%", background: "rgba(0,0,0,0.85)", filter: "blur(14px)", zIndex: z }} />
+      <Img src={src} style={{ position: "absolute", left: x, top: floor - height, width, height, zIndex: z + 1, filter: "drop-shadow(0 20px 30px rgba(0,0,0,0.7))" }} />
+      <div style={{ position: "absolute", left: x, top: floor + 4, width, height: floor === FLOOR ? 150 : 90, overflow: "hidden", opacity: 0.22, zIndex: z, WebkitMaskImage: "linear-gradient(180deg, black, transparent 85%)" }}>
         <Img src={src} style={{ width, height, transform: "scaleY(-1)", transformOrigin: "50% 0", marginTop: height - 4 }} />
       </div>
     </>
@@ -137,20 +143,39 @@ export const CenefaProductos: React.FC = () => {
       <Img src={staticFile("meguiars-logo-cutout.png")} style={{ position: "absolute", left: logo.cx - 850, top: logo.cy - 525, width: 1700, height: "auto", zIndex: 5, filter: "drop-shadow(0 30px 50px rgba(0,0,0,0.85)) drop-shadow(0 0 50px rgba(242,194,48,0.4))" }} />
       <Flare id="f1" x={logo.cx + 420} y={logo.cy - 345} size={360} />
 
-      {/* productos a la izquierda */}
-      <Product name="all-wheel-cleaner" x={150} height={1090} z={2} />
-      <Product name="cleaner-wax" x={520} height={1010} z={4} />
-      <Product name="kit-pulido" x={900} height={990} z={6} />
-      {/* productos a la derecha */}
-      <Product name="linea-limpieza" x={3990} height={900} z={6} />
-      <Product name="ultimate-compound" x={5390} height={1040} z={4} />
+      {/* repisas de atrás (vidrio oscuro con filo dorado) */}
+      {[
+        [90, 2160],
+        [3840, 5910],
+      ].map(([x0, x1]) => (
+        <div key={x0} style={{ position: "absolute", left: x0, top: BACK - 4, width: x1 - x0, height: 40, zIndex: 1 }}>
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(255,230,154,0.25), rgba(20,20,20,0.9) 30%, rgba(0,0,0,0.6))" }} />
+          <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 4, background: "linear-gradient(90deg, transparent, #FFE69A, transparent)" }} />
+        </div>
+      ))}
+
+      {/* izquierda · atrás */}
+      <Product name="all-wheel-cleaner" x={120} height={880} z={2} floor={BACK} />
+      <Product name="cleaner-wax" x={430} height={810} z={2} floor={BACK} />
+      <Product name="kit-pulido" x={740} height={840} z={2} floor={BACK} />
+      <Product name="endurance-tire-gel" x={1560} height={830} z={2} floor={BACK} />
+      {/* izquierda · adelante */}
+      <Product name="cleaner-wax-pasta" x={560} height={480} z={8} />
+
+      {/* derecha · atrás */}
+      <Product name="linea-limpieza" x={3990} height={800} z={2} floor={BACK} />
+      <Product name="ultimate-compound" x={5330} height={880} z={2} floor={BACK} />
+      {/* derecha · adelante */}
+      <Product name="air-refresher" x={4150} height={460} z={8} />
+      <Product name="little-joe" x={4930} height={420} z={8} />
 
       {/* destellos */}
       <div style={{ position: "absolute", inset: 0, zIndex: 20 }}>
-        <Flare id="f2" x={300} y={300} size={210} opacity={0.9} />
-        <Flare id="f3" x={1580} y={420} size={190} opacity={0.9} />
-        <Flare id="f4" x={4380} y={470} size={200} opacity={0.9} />
-        <Flare id="f5" x={5600} y={320} size={220} opacity={0.95} />
+        <Flare id="f2" x={260} y={250} size={200} opacity={0.9} />
+        <Flare id="f3" x={1700} y={300} size={180} opacity={0.9} />
+        <Flare id="f4" x={4300} y={420} size={190} opacity={0.9} />
+        <Flare id="f5" x={5640} y={300} size={210} opacity={0.95} />
+        <Flare id="f8" x={820} y={900} size={150} opacity={0.85} />
         <Flare id="f6" x={2100} y={260} size={140} opacity={0.7} />
         <Flare id="f7" x={3900} y={240} size={150} opacity={0.75} />
       </div>
