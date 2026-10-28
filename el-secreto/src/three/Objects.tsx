@@ -44,10 +44,11 @@ const cupBody = lathe([
   [0, 2.34],
 ]);
 const sleeve = lathe([
-  [0.715, 0.85],
-  [0.79, 1.75],
-  [0.8, 1.75],
-  [0.725, 0.85],
+  [0.728, 0.85],
+  [0.818, 1.75],
+  [0.83, 1.75],
+  [0.74, 0.85],
+  [0.728, 0.85],
 ]);
 const lid = lathe([
   [0, 2.62],
@@ -70,7 +71,7 @@ export const Cup3D: React.FC<{ position?: V3; rotation?: V3; scale?: number; fad
       <meshPhysicalMaterial color="#1B1B1B" roughness={0.35} clearcoat={0.6} transparent={fade < 1} opacity={fade} />
     </mesh>
     {/* estrella en la faja */}
-    <group position={[0, 1.3, 0.79]} rotation={[0.04, 0, 0]}>
+    <group position={[0, 1.3, 0.82]} rotation={[0.04, 0, 0]}>
       <Star3D scale={0.2} />
     </group>
   </group>
