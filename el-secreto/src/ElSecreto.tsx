@@ -1,0 +1,619 @@
+import React from "react";
+import { AbsoluteFill, Html5Audio, Sequence, getStaticFiles, interpolate, random, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { audio, brand } from "./brand";
+import { copy, headlines } from "./copy";
+import { font, logoFont, tracking } from "./fonts";
+import { Logo } from "./components/Logo";
+import { PassCard } from "./components/PassCard";
+import { Storefront } from "./components/Storefront";
+import { EASE, EASE_IN, EASE_INOUT, clamp, ease, pop } from "./motion";
+import { BigPhone, CX, Headline, Karaoke, SCREEN } from "./ui";
+import { DURATION_SEC, SCENES, type SceneId, V, VOICE, wordTime } from "./timeline";
+
+const C = brand.colors;
+const S = SCENES;
+
+const useT = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  return { frame, fps, t: frame / fps, s: (x: number) => Math.round(x * fps) };
+};
+
+/* ------------------------------------------------------------------ */
+/* Piezas gráficas */
+
+/** Estrella dorada de 5 puntas con degradado y brillo. */
+export const Star: React.FC<{ size: number; glow?: number; style?: React.CSSProperties; id?: string; dim?: boolean }> = ({ size, glow = 0, style, id = "st", dim = false }) => (
+  <svg width={size} height={size} viewBox="-50 -50 100 100" style={{ overflow: "visible", filter: glow ? `drop-shadow(0 0 ${glow}px rgba(255,200,90,0.75))` : undefined, ...style }}>
+    <defs>
+      <linearGradient id={`g-${id}`} x1="0" y1="-1" x2="0" y2="1">
+        <stop offset="0" stopColor={dim ? "#C9C1AE" : "#FFE6A3"} />
+        <stop offset="0.55" stopColor={dim ? "#B3AA95" : "#E8B84A"} />
+        <stop offset="1" stopColor={dim ? "#9C937E" : "#B8821F"} />
+      </linearGradient>
+    </defs>
+    <path d="M0 -46 L13.5 -15 L46 -14 L21 8 L29 42 L0 24 L-29 42 L-21 8 L-46 -14 L-13.5 -15 Z" fill={`url(#g-${id})`} stroke={dim ? "#A79F8B" : "#FFF1C9"} strokeWidth={1.5} strokeLinejoin="round" />
+    <path d="M0 -46 L13.5 -15 L0 -6 Z" fill="rgba(255,255,255,0.35)" />
+  </svg>
+);
+
+/** Vaso de café genérico (sin marcas): tapa, cuerpo crema y faja verde con una estrella. */
+const Cup: React.FC<{ w: number; tilt?: number; star?: number }> = ({ w, tilt = 0, star = 1 }) => {
+  const h = w * 1.45;
+  return (
+    <div style={{ width: w, height: h, position: "relative", transform: `perspective(1400px) rotateY(${tilt}deg)`, filter: "drop-shadow(0 50px 60px rgba(0,0,0,0.55))" }}>
+      <svg width={w} height={h} viewBox="0 0 200 290" style={{ overflow: "visible" }}>
+        <defs>
+          <linearGradient id="cupBody" x1="0" x2="1">
+            <stop offset="0" stopColor="#D9D2C2" />
+            <stop offset="0.25" stopColor="#FBF8F1" />
+            <stop offset="0.6" stopColor="#F4EFE4" />
+            <stop offset="1" stopColor="#C9C0AC" />
+          </linearGradient>
+          <linearGradient id="cupSleeve" x1="0" x2="1">
+            <stop offset="0" stopColor="#0A3A2D" />
+            <stop offset="0.3" stopColor="#14644D" />
+            <stop offset="0.7" stopColor="#0F5440" />
+            <stop offset="1" stopColor="#082E24" />
+          </linearGradient>
+          <linearGradient id="cupLid" x1="0" x2="1">
+            <stop offset="0" stopColor="#1B1B1B" />
+            <stop offset="0.35" stopColor="#3A3A3A" />
+            <stop offset="1" stopColor="#111" />
+          </linearGradient>
+        </defs>
+        <path d="M30 40 L170 40 L152 285 Q100 292 48 285 Z" fill="url(#cupBody)" />
+        <path d="M40 120 L160 120 L153 210 Q100 216 47 210 Z" fill="url(#cupSleeve)" />
+        <rect x={18} y={22} width={164} height={22} rx={8} fill="url(#cupLid)" />
+        <path d="M30 22 Q100 -8 170 22 Z" fill="url(#cupLid)" />
+        <ellipse cx={100} cy={10} rx={14} ry={4} fill="#000" opacity={0.6} />
+      </svg>
+      <div style={{ position: "absolute", left: "50%", top: h * 0.565, transform: `translate(-50%, -50%) scale(${star})` }}>
+        <Star size={w * 0.22} id="cup" />
+      </div>
+    </div>
+  );
+};
+
+/** Persona (ícono) que se ilumina en dorado. */
+const PersonIcon: React.FC<{ size: number; on: number }> = ({ size, on }) => {
+  const c = on > 0.5 ? "#E8B84A" : "rgba(167,201,189,0.28)";
+  return (
+    <svg width={size} height={size * 1.15} viewBox="0 0 40 46" style={{ transform: `scale(${1 + 0.18 * Math.sin(Math.min(1, on) * Math.PI)})`, filter: on > 0.5 ? "drop-shadow(0 0 8px rgba(232,184,74,0.55))" : undefined }}>
+      <circle cx={20} cy={12} r={9} fill={c} />
+      <path d="M3 44 Q3 24 20 24 Q37 24 37 44 Z" fill={c} />
+    </svg>
+  );
+};
+
+/** Lluvia de estrellas / partículas doradas que salen de un punto. */
+const Burst: React.FC<{ at: number; x: number; y: number; n?: number; spread?: number; seed?: string }> = ({ at, x, y, n = 18, spread = 520, seed = "b" }) => {
+  const { frame } = useT();
+  if (frame < at) return null;
+  const k = frame - at;
+  return (
+    <>
+      {Array.from({ length: n }).map((_, i) => {
+        const a = random(`${seed}a${i}`) * Math.PI * 2;
+        const d = (0.35 + random(`${seed}d${i}`) * 0.65) * spread * interpolate(k, [0, 40], [0, 1], { ...clamp, easing: EASE });
+        const o = interpolate(k, [0, 6, 34, 56], [0, 1, 0.9, 0], clamp);
+        const sz = 16 + random(`${seed}s${i}`) * 34;
+        return (
+          <div key={i} style={{ position: "absolute", left: x + Math.cos(a) * d - sz / 2, top: y + Math.sin(a) * d - sz / 2 + k * 0.6, opacity: o, transform: `rotate(${k * (random(`${seed}r${i}`) * 8 - 4)}deg)` }}>
+            <Star size={sz} id={`${seed}${i}`} />
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
+const fmt = (n: number) => Math.round(n).toLocaleString("es-CO").replace(/,/g, ".");
+
+/* ------------------------------------------------------------------ */
+/* Fondos */
+const ForestBg: React.FC<{ rays?: boolean; tone?: number }> = ({ rays = true, tone = 1 }) => {
+  const { frame } = useT();
+  return (
+    <AbsoluteFill style={{ background: `radial-gradient(ellipse 900px 1100px at 480px 820px, #17614A 0%, ${C.forest} 52%, #04110D 100%)`, filter: tone < 1 ? `saturate(${tone})` : undefined }}>
+      {rays ? (
+        <AbsoluteFill
+          style={{
+            background: `repeating-conic-gradient(from ${frame * 0.15}deg at 480px 860px, rgba(255,230,160,0.07) 0deg 4deg, transparent 4deg 14deg)`,
+            maskImage: "radial-gradient(circle at 480px 860px, black 0%, transparent 62%)",
+          }}
+        />
+      ) : null}
+    </AbsoluteFill>
+  );
+};
+const PaperBg: React.FC = () => (
+  <AbsoluteFill style={{ background: `radial-gradient(ellipse 820px 1000px at 480px 860px, #FBF7EE 0%, ${C.paper} 55%, #D9D0BD 100%)` }} />
+);
+
+/* ------------------------------------------------------------------ */
+/* Escenas */
+const Scene: React.FC<{ id: SceneId; children: React.ReactNode }> = ({ id, children }) => {
+  const { frame, s } = useT();
+  const a = s(S[id].from);
+  const b = s(S[id].to);
+  if (frame < a || frame > b + 7) return null;
+  const tin = a === 0 ? 1 : ease(frame, a, 7);
+  return <AbsoluteFill style={{ opacity: tin, transform: `scale(${1.04 - 0.04 * tin})`, filter: tin < 1 ? `blur(${(1 - tin) * 10}px)` : undefined }}>{children}</AbsoluteFill>;
+};
+
+const HookScene: React.FC = () => {
+  const { frame, fps, s, t } = useT();
+  const rise = spring({ frame: frame - 4, fps, config: { damping: 16, stiffness: 90 } });
+  const noAt = s(wordTime("h1", "no"));
+  const dimCup = ease(frame, noAt, 10);
+  const starAt = s(wordTime("h2", "estrella") - 0.15);
+  const starPop = frame >= starAt ? spring({ frame: frame - starAt, fps, config: { damping: 11, stiffness: 120 } }) : 0;
+  const float = Math.sin(t * 1.6) * 14;
+  return (
+    <Scene id="hook">
+      <ForestBg />
+      <div style={{ position: "absolute", left: CX - 170, top: 640 + (1 - rise) * 900 + float + dimCup * 60, opacity: (1 - 0.45 * dimCup) * (1 - Math.min(1, starPop * 1.4)), transform: `scale(${1 - 0.12 * dimCup})` }}>
+        <Cup w={340} tilt={Math.sin(t * 0.9) * 14} star={1 - Math.min(1, starPop)} />
+      </div>
+      {starPop > 0 ? (
+        <div style={{ position: "absolute", left: CX - 230, top: 640 + float, width: 460, height: 460, transform: `translateY(${(1 - Math.min(1, starPop)) * 260}px) scale(${starPop}) rotate(${(1 - Math.min(1, starPop)) * -90 + Math.sin(t * 2) * 4}deg)` }}>
+          <div style={{ position: "absolute", inset: -140, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,214,120,0.45), transparent 65%)" }} />
+          <Star size={460} glow={40} id="hero" />
+        </div>
+      ) : null}
+      <Burst at={starAt + 4} x={CX} y={870} n={22} seed="h" />
+    </Scene>
+  );
+};
+
+const Stat1Scene: React.FC = () => {
+  const { frame, fps, s } = useT();
+  const from = s(wordTime("s1", "gastaron"));
+  const to = s(wordTime("s1", "dólares"));
+  const v = copy.stat1.value * interpolate(frame, [from, to], [0, 1], { ...clamp, easing: Easing3 });
+  const inn = spring({ frame: frame - s(S.stat1.from), fps, config: { damping: 18, stiffness: 120 } });
+  const membersAt = s(wordTime("s1", "miembros"));
+  const cols = 7;
+  const rows = 6;
+  const unitIn = ease(frame, to - 4, 10);
+  return (
+    <Scene id="stat1">
+      <ForestBg />
+      <div style={{ position: "absolute", left: 0, width: 960, top: 300, textAlign: "center", fontFamily: font, color: C.white, opacity: Math.min(1, inn * 1.5) }}>
+        <div style={{ fontSize: 168, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: C.goldLight, textShadow: "0 0 50px rgba(232,184,74,0.35)" }}>
+          {copy.stat1.prefix}
+          {fmt(v)}
+        </div>
+        <div style={{ fontSize: 50, fontWeight: 800, letterSpacing: "0.04em", marginTop: 10, opacity: 0.4 + 0.6 * unitIn }}>{copy.stat1.unit}</div>
+        <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 40, color: C.soft, marginTop: 16, lineHeight: 1.2, padding: "0 80px" }}>{copy.stat1.label}</div>
+      </div>
+      <div style={{ position: "absolute", left: CX - (cols * 96) / 2, top: 770, display: "grid", gridTemplateColumns: `repeat(${cols}, 96px)`, rowGap: 14, justifyItems: "center" }}>
+        {Array.from({ length: cols * rows }).map((_, i) => {
+          const order = random(`p${i}`) * 40;
+          const on = frame >= membersAt + order ? spring({ frame: frame - membersAt - order, fps, config: { damping: 12, stiffness: 160 } }) : 0;
+          return <PersonIcon key={i} size={64} on={on} />;
+        })}
+      </div>
+      <div style={{ position: "absolute", left: 0, width: 960, top: 1300, textAlign: "center", fontFamily: font, fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.7)" }}>{copy.source}</div>
+    </Scene>
+  );
+};
+const Easing3 = (x: number) => 1 - Math.pow(1 - x, 3);
+
+const Stat2Scene: React.FC = () => {
+  const { frame, fps, s, t } = useT();
+  const waitEnd = s(V.s3.at - 0.1);
+  const dim = frame < waitEnd ? 1 : 1 - ease(frame, waitEnd, 8);
+  const pctAt = s(wordTime("s3", "sesenta") - 0.25);
+  const p = interpolate(frame, [pctAt, pctAt + 30], [0, 0.6], { ...clamp, easing: EASE });
+  const inn = spring({ frame: frame - waitEnd, fps, config: { damping: 16, stiffness: 120 } });
+  const R = 250;
+  const L = 2 * Math.PI * R;
+  const label = ease(frame, s(wordTime("s3", "venden")), 12);
+  const people = Array.from({ length: 10 });
+  return (
+    <Scene id="stat2">
+      <ForestBg tone={0.35 + 0.65 * (1 - dim)} />
+      {/* "Espera…": la escena se apaga un instante */}
+      <AbsoluteFill style={{ background: "rgba(0,0,0,0.45)", opacity: dim }} />
+      {frame >= waitEnd ? (
+        <div style={{ opacity: Math.min(1, inn * 1.5), transform: `scale(${0.9 + 0.1 * inn})`, transformOrigin: `${CX}px 800px` }}>
+          <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
+            <circle cx={CX} cy={800} r={R} fill="none" stroke="rgba(167,201,189,0.15)" strokeWidth={56} />
+            <circle cx={CX} cy={800} r={R} fill="none" stroke="url(#gold)" strokeWidth={56} strokeLinecap="round" strokeDasharray={`${L * p} ${L}`} transform={`rotate(-90 ${CX} 800)`} style={{ filter: "drop-shadow(0 0 18px rgba(232,184,74,0.5))" }} />
+            <defs>
+              <linearGradient id="gold" x1="0" x2="1">
+                <stop offset="0" stopColor="#FFE6A3" />
+                <stop offset="1" stopColor="#D49B2E" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style={{ position: "absolute", left: CX - 220, width: 440, top: 690, textAlign: "center", fontFamily: font, color: C.white }}>
+            <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: "0.2em", color: C.soft }}>CASI</div>
+            <div style={{ fontSize: 150, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, color: C.goldLight, fontVariantNumeric: "tabular-nums" }}>{Math.round(p * 100)}%</div>
+          </div>
+          <div style={{ position: "absolute", left: 60, width: 840, top: 1100, display: "flex", justifyContent: "center", gap: 14 }}>
+            {people.map((_, i) => (
+              <PersonIcon key={i} size={58} on={p * 10 > i + 0.5 ? 1 : 0} />
+            ))}
+          </div>
+          <div style={{ position: "absolute", left: 0, width: 960, top: 1196, textAlign: "center", fontFamily: font, opacity: label, transform: `translateY(${(1 - label) * 14}px)` }}>
+            <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 40, color: C.white, lineHeight: 1.2 }}>{copy.stat2.label}</div>
+            <div style={{ fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.7)", marginTop: 10 }}>{copy.source}</div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ position: "absolute", left: CX - 60, top: 760 + Math.sin(t * 3) * 6, opacity: 0.5 }}>
+          <Star size={120} id="wait" dim />
+        </div>
+      )}
+    </Scene>
+  );
+};
+
+const WhyScene: React.FC = () => {
+  const { frame, fps, s } = useT();
+  const cardsAt = s(V.w2.at);
+  const today = spring({ frame: frame - cardsAt, fps, config: { damping: 16, stiffness: 130 } });
+  const tomAt = s(wordTime("w2", "razón") - 0.1);
+  const tom = spring({ frame: frame - tomAt, fps, config: { damping: 14, stiffness: 130 } });
+  const glow = ease(frame, s(wordTime("w2", "mañana")), 12);
+  const Card: React.FC<{ title: string; sub: string; on: number; hi?: boolean; icon: React.ReactNode }> = ({ title, sub, on, hi, icon }) => (
+    <div
+      style={{
+        width: 380,
+        height: 520,
+        borderRadius: 36,
+        background: hi ? `linear-gradient(160deg, #14644D, ${C.forest})` : "#FFFFFF",
+        boxShadow: hi ? `0 30px 80px rgba(11,42,34,0.35), 0 0 ${60 * glow}px rgba(232,184,74,${0.5 * glow})` : "0 24px 60px rgba(60,50,30,0.18)",
+        border: hi ? `3px solid rgba(232,184,74,${0.3 + 0.7 * glow})` : "2px solid #E6DECD",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 26,
+        transform: `translateY(${(1 - on) * 400}px) scale(${hi ? 1 + 0.05 * glow : 1 - 0.04 * glow})`,
+        opacity: Math.min(1, on * 1.6) * (hi ? 1 : 1 - 0.35 * glow),
+        fontFamily: font,
+      }}
+    >
+      {icon}
+      <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: "-0.03em", color: hi ? C.goldLight : C.ink }}>{title}</div>
+      <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, color: hi ? C.cream : "#5B5446", textAlign: "center", padding: "0 30px", lineHeight: 1.2 }}>{sub}</div>
+    </div>
+  );
+  return (
+    <Scene id="why">
+      <PaperBg />
+      <div style={{ position: "absolute", left: 0, width: 960, top: 640, display: "flex", justifyContent: "center", alignItems: "center", gap: 30 }}>
+        <Card title={copy.today} sub="te vende el café" on={today} icon={<Cup w={110} />} />
+        <div style={{ fontFamily: font, fontSize: 70, fontWeight: 800, color: C.forest, opacity: tom, transform: `translateX(${(1 - tom) * -30}px)` }}>→</div>
+        <Card title={copy.tomorrow} sub="te da una razón para volver" on={tom} hi icon={<Star size={150} glow={20 * glow} id="tm" />} />
+      </div>
+    </Scene>
+  );
+};
+
+const MechScene: React.FC = () => {
+  const { frame, fps, s, t } = useT();
+  const steps: [string, number][] = [
+    ["compras", 2],
+    ["acumulas", 5],
+    ["estrellas", 7],
+    ["cada", 9],
+    ["premio", 10],
+  ];
+  let target = 0;
+  for (const [w, n] of steps) if (frame >= s(wordTime("m1", w))) target = n;
+  const rewardAt = s(wordTime("m1", "premio"));
+  const reward = pop(frame, fps, rewardAt + 6);
+  const chartAt = s(V.m2.at - 0.05);
+  const chart = ease(frame, chartAt, 14, EASE_INOUT);
+  const bars = [1, 2, 3, 5, 8];
+  return (
+    <Scene id="mech">
+      <PaperBg />
+      {/* parte 1: vaso + barra de estrellas */}
+      <div style={{ opacity: 1 - chart, transform: `translateY(${-chart * 80}px)` }}>
+        <div style={{ position: "absolute", left: CX - 130, top: 560 + Math.sin(t * 1.6) * 10 }}>
+          <Cup w={260} tilt={Math.sin(t) * 10} />
+        </div>
+        <div style={{ position: "absolute", left: 90, width: 780, top: 1010 }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            {Array.from({ length: 10 }).map((_, i) => {
+              const on = i < target;
+              const at = s(wordTime("m1", steps.find(([, n]) => n > i)?.[0] ?? "premio")) + (i % 3) * 2;
+              const p = on ? spring({ frame: frame - at, fps, config: { damping: 10, stiffness: 220 } }) : 0;
+              return (
+                <div key={i} style={{ transform: `scale(${on ? 0.6 + 0.4 * p : 0.8})` }}>
+                  <Star size={62} id={`m${i}`} dim={!on} glow={on ? 10 : 0} />
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ marginTop: 22, height: 22, borderRadius: 99, background: "#E2D9C6", overflow: "hidden" }}>
+            <div style={{ width: `${interpolate(target, [0, 10], [0, 100])}%`, height: "100%", borderRadius: 99, background: "linear-gradient(90deg, #14644D, #E8B84A)", transition: "none" }} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 18, fontFamily: font }}>
+            <div style={{ fontSize: 54, fontWeight: 800, color: C.ink, fontVariantNumeric: "tabular-nums" }}>{target} ★</div>
+            {reward > 0 ? (
+              <div style={{ transform: `scale(${reward})`, padding: "14px 28px", borderRadius: 999, background: `linear-gradient(90deg, #D49B2E, #FFD98A)`, color: C.ink, fontSize: 36, fontWeight: 800, letterSpacing: "0.08em", boxShadow: "0 14px 40px rgba(212,155,46,0.45)" }}>🎁 {copy.reward}</div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+      <Burst at={rewardAt + 6} x={CX + 230} y={1150} n={16} spread={360} seed="m" />
+      {/* parte 2: entre más vuelves… */}
+      {chart > 0 ? (
+        <div style={{ position: "absolute", left: 110, width: 740, top: 600, height: 640, opacity: chart }}>
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 60, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+            {bars.map((b, i) => {
+              const g = ease(frame, chartAt + 6 + i * 6, 16);
+              return (
+                <div key={i} style={{ width: 110, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                  <div style={{ opacity: g, transform: `scale(${g})` }}>
+                    <Star size={56} id={`b${i}`} glow={8} />
+                  </div>
+                  <div style={{ width: 110, height: (b / 8) * 430 * g, borderRadius: "18px 18px 6px 6px", background: i === bars.length - 1 ? "linear-gradient(180deg, #E8B84A, #B8821F)" : "linear-gradient(180deg, #1B7A5E, #0E4D3B)" }} />
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", justifyContent: "space-between", fontFamily: font, fontSize: 24, fontWeight: 800, color: "#6B6455" }}>
+            {copy.visits.map((v) => (
+              <div key={v} style={{ width: 110, textAlign: "center" }}>
+                {v}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </Scene>
+  );
+};
+
+const BizScene: React.FC = () => {
+  const { frame, s } = useT();
+  const push = ease(frame, s(S.biz.from), s(S.biz.to - S.biz.from), EASE_INOUT);
+  return (
+    <Scene id="biz">
+      <AbsoluteFill style={{ background: "#071510" }} />
+      <AbsoluteFill style={{ transform: `scale(${1.05 + 0.1 * push})`, transformOrigin: "540px 1150px" }}>
+        <div style={{ position: "absolute", left: 0, top: 640 }}>
+          <Storefront />
+        </div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(5,8,11,0.85) 0%, rgba(5,8,11,0.2) 35%, rgba(5,8,11,0) 60%)" }} />
+      {Array.from({ length: 9 }).map((_, i) => {
+        const at = s(S.biz.from + 0.3) + i * 4;
+        const p = pop(frame, 30, at);
+        return (
+          <div key={i} style={{ position: "absolute", left: 120 + random(`sx${i}`) * 720, top: 760 + random(`sy${i}`) * 420 + Math.sin(frame / 20 + i) * 8, transform: `scale(${p})`, opacity: 0.9 }}>
+            <Star size={40 + random(`ss${i}`) * 36} id={`bz${i}`} glow={14} />
+          </div>
+        );
+      })}
+    </Scene>
+  );
+};
+
+const AppScene: React.FC = () => {
+  const { frame, fps, s, t } = useT();
+  const phoneAt = s(wordTime("y2", "tarjetica") - 0.2);
+  const rise = spring({ frame: frame - phoneAt, fps, config: { damping: 20, stiffness: 120 } });
+  const logoAt = s(wordTime("y2", "mi") - 0.1);
+  const logoShow = ease(frame, logoAt, 10);
+  const headOut = ease(frame, logoAt - 6, 6, EASE_IN);
+  const chips: [string, string, number, number][] = [
+    [copy.chips[1], "sellos", -1, 760],
+    [copy.chips[2], "premios", 1, 960],
+    ["Y vuelven ↺", "vuelven", -1, 1160],
+  ];
+  return (
+    <Scene id="app">
+      <AbsoluteFill style={{ background: `radial-gradient(ellipse 900px 1100px at 480px 900px, #145B44 0%, #0B2A22 55%, #04110D 100%)` }} />
+      <div style={{ position: "absolute", left: 0, width: 960, top: 300, display: "flex", justifyContent: "center", opacity: logoShow * (1 - 0) }}>
+        <Logo height={120} color={C.white} animateAt={logoAt} />
+      </div>
+      <div style={{ position: "absolute", inset: 0, transform: `translateY(${(1 - rise) * 1100}px)` }}>
+        <BigPhone y={540} w={470} tilt={Math.sin(t * 1.2) * 1.5}>
+          <AbsoluteFill style={{ background: "#050505" }}>
+            <div style={{ position: "absolute", top: 140, left: 32, right: 32, display: "flex", justifyContent: "space-between", fontFamily: font, fontWeight: 600, fontSize: 32, color: "#fff" }}>
+              <span>Listo</span>
+              <span>···</span>
+            </div>
+            <div style={{ position: "absolute", left: 32, top: 210 }}>
+              <PassCard width={SCREEN - 64} pulse={(Math.sin(t * Math.PI * 3) + 1) / 2} />
+            </div>
+          </AbsoluteFill>
+        </BigPhone>
+      </div>
+      {chips.map(([text, w, side, y]) => {
+        const p = spring({ frame: frame - s(wordTime("y2", w)), fps, config: { damping: 14, stiffness: 170 } });
+        if (p <= 0.001) return null;
+        return (
+          <div
+            key={text}
+            style={{
+              position: "absolute",
+              top: y,
+              left: side < 0 ? 40 : undefined,
+              right: side > 0 ? 160 : undefined,
+              transform: `translateX(${(1 - p) * side * 200}px) rotate(${side * -3}deg)`,
+              opacity: Math.min(1, p * 1.5),
+              padding: "18px 30px",
+              borderRadius: 999,
+              background: w === "premios" ? "linear-gradient(90deg, #D49B2E, #FFD98A)" : C.highlight,
+              color: C.ink,
+              fontFamily: font,
+              fontWeight: 800,
+              fontSize: 36,
+              boxShadow: "0 18px 50px rgba(0,0,0,0.45)",
+            }}
+          >
+            {w === "sellos" ? "✓ " : w === "premios" ? "🎁 " : ""}
+            {text}
+          </div>
+        );
+      })}
+      <div style={{ opacity: 1 - headOut }} />
+    </Scene>
+  );
+};
+
+const CtaScene: React.FC = () => {
+  const { frame, fps, s } = useT();
+  if (frame < s(S.cta.from)) return null;
+  const at = s(V.c1.at);
+  const title = spring({ frame: frame - at + 2, fps, config: { damping: 14, stiffness: 170 } });
+  const word = spring({ frame: frame - at - s(0.25), fps, config: { damping: 12, stiffness: 190 } });
+  const sub = ease(frame, at + s(0.7), s(0.5));
+  const bar = ease(frame, at + s(0.5), s(0.5));
+  const typeStart = at + s(1.0);
+  const typed = copy.cta.word.slice(0, Math.max(0, Math.min(copy.cta.word.length, Math.floor((frame - typeStart) / 3))));
+  const sentAt = typeStart + copy.cta.word.length * 3 + s(0.25);
+  const sent = ease(frame, sentAt, s(0.4));
+  const logoAt = at + s(2.2);
+  const caret = Math.floor(frame / 15) % 2 === 0;
+  const arrow = Math.sin((frame / fps) * Math.PI * 2 * 1.2) * 10;
+  const ring = ease(frame, at, 20);
+  return (
+    <Scene id="cta">
+      <ForestBg />
+      {Array.from({ length: 14 }).map((_, i) => {
+        const a = (i / 14) * Math.PI * 2 + frame * 0.012;
+        const r = 380 * ring;
+        return (
+          <div key={i} style={{ position: "absolute", left: CX + Math.cos(a) * r - 18, top: 560 + Math.sin(a) * r * 0.55 - 18, opacity: ring * (0.5 + 0.5 * Math.sin(frame * 0.1 + i)) }}>
+            <Star size={36} id={`r${i}`} glow={8} />
+          </div>
+        );
+      })}
+      <div style={{ position: "absolute", left: 0, width: 960, top: 380, display: "flex", flexDirection: "column", alignItems: "center", fontFamily: font, color: C.white, textShadow: "0 10px 40px rgba(0,0,0,0.6)" }}>
+        <div style={{ fontSize: 120, fontWeight: 800, letterSpacing: tracking.headline, lineHeight: 1, transform: `scale(${0.7 + 0.3 * title})`, opacity: Math.min(1, title * 1.5) }}>{copy.cta.top}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 18, transform: `scale(${0.6 + 0.4 * word})`, opacity: Math.min(1, word * 1.5) }}>
+          <span style={{ fontSize: 116, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.05, background: `linear-gradient(90deg, #E8B84A, #FFD98A)`, color: C.ink, padding: "0 20px", borderRadius: 18, textShadow: "none", boxShadow: "0 18px 60px rgba(232,184,74,0.35)" }}>{copy.cta.word}</span>
+          <span style={{ fontSize: 100, fontWeight: 800, transform: `translateY(${arrow}px)` }}>↓</span>
+        </div>
+        <div style={{ marginTop: 40, fontFamily: logoFont, fontStyle: "italic", fontSize: 46, fontWeight: 600, color: C.cream, opacity: sub, transform: `translateY(${(1 - sub) * 20}px)`, textAlign: "center", padding: "0 60px", lineHeight: 1.2 }}>{copy.cta.sub}</div>
+      </div>
+      <div style={{ position: "absolute", left: CX - 420, width: 840, top: 1010, opacity: bar, transform: `translateY(${(1 - bar) * 40}px)` }}>
+        <div style={{ height: 112, borderRadius: 999, background: "rgba(5,8,11,0.55)", border: "2px solid rgba(255,255,255,0.16)", display: "flex", alignItems: "center", padding: "0 20px", gap: 20, fontFamily: font }}>
+          <div style={{ width: 70, height: 70, borderRadius: "50%", background: `linear-gradient(145deg, ${C.mint}, ${C.greenMid})` }} />
+          <div style={{ flex: 1, fontSize: 40, fontWeight: typed && sent === 0 ? 800 : 400, color: typed && sent === 0 ? C.white : "rgba(255,255,255,0.5)" }}>
+            {sent > 0 ? copy.cta.comment : typed || copy.cta.comment}
+            {typed && sent === 0 && caret ? <span style={{ fontWeight: 400 }}>|</span> : null}
+          </div>
+          <div style={{ width: 76, height: 76, borderRadius: "50%", background: typed.length === copy.cta.word.length ? "#2F7BF6" : "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 44, fontWeight: 800, transform: `scale(${1 + 0.15 * Math.sin(Math.min(1, sent) * Math.PI)})` }}>↑</div>
+        </div>
+        {sent > 0 ? <div style={{ position: "absolute", right: 30, top: -96 - 30 * sent, opacity: Math.min(1, sent * 2), padding: "14px 28px", borderRadius: 26, background: "#2F7BF6", color: "#fff", fontFamily: font, fontWeight: 800, fontSize: 40 }}>{copy.cta.word}</div> : null}
+      </div>
+      <div style={{ position: "absolute", left: 0, width: 960, top: 1240, display: "flex", justifyContent: "center", opacity: ease(frame, logoAt, s(0.3)) }}>
+        <Logo height={150} color={C.white} animateAt={logoAt} />
+      </div>
+    </Scene>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+const DARK: Record<string, boolean> = { w1: true, w2: true, m1: true, m2: true };
+const SCENE_OF: Record<string, SceneId> = { h1: "hook", h2: "hook", s2: "stat2", w1: "why", w2: "why", m1: "mech", m2: "mech", y1: "biz", y2: "app" };
+const Headlines: React.FC = () => {
+  const { fps } = useVideoConfig();
+  const s = (x: number) => Math.round(x * fps);
+  const list: { text: string; at: number; scene: SceneId; dark: boolean; id: string }[] = [];
+  for (const v of VOICE) for (const [text, needle] of headlines[v.id] ?? []) list.push({ text, at: Math.max(wordTime(v.id, needle), S[SCENE_OF[v.id]].from + 0.05), scene: SCENE_OF[v.id], dark: !!DARK[v.id], id: v.id });
+  return (
+    <>
+      {list.map((h, i) => {
+        const next = list[i + 1];
+        let end = next && next.scene === h.scene ? next.at - 0.12 : S[h.scene].to - 0.1;
+        if (h.id === "y2") end = wordTime("y2", "mi") - 0.25;
+        if (h.id === "s2") end = V.s3.at - 0.15;
+        if (h.id === "w1") end = V.w2.at - 0.1;
+        return <Headline key={i} text={h.text} at={s(h.at)} exitAt={s(end)} size={h.text.length > 24 ? 92 : h.text.length > 18 ? 104 : 116} dark={h.dark} top={h.id === "w1" ? 700 : 262} />;
+      })}
+    </>
+  );
+};
+
+const Cuts: React.FC = () => {
+  const { frame, s } = useT();
+  let o = 0;
+  for (const id of Object.keys(S) as SceneId[]) {
+    if (id === "hook") continue;
+    const c = s(S[id].from);
+    o = Math.max(o, interpolate(frame, [c - 3, c, c + 4], [0, 0.6, 0], clamp));
+  }
+  return o > 0 ? <AbsoluteFill style={{ background: "#000", opacity: o }} /> : null;
+};
+
+const Grain: React.FC = () => {
+  const frame = useCurrentFrame();
+  return <AbsoluteFill style={{ backgroundImage: `url(${staticFile("grain.png")})`, backgroundPosition: `${(frame * 137) % 512}px ${(frame * 251) % 512}px`, opacity: 0.06, mixBlendMode: "overlay", pointerEvents: "none" }} />;
+};
+
+/* ------------------------------------------------------------------ */
+const musicVolume = (f: number, fps: number, total: number) => {
+  const t = f / fps;
+  const speaking = VOICE.some((v) => t > V[v.id].at - 0.15 && t < V[v.id].end + 0.15);
+  const near = VOICE.reduce((m, v) => Math.min(m, Math.abs(t - V[v.id].at), Math.abs(t - V[v.id].end)), 9);
+  const base = speaking ? audio.music.duckTo : audio.music.duckTo + (audio.music.volume - audio.music.duckTo) * Math.min(1, near / 0.3);
+  return base * Math.min(1, t / 0.4) * Math.min(1, (total / fps - t) / 1.4);
+};
+const Sfx: React.FC<{ at: number; file: string; vol: number }> = ({ at, file, vol }) => {
+  const { fps } = useVideoConfig();
+  return (
+    <Sequence from={Math.max(0, Math.round(at * fps))} layout="none">
+      <Html5Audio src={staticFile(`sfx/${file}.mp3`)} volume={vol} />
+    </Sequence>
+  );
+};
+export const SFX: [number, string, number][] = [
+  ...(Object.keys(S) as SceneId[]).filter((id) => id !== "hook").map((id) => [S[id].from - 0.08, "whoosh-soft", 0.3] as [number, string, number]),
+  [wordTime("h2", "estrella") - 0.1, "ring-pulse", 0.45],
+  [wordTime("s1", "dólares"), "pop", 0.4],
+  [wordTime("s3", "sesenta"), "ring-pulse", 0.35],
+  [wordTime("w2", "mañana"), "pop", 0.35],
+  [wordTime("m1", "compras"), "tap", 0.3],
+  [wordTime("m1", "acumulas"), "tap", 0.3],
+  [wordTime("m1", "estrellas"), "tap", 0.3],
+  [wordTime("m1", "premio") + 0.2, "notification", 0.4],
+  [wordTime("y2", "sellos"), "pop", 0.35],
+  [wordTime("y2", "premios"), "pop", 0.35],
+  [wordTime("y2", "vuelven"), "pop", 0.35],
+  [V.c1.at + 1.0 + (copy.cta.word.length * 3) / 30 + 0.25, "tap", 0.45],
+];
+
+export const ElSecreto: React.FC = () => {
+  const { fps, durationInFrames } = useVideoConfig();
+  return (
+    <AbsoluteFill style={{ background: C.bg }}>
+      <HookScene />
+      <Stat1Scene />
+      <Stat2Scene />
+      <WhyScene />
+      <MechScene />
+      <BizScene />
+      <AppScene />
+      <CtaScene />
+      <AbsoluteFill style={{ background: "radial-gradient(ellipse 120% 90% at 50% 50%, transparent 60%, rgba(0,0,0,0.4) 100%)", pointerEvents: "none" }} />
+      <Headlines />
+      <Karaoke hide={(id) => id === "c1"} />
+      <Cuts />
+      <Grain />
+      <Html5Audio src={staticFile(audio.music.file)} volume={(f) => musicVolume(f, fps, durationInFrames)} />
+      {VOICE.filter((v) => getStaticFiles().some((f) => f.name === `voz/${v.id}.wav`)).map((v) => (
+        <Sequence key={v.id} from={Math.round(V[v.id].at * fps)} layout="none">
+          <Html5Audio src={staticFile(`voz/${v.id}.wav`)} volume={audio.voice.volume} />
+        </Sequence>
+      ))}
+      {SFX.map(([at, f, vol], i) => (
+        <Sfx key={i} at={at} file={f} vol={vol} />
+      ))}
+    </AbsoluteFill>
+  );
+};
+
+export { DURATION_SEC };
