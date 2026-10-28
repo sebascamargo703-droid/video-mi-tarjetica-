@@ -1,0 +1,86 @@
+[
+  {
+    "id": "q1",
+    "say": "¿Es legal que un negocio te mande esto,",
+    "pause": 0.05,
+    "dur": 2.03
+  },
+  {
+    "id": "q2",
+    "say": "solo por pasar por el frente?",
+    "pause": 0.45,
+    "dur": 1.642
+  },
+  {
+    "id": "calm",
+    "say": "Tranquilo. Nadie te está siguiendo.",
+    "pause": 0.35,
+    "dur": 1.891
+  },
+  {
+    "id": "card",
+    "say": "Es su tarjeta de sellos, guardada en tu Uálet.",
+    "pause": 0.25,
+    "dur": 2.345
+  },
+  {
+    "id": "scan",
+    "say": "La guardaste tú, cuando escaneaste su código cú erre.",
+    "pause": 0.3,
+    "dur": 2.799
+  },
+  {
+    "id": "loc",
+    "say": "Y la tarjeta trae guardada la ubicación del negocio.",
+    "pause": 0.3,
+    "dur": 2.945
+  },
+  {
+    "id": "near",
+    "say": "Cuando pasas cerca, es tu propio celular el que te la muestra.",
+    "pause": 0.3,
+    "dur": 3.195
+  },
+  {
+    "id": "nosabe",
+    "say": "El negocio no sabe dónde estás.",
+    "pause": 0.25,
+    "dur": 1.87
+  },
+  {
+    "id": "off",
+    "say": "Y la puedes apagar cuando quieras.",
+    "pause": 0.45,
+    "dur": 1.832
+  },
+  {
+    "id": "biz",
+    "say": "¿Y para el negocio?",
+    "pause": 0.2,
+    "dur": 1.031
+  },
+  {
+    "id": "door",
+    "say": "Aparece en el celular de su cliente, justo frente a su puerta,",
+    "pause": 0.1,
+    "dur": 3.247
+  },
+  {
+    "id": "stamp",
+    "say": "cuando le falta un sello para el premio.",
+    "pause": 0.45,
+    "dur": 2.0
+  },
+  {
+    "id": "want",
+    "say": "¿Quieres una así para tu negocio?",
+    "pause": 0.3,
+    "dur": 1.782
+  },
+  {
+    "id": "cta",
+    "say": "Comenta tarjeta, y te mostramos cómo quedaría la tuya.",
+    "pause": 0,
+    "dur": 2.901
+  }
+]
