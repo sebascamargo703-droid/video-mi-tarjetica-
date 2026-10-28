@@ -110,7 +110,7 @@ const Label: React.FC<{ p: V3; cam: Cam; children: React.ReactNode; dy?: number;
 
 /* ------------------------------------------------------------------ */
 /* 1 · La tarjeta en la lavadora */
-const PaperWasher: React.FC<{ spin: number; shake: number }> = ({ spin, shake }) => {
+export const PaperWasher: React.FC<{ spin: number; shake: number }> = ({ spin, shake }) => {
   const paper = usePaper();
   return <Washer3D spin={spin} shake={shake} cardTex={paper} />;
 };

@@ -356,7 +356,7 @@ export const Washer3D: React.FC<{ spin: number; shake?: number; cardTex: THREE.T
             </mesh>
           ))}
           {cardTex ? (
-            <mesh position={[0.05, -0.12, 0.12]} rotation={[0.05, Math.PI + 0.1, 0.35]}>
+            <mesh position={[0.05, -0.12, 0.12]} rotation={[0.05, 0.1, 0.35]}>
               <planeGeometry args={[0.74, 0.46]} />
               <meshStandardMaterial map={cardTex} roughness={0.7} side={THREE.DoubleSide} />
             </mesh>
