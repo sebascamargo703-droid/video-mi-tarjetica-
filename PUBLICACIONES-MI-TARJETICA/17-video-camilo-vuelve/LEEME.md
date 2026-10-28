@@ -1,9 +1,10 @@
 # Video "Camilo vuelve": la tarjeta de papel terminó en la lavadora
 
-`camilo-vuelve-vertical.mp4` · 1080×1920 · 54 s · fotos realistas + escena 3D + pantallas de la app,
+`camilo-vuelve-vertical.mp4` · 1080×1920 · 54 s · todo en 3D (lavadora, celulares, tablet, mostrador,
+calle con la barbería, tarjetas, medallas) con las pantallas de la app en los aparatos,
 voz de ElevenLabs ("Lina", colombiana), titulares, subtítulos palabra por palabra y música
 (audio masterizado para redes).
-`portada.jpg` / `portada.png` · portada (1080×1920): la tarjeta de papel en la lavadora, "Le faltaba
+`portada.jpg` / `portada.png` · portada 3D (1080×1920): la lavadora con la tarjeta de papel adentro, "Le faltaba
 UN SELLO… y terminó en la lavadora."; lo importante va en la franja central de la cuadrícula del perfil.
 `portada-4x5-feed.jpg` · el mismo diseño en 1080×1350.
 
