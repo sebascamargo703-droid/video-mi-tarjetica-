@@ -1,0 +1,140 @@
+[
+  {
+    "id": "h1",
+    "say": "A tu cliente le faltaba un solo sello…",
+    "pause": 0.15,
+    "dur": 2.422
+  },
+  {
+    "id": "h2",
+    "say": "y la tarjeta de papel terminó en la lavadora.",
+    "pause": 0.4,
+    "dur": 2.57
+  },
+  {
+    "id": "p1",
+    "say": "Se pierde, se moja, se olvida…",
+    "pause": 0.25,
+    "dur": 2.738
+  },
+  {
+    "id": "p2",
+    "say": "y no vuelve.",
+    "pause": 0.3,
+    "dur": 0.886
+  },
+  {
+    "id": "p3",
+    "say": "Ni te avisa.",
+    "pause": 0.5,
+    "dur": 0.908
+  },
+  {
+    "id": "g1",
+    "say": "¿Adivina quién sí vuelve?",
+    "pause": 0.35,
+    "dur": 1.5
+  },
+  {
+    "id": "m0",
+    "say": "Mi Tarjetica:",
+    "pause": 0.12,
+    "dur": 1.031
+  },
+  {
+    "id": "m1",
+    "say": "tu tarjeta de sellos, en el celular de tu cliente.",
+    "pause": 0.35,
+    "dur": 2.678
+  },
+  {
+    "id": "q1",
+    "say": "Escanea tu QR, sin descargar ninguna app.",
+    "pause": 0.4,
+    "dur": 2.861
+  },
+  {
+    "id": "c1",
+    "say": "Camilo paga, y el sello le llega solito al celular.",
+    "pause": 0.2,
+    "dur": 3.108
+  },
+  {
+    "id": "c2",
+    "say": "A los cinco sellos, su corte gratis.",
+    "pause": 0.45,
+    "dur": 2.341
+  },
+  {
+    "id": "d1",
+    "say": "Pero un día, Camilo deja de venir…",
+    "pause": 0.2,
+    "dur": 2.159
+  },
+  {
+    "id": "d2",
+    "say": "y tú ni te enteras.",
+    "pause": 0.45,
+    "dur": 1.581
+  },
+  {
+    "id": "n1",
+    "say": "Pasa cerca de tu barbería, y su celular le avisa:",
+    "pause": 0.15,
+    "dur": 2.729
+  },
+  {
+    "id": "n2",
+    "say": "te falta uno.",
+    "pause": 0.4,
+    "dur": 1.013
+  },
+  {
+    "id": "v1",
+    "say": "Y vuelve.",
+    "pause": 0.2,
+    "dur": 0.657
+  },
+  {
+    "id": "v2",
+    "say": "Y tú lo ves en tu panel.",
+    "pause": 0.45,
+    "dur": 1.445
+  },
+  {
+    "id": "a1",
+    "say": "¿Y los que aún no vuelven?",
+    "pause": 0.25,
+    "dur": 1.176
+  },
+  {
+    "id": "a2",
+    "say": "Les mandas un aviso, y listo.",
+    "pause": 0.12,
+    "dur": 1.885
+  },
+  {
+    "id": "a3",
+    "say": "Sin llamar a nadie.",
+    "pause": 0.45,
+    "dur": 1.263
+  },
+  {
+    "id": "t1",
+    "say": "Tu tarjeta, con tu logo y tus colores.",
+    "pause": 0.2,
+    "dur": 2.551
+  },
+  {
+    "id": "f1",
+    "say": "Empieza gratis, hasta con veinte clientes.",
+    "pause": 0.45,
+    "dur": 2.513
+  },
+  {
+    "id": "k1",
+    "say": "Comenta \"Tarjetica\" y te mando el link.",
+    "pause": 0,
+    "dur": 2.337
+  }
+]
