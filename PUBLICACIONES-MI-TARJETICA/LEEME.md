@@ -19,6 +19,7 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | `13-foto-grupo-whatsapp/` | Foto del grupo de WhatsApp de Mi Tarjetica: ícono + nombre, y versión solo ícono | PNG/JPG 1080×1080 (se ve en círculo) | Foto de grupo de WhatsApp |
 | `14-video-es-legal/` | Reel "¿Es legal?": explica el aviso por cercanía (no te siguen, lo muestra tu celular, se puede apagar) y cierra con "Comenta TARJETA" | MP4 1080×1920, 44 s, voz ElevenLabs + portada | Reels / TikTok |
 | `15-video-dos-locales/` | Reel "Dos locales" en 3D: dos cafés frente a frente, uno lleno y otro vacío; la diferencia es la tarjeta de sellos y el aviso por cercanía. Cierra con "Comenta TARJETICA" | MP4 1080×1920, 53 s, voz ElevenLabs + portada | Reels / TikTok |
+| `16-video-el-secreto/` | Reel "El secreto" en 3D con fotos realistas: el secreto de Starbucks no es el café sino la estrella que te hace volver; lo lleva a tu negocio con Mi Tarjetica. Cierra con "Comenta TARJETICA" | MP4 1080×1920, 51 s, voz ElevenLabs + portada | Reels / TikTok |
 | `06-carruseles-editoriales/` | 4 carruseles editoriales (verde #145B44 / blanco): cuánto vale un cliente, premios que funcionan, cartoncito vs. Mi Tarjetica, cómo funciona — cada uno con `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 
 **En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts, más 8 historias de precios con su portada de destacada.
@@ -56,6 +57,7 @@ Todo se genera desde el proyecto `../mi-tarjetica-launch/` (Remotion):
 - `npm run render:vertical` / `npm run render:hero` → `01-video-lanzamiento/`
 - Cenefa Meguiar's: proyecto `../cenefa-meguiars/` → `npx remotion still src/index.ts Cenefa out/cenefa-meguiars.png`
 - Video Dos locales (3D): proyecto `../dos-locales/` → `npx remotion render DosLocales out/dos-locales.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000` + `bash scripts/master-audio.sh out/dos-locales.mp4`
+- Video El secreto (3D): proyecto `../el-secreto/` → `npx remotion render ElSecreto out/el-secreto.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000` + `bash scripts/master-audio.sh out/el-secreto.mp4`
 - Video ¿Es legal?: proyecto `../es-legal/` → `npx remotion render EsLegal out/es-legal.mp4 --codec=h264 --crf=16` + `bash scripts/master-audio.sh out/es-legal.mp4`
 - Foto de grupo de WhatsApp: `python3 ../whatsapp-grupo/make.py` (y copiar `whatsapp-grupo/out/` a `13-foto-grupo-whatsapp/`)
 - Banner YouTube Meguiar's: proyecto `../cenefa-meguiars/` → `npx remotion still src/index.ts BannerYouTube out/banner-youtube.png` → `12-banner-youtube-meguiars/`
