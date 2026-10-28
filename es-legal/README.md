@@ -28,6 +28,7 @@ npm install
 npx remotion studio                                    # vista previa
 npx remotion render EsLegal out/es-legal.mp4 --codec=h264 --crf=16 --audio-bitrate=192k
 bash scripts/master-audio.sh out/es-legal.mp4          # audio al estándar de redes
+npx remotion still Portada out/portada.png             # portada del reel (src/Portada.tsx)
 ```
 Sin internet: antepón `REMOTION_LOCAL_FONTS=1`.
 

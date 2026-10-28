@@ -1,7 +1,9 @@
 # Video "¿Es legal?" — aviso por cercanía
 
 `es-legal-vertical.mp4` · 1080×1920 · 44 s · voz de ElevenLabs ("Lina", colombiana), subtítulos y música (audio masterizado para redes).
-`portada.jpg` · fotograma "¿ESTO ES LEGAL?" para usar de portada del reel.
+`portada.jpg` / `portada.png` · portada diseñada del reel (1080×1920): notificación + "¿ESTO ES LEGAL?" + logo; lo
+importante va en la franja central que se ve en la cuadrícula del perfil.
+`portada-4x5-feed.jpg` · el mismo diseño recortado a 1080×1350, por si quieres publicarla también como imagen.
 
 Para Reels y TikTok. Gancho: *"¿Es legal que un negocio te mande esto, solo por pasar por el frente?"*.
 Explica que la notificación la muestra el propio celular con la tarjeta que el cliente guardó (el
