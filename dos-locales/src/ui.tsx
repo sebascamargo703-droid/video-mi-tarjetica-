@@ -55,11 +55,11 @@ export const Headline: React.FC<{ text: string; at: number; exitAt: number; size
         <div key={i} style={{ whiteSpace: "nowrap" }}>
           {parseLine(ln).map((p, k) =>
             p.mark ? (
-              <span key={k} style={{ position: "relative", display: "inline-block", color: brand.colors.ink, padding: "0 0.14em", margin: "0.05em 0", textShadow: "none" }}>
+              <span key={k} style={{ position: "relative", display: "inline-block", color: brand.colors.ink, padding: "0 0.14em", margin: "0.16em 0 0.04em", textShadow: "none" }}>
                 <span
                   style={{
                     position: "absolute",
-                    inset: "0.04em 0 0.02em 0",
+                    inset: "-0.13em 0 0.02em 0",
                     borderRadius: "0.1em",
                     background: brand.colors.highlight,
                     boxShadow: "0 12px 40px rgba(143,227,192,0.35)",

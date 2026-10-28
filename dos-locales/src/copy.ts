@@ -67,7 +67,7 @@ export const headlines: Record<string, [string, string][]> = {
   c2: [["UNA RAZÓN\n[PARA VOLVER]", "razón"]],
   d1: [["[DÍAS DESPUÉS]", "días"]],
   d2: [["LE FALTA\n[1 SELLO]", "falta"]],
-  e1: [["UN MOTIVO\n[PARA REGRESAR]", "motivo"]],
+  e1: [["UN MOTIVO PARA\n[REGRESAR]", "motivo"]],
   e2: [["¿A CUÁL\n[VOLVERÁ?]", "cuál"]],
   g1: [
     ["¿Y TÚ?", "tú"],

@@ -27,60 +27,60 @@
     "id": "c1",
     "say": "Está en lo que pasa cuando el cliente se va.",
     "pause": 0.3,
-    "dur": 2.9
+    "dur": 2.209
   },
   {
     "id": "c2",
     "say": "Uno de los dos le da una razón para volver: su tarjeta de sellos, guardada en el celular.",
     "pause": 0.4,
-    "dur": 5.6
+    "dur": 5.279
   },
   {
     "id": "d1",
     "say": "Días después, vuelve a pasar por la misma calle,",
     "pause": 0.1,
-    "dur": 3.0
+    "dur": 2.985
   },
   {
     "id": "d2",
     "say": "y su celular le recuerda que le falta un solo sello para su premio.",
     "pause": 0.35,
-    "dur": 4.2
+    "dur": 3.905
   },
   {
     "id": "e1",
     "say": "Ahora tiene un motivo para regresar.",
     "pause": 0.15,
-    "dur": 2.3
+    "dur": 2.07
   },
   {
     "id": "e2",
     "say": "¿A cuál de los dos crees que vuelve?",
     "pause": 0.4,
-    "dur": 2.3
+    "dur": 1.844
   },
   {
     "id": "f1",
     "say": "Eso es lo que creas con Mi Tarjetica.",
     "pause": 0.1,
-    "dur": 2.5
+    "dur": 2.189
   },
   {
     "id": "f2",
     "say": "Tarjetas de sellos digitales, premios y avisos, para que tus clientes siempre tengan un motivo para volver.",
     "pause": 0.4,
-    "dur": 6.2
+    "dur": 6.182
   },
   {
     "id": "g1",
     "say": "Y tú, ¿cuál de los dos negocios quieres ser?",
     "pause": 0.4,
-    "dur": 2.9
+    "dur": 2.432
   },
   {
     "id": "h1",
     "say": "Comenta \"Tarjetica\", y te mostramos cómo quedaría la tuya.",
     "pause": 0,
-    "dur": 3.9
+    "dur": 3.526
   }
 ]
