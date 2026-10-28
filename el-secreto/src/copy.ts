@@ -31,6 +31,5 @@ export const headlines: Record<string, [string, string][]> = {
   w2: [["UNA RAZÓN PARA\n[VOLVER MAÑANA]", "razón"]],
   m1: [["CADA ESTRELLA\n[TE ACERCA]", "cada"]],
   m2: [["ENTRE MÁS VUELVES,\n[MÁS VUELVES.]", "entre"]],
-  y1: [["AHORA PIENSA EN\n[TU NEGOCIO]", "piensa"]],
   y2: [["SIN SER STARBUCKS.\n[SIN CREAR UNA APP.]", "necesitas"]],
 };

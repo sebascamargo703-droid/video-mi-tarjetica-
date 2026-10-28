@@ -1,14 +1,74 @@
 [
-  { "id": "h1", "say": "El secreto de Starbucks no es el café.", "pause": 0.15, "dur": 2.4 },
-  { "id": "h2", "say": "Es algo tan simple como una estrella.", "pause": 0.4, "dur": 2.3 },
-  { "id": "s1", "say": "En un solo año, los miembros de Starbucks Rewards gastaron más de trece mil millones de dólares.", "pause": 0.35, "dur": 5.4 },
-  { "id": "s2", "say": "Pero espera, lo fuerte no es la plata.", "pause": 0.15, "dur": 2.3 },
-  { "id": "s3", "say": "Es que esos clientes son casi el sesenta por ciento de lo que venden sus tiendas propias en Estados Unidos.", "pause": 0.4, "dur": 5.6 },
-  { "id": "w1", "say": "¿Por qué?", "pause": 0.2, "dur": 0.8 },
-  { "id": "w2", "say": "Porque Starbucks no solo te vende el café de hoy: te da una razón para volver mañana.", "pause": 0.4, "dur": 4.8 },
-  { "id": "m1", "say": "Compras, acumulas estrellas, y cada estrella te acerca a un premio.", "pause": 0.2, "dur": 3.8 },
-  { "id": "m2", "say": "Y entre más vuelves, más sentido tiene seguir volviendo.", "pause": 0.4, "dur": 3.0 },
-  { "id": "y1", "say": "Ahora piensa en tu negocio.", "pause": 0.3, "dur": 1.6 },
-  { "id": "y2", "say": "No necesitas ser Starbucks ni crear una app: con Mi Tarjetica, tus clientes suman sellos en el celular, ganan premios, y vuelven.", "pause": 0.4, "dur": 7.0 },
-  { "id": "c1", "say": "Comenta \"Tarjetica\", y te mostramos cómo aplicarlo en tu negocio.", "pause": 0, "dur": 3.8 }
+  {
+    "id": "h1",
+    "say": "El secreto de Starbucks no es el café.",
+    "pause": 0.15,
+    "dur": 2.478
+  },
+  {
+    "id": "h2",
+    "say": "Es algo tan simple como una estrella.",
+    "pause": 0.4,
+    "dur": 2.424
+  },
+  {
+    "id": "s1",
+    "say": "En un solo año, los miembros de Starbucks Rewards gastaron más de trece mil millones de dólares.",
+    "pause": 0.35,
+    "dur": 5.698
+  },
+  {
+    "id": "s2",
+    "say": "Pero espera, lo fuerte no es la plata.",
+    "pause": 0.15,
+    "dur": 2.424
+  },
+  {
+    "id": "s3",
+    "say": "Es que esos clientes son casi el sesenta por ciento de lo que venden sus tiendas propias en Estados Unidos.",
+    "pause": 0.4,
+    "dur": 6.033
+  },
+  {
+    "id": "w1",
+    "say": "¿Por qué?",
+    "pause": 0.2,
+    "dur": 0.449
+  },
+  {
+    "id": "w2",
+    "say": "Porque Starbucks no solo te vende el café de hoy: te da una razón para volver mañana.",
+    "pause": 0.4,
+    "dur": 4.932
+  },
+  {
+    "id": "m1",
+    "say": "Compras, acumulas estrellas, y cada estrella te acerca a un premio.",
+    "pause": 0.2,
+    "dur": 3.975
+  },
+  {
+    "id": "m2",
+    "say": "Y entre más vuelves, más sentido tiene seguir volviendo.",
+    "pause": 0.4,
+    "dur": 3.339
+  },
+  {
+    "id": "y1",
+    "say": "Ahora piensa en tu negocio.",
+    "pause": 0.3,
+    "dur": 1.442
+  },
+  {
+    "id": "y2",
+    "say": "No necesitas ser Starbucks ni crear una app: con Mi Tarjetica, tus clientes suman sellos en el celular, ganan premios, y vuelven.",
+    "pause": 0.4,
+    "dur": 7.586
+  },
+  {
+    "id": "c1",
+    "say": "Comenta \"Tarjetica\", y te mostramos cómo aplicarlo en tu negocio.",
+    "pause": 0,
+    "dur": 3.833
+  }
 ]

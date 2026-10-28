@@ -6,8 +6,7 @@ import { copy, headlines } from "./copy";
 import { font, logoFont, tracking } from "./fonts";
 import { Logo } from "./components/Logo";
 import { PassCard } from "./components/PassCard";
-import { Cafe } from "./three/Cafe";
-import { Coin, Cup3D, GOLD, Member, Pedestal, ShadowFloor, Star3D } from "./three/Objects";
+import { Coin, Cup3D, GOLD, Member, ShadowFloor, Star3D } from "./three/Objects";
 import { Stage } from "./three/Stage";
 import { toScreen } from "./three/camera";
 import { EASE, EASE_INOUT, clamp, ease, pop } from "./motion";
@@ -42,6 +41,18 @@ export const Star: React.FC<{ size: number; glow?: number; style?: React.CSSProp
 );
 
 const fmt = (n: number) => Math.round(n).toLocaleString("es-CO").replace(/,/g, ".");
+
+
+/** Foto 16:9 llenando el vertical: `cx` = columna (px de la foto de 2048) que queda centrada. */
+const Photo: React.FC<{ src: string; cx: number; zoom?: number; originY?: number; filter?: string }> = ({ src, cx, zoom = 1, originY = 960, filter }) => {
+  const k = 1920 / 1152;
+  const w = 2048 * k;
+  return (
+    <AbsoluteFill style={{ overflow: "hidden" }}>
+      <img src={staticFile(src)} style={{ position: "absolute", height: 1920, width: w, left: 540 - cx * k, top: 0, transform: `scale(${zoom})`, transformOrigin: `${cx * k}px ${originY}px`, filter }} />
+    </AbsoluteFill>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /* Fondos */
@@ -216,8 +227,8 @@ const Stat2Scene: React.FC = () => {
   const arcGeo = useMemo(() => new THREE.TorusGeometry(1.0, 0.11, 32, 160, Math.max(0.0001, Math.PI * 2 * p)), [p]);
   return (
     <Scene id="stat2">
-      <ForestBg tone={0.35 + 0.65 * (1 - dim)} />
-      <AbsoluteFill style={{ background: "rgba(0,0,0,0.45)", opacity: dim }} />
+      <Photo src="fotos/fila.jpg" cx={1290} zoom={1.04 + 0.06 * ease(frame, s(S.stat2.from), s(S.stat2.to - S.stat2.from))} filter={`grayscale(${dim}) brightness(${0.75 - 0.2 * dim})`} />
+      <AbsoluteFill style={{ background: `linear-gradient(180deg, rgba(4,17,13,0.85) 0%, rgba(4,17,13,${0.35 + 0.35 * (1 - dim)}) 35%, rgba(4,17,13,${0.45 + 0.3 * (1 - dim)}) 60%, rgba(4,17,13,0.92) 100%)` }} />
       {frame >= waitEnd ? (
         <>
           <Stage cam={cam} shadows={false}>
@@ -246,60 +257,48 @@ const Stat2Scene: React.FC = () => {
             <div style={{ fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.75)", marginTop: 10 }}>{copy.source}</div>
           </div>
         </>
-      ) : (
-        <Stage cam={{ pos: [0, 0.3, 8], target: [0, 0.3, 0], fov: 35 }} shadows={false}>
-          <group position={[0, 0.4 + Math.sin(t * 3) * 0.04, 0]} rotation={[0, t * 0.8, 0]}>
-            <Star3D scale={0.45} dim={0.85} />
-          </group>
-        </Stage>
-      )}
+      ) : null}
     </Scene>
   );
 };
 
 const WhyScene: React.FC = () => {
   const { frame, fps, s, t } = useT();
-  const cardsAt = s(V.w2.at);
-  const today = spring({ frame: frame - cardsAt, fps, config: { damping: 16, stiffness: 130 } });
-  const tomAt = s(wordTime("w2", "razón") - 0.1);
-  const tom = spring({ frame: frame - tomAt, fps, config: { damping: 14, stiffness: 130 } });
-  const glow = ease(frame, s(wordTime("w2", "mañana")), 12);
-  const cam = { pos: [0, 2.6, 13] as V3, target: [0, 0.1, 0] as V3, fov: 34 };
-  const L = toScreen([-1.25, -0.6, 0], cam);
-  const R = toScreen([1.25, -0.6, 0], cam);
+  const sharp = ease(frame, s(V.w2.at - 0.1), 12);
+  const todayAt = s(wordTime("w2", "vende"));
+  const today = spring({ frame: frame - todayAt, fps, config: { damping: 15, stiffness: 160 } });
+  const tomAt = s(wordTime("w2", "mañana") - 0.1);
+  const tom = spring({ frame: frame - tomAt, fps, config: { damping: 13, stiffness: 160 } });
+  const swap = Math.min(1, tom);
+  const zoom = 1.06 + 0.08 * ease(frame, s(S.why.from), s(S.why.to - S.why.from));
+  const Tag: React.FC<{ text: string; gold?: boolean }> = ({ text, gold }) => (
+    <div style={{ padding: "16px 34px", borderRadius: 16, fontFamily: font, fontWeight: 800, fontSize: 64, letterSpacing: "0.02em", background: gold ? "linear-gradient(90deg, #D49B2E, #FFD98A)" : C.forest, color: gold ? C.ink : C.white, boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>{text}</div>
+  );
   return (
     <Scene id="why">
-      <PaperBg />
-      {frame >= cardsAt ? (
-        <Stage cam={cam} env={1}>
-          <ShadowFloor y={-0.6} opacity={0.18} />
-          <group position={[-1.25, -4 * (1 - today), 0]} scale={0.75}>
-            <Pedestal position={[0, 0, 0]} color="#EDE6D6" />
-            <Cup3D position={[0, 0, 0]} rotation={[0, t * 0.6, 0]} scale={0.55} fade={1 - 0.4 * glow} />
+      <Photo src="fotos/barista.jpg" cx={1240} zoom={zoom} originY={900} filter={`blur(${(1 - sharp) * 14}px) brightness(${0.55 + 0.35 * sharp})`} />
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(4,17,13,0.85) 0%, rgba(4,17,13,0.25) 32%, rgba(4,17,13,0.1) 55%, rgba(4,17,13,0.75) 100%)" }} />
+      {tom > 0.001 ? (
+        <Stage cam={{ pos: [0, 0, 10], target: [0, 0, 0], fov: 40 }} shadows={false}>
+          <group position={[-1.05, 0.2 + Math.sin(t * 1.6) * 0.08, 0.5]} rotation={[0.1, Math.sin(t * 1.3) * 0.6, 0]} scale={0.7 * tom}>
+            <Star3D emissive={0.35} />
+            <pointLight position={[0, 0, 1.4]} intensity={4} distance={5} color="#FFD98A" />
           </group>
-          {tom > 0.001 ? (
-            <group position={[1.25, -4 * (1 - tom), 0]} scale={0.75}>
-              <Pedestal position={[0, 0, 0]} color="#145B44" glow={0.6 * glow} />
-              <group position={[0, 0.95 + Math.sin(t * 1.6) * 0.06, 0]} rotation={[0.1, t * 0.9, 0]} scale={0.62 + 0.1 * glow}>
-                <Star3D emissive={0.35 + 0.35 * glow} />
-              </group>
-              <pointLight position={[0, 1.2, 1.4]} intensity={4 * glow} distance={5} color="#FFD98A" />
-            </group>
-          ) : null}
+          <Burst3D at={tomAt + 3} origin={[-1.05, 0.2, 0.5]} n={18} spread={2} seed="w" />
         </Stage>
       ) : null}
-      {frame >= cardsAt ? (
-        <>
-          <div style={{ position: "absolute", left: L.x - 200, width: 400, top: L.y + 20, textAlign: "center", fontFamily: font, opacity: Math.min(1, today * 1.5) * (1 - 0.35 * glow) }}>
-            <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: "-0.03em", color: C.ink }}>{copy.today}</div>
-            <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, color: "#5B5446" }}>te vende el café</div>
+      <div style={{ position: "absolute", left: 0, width: 960, top: 1120, display: "flex", justifyContent: "center" }}>
+        {today > 0.001 ? (
+          <div style={{ position: "absolute", transform: `scale(${(0.6 + 0.4 * today) * (1 - 0.3 * swap)}) translateY(${-swap * 60}px)`, opacity: Math.min(1, today * 1.5) * (1 - swap) }}>
+            <Tag text={copy.today} />
           </div>
-          <div style={{ position: "absolute", left: R.x - 200, width: 400, top: R.y + 20, textAlign: "center", fontFamily: font, opacity: Math.min(1, tom * 1.5) }}>
-            <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: "-0.03em", color: C.forest, textShadow: `0 0 ${30 * glow}px rgba(232,184,74,0.6)` }}>{copy.tomorrow}</div>
-            <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, color: "#5B5446" }}>te da una razón para volver</div>
+        ) : null}
+        {tom > 0.001 ? (
+          <div style={{ position: "absolute", transform: `scale(${0.6 + 0.4 * tom})`, opacity: Math.min(1, tom * 1.5) }}>
+            <Tag text={copy.tomorrow} gold />
           </div>
-        </>
-      ) : null}
+        ) : null}
+      </div>
     </Scene>
   );
 };
@@ -381,25 +380,33 @@ const MechScene: React.FC = () => {
 
 const BizScene: React.FC = () => {
   const { frame, s, t } = useT();
-  const push = ease(frame, s(S.biz.from), s(S.biz.to - S.biz.from), EASE_INOUT);
-  const cam = { pos: [1.2 - push * 0.6, 2.7, 13 - push * 2] as V3, target: [0, 1.7, -2.5] as V3, fov: 40 };
+  const push = ease(frame, s(S.biz.from), s(S.biz.to - S.biz.from) + 12, EASE_INOUT);
+  const zoom = 1.0 + 0.07 * push;
+  // letrero de la foto: x 674–1400, y 150–240 (px de la foto de 2048×1152)
+  const k = 1920 / 1152;
+  const cx = 1037;
+  const signY = 195 * k;
+  const write = ease(frame, s(wordTime("y1", "negocio") - 0.15), 16);
   return (
     <Scene id="biz">
-      <AbsoluteFill style={{ background: "linear-gradient(180deg, #050B0E 0%, #0B1A15 60%, #070B0D 100%)" }} />
-      <Stage cam={cam} env={0.25} exposure={1.1}>
-        <hemisphereLight args={["#3a5488", "#0a0a0c", 0.5]} />
-        <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <planeGeometry args={[60, 60]} />
-          <meshStandardMaterial color="#15191d" roughness={0.9} />
-        </mesh>
-        <Cafe kind="origen" position={[0, 0.02, 0]} />
+      <Photo src="fotos/fachada.jpg" cx={cx} zoom={zoom} originY={1100} filter="brightness(0.95) saturate(1.05)" />
+      {/* "Tu negocio" en el letrero (misma transformación que la foto) */}
+      <AbsoluteFill style={{ transform: `scale(${zoom})`, transformOrigin: `540px 1100px` }}>
+        <div style={{ position: "absolute", left: 0, right: 0, top: signY - 62, height: 124, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 700, fontSize: 104, color: "#0E3F31", letterSpacing: "-0.01em", clipPath: `inset(0 ${100 - write * 100}% 0 0)`, textShadow: "0 1px 0 rgba(255,255,255,0.25)" }}>Tu negocio</div>
+        </div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(4,8,10,0.55) 0%, rgba(4,8,10,0) 22%, rgba(4,8,10,0) 70%, rgba(4,8,10,0.55) 100%)" }} />
+      <div style={{ position: "absolute", left: 0, width: 960, top: 150, display: "flex", justifyContent: "center", opacity: ease(frame, s(S.biz.from + 0.05), 8) }}>
+        <div style={{ fontFamily: font, fontWeight: 800, fontSize: 30, letterSpacing: "0.24em", color: C.white, padding: "10px 22px", borderRadius: 999, background: "rgba(5,8,11,0.55)" }}>AHORA PIENSA EN</div>
+      </div>
+      <Stage cam={{ pos: [0, 0, 10], target: [0, 0, 0], fov: 40 }} shadows={false}>
         {Array.from({ length: 11 }).map((_, i) => {
-          const at = s(S.biz.from + 0.2) + i * 3;
+          const at = s(S.biz.from + 0.25) + i * 3;
           const p = pop(frame, 30, at);
-          const x = (random(`bx${i}`) - 0.5) * 8;
-          const y = 1.0 + random(`by${i}`) * 3.4 + Math.sin(t * 1.4 + i) * 0.1;
-          const z = 0.8 + random(`bz${i}`) * 2;
-          return <Star3D key={i} position={[x, y, z]} rotation={[0, t * 1.2 + i, 0]} scale={(0.12 + random(`bs${i}`) * 0.12) * p} emissive={0.4} />;
+          const x = (random(`bx${i}`) - 0.5) * 6;
+          const y = -2.2 + random(`by${i}`) * 4.2 + Math.sin(t * 1.4 + i) * 0.08;
+          return <Star3D key={i} position={[x, y, random(`bz${i}`) * 2]} rotation={[0, t * 1.2 + i, 0]} scale={(0.1 + random(`bs${i}`) * 0.12) * p} emissive={0.45} />;
         })}
       </Stage>
     </Scene>
@@ -544,7 +551,7 @@ const CtaScene: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-const DARK: Record<string, boolean> = { w1: true, w2: true, m1: true, m2: true };
+const DARK: Record<string, boolean> = { m1: true, m2: true };
 const SCENE_OF: Record<string, SceneId> = { h1: "hook", h2: "hook", s2: "stat2", w1: "why", w2: "why", m1: "mech", m2: "mech", y1: "biz", y2: "app" };
 const Headlines: React.FC = () => {
   const { fps } = useVideoConfig();
@@ -559,7 +566,7 @@ const Headlines: React.FC = () => {
         if (h.id === "y2") end = wordTime("y2", "mi") - 0.25;
         if (h.id === "s2") end = V.s3.at - 0.15;
         if (h.id === "w1") end = V.w2.at - 0.1;
-        return <Headline key={i} text={h.text} at={s(h.at)} exitAt={s(end)} size={h.text.length > 24 ? 92 : h.text.length > 18 ? 104 : 116} dark={h.dark} top={h.id === "w1" ? 700 : 262} />;
+        return <Headline key={i} text={h.text} at={s(h.at)} exitAt={s(end)} size={h.text.length > 24 ? 92 : h.text.length > 18 ? 104 : 116} dark={h.dark} top={h.id === "w1" ? 760 : 262} />;
       })}
     </>
   );

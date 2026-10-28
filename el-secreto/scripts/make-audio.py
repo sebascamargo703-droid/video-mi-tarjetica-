@@ -1,4 +1,4 @@
-"""Genera la música y los efectos de "Dos locales" desde cero (síntesis).
+"""Genera la música y los efectos de "El secreto" desde cero (síntesis).
 
   public/music.mp3              groove nocturno lounge/afrobeat suave (placeholder, ~100 BPM)
   public/sfx/ring-pulse.mp3     al entrar en la geocerca
@@ -10,7 +10,7 @@
 
 La duración y los momentos de la música salen de src/voiceover.json (misma cuenta que src/timeline.ts).
 
-Uso (desde dos-locales/):  python3 scripts/make-audio.py
+Uso (desde el-secreto/):  python3 scripts/make-audio.py
 Requiere numpy y `npx remotion ffmpeg` (viene con @remotion/cli).
 """
 import json
@@ -31,7 +31,7 @@ V, _t = {}, LEAD
 for _it in _vo:
     V[_it["id"]] = (_t, _t + _it["dur"])
     _t += _it["dur"] + _it["pause"]
-DUR = round(V["h1"][1] + TAIL, 1) + 0.2
+DUR = round(V["c1"][1] + TAIL, 1) + 0.2
 rng = np.random.default_rng(42)
 BPM = float(re.search(r"bpm:\s*([\d.]+)", (ROOT / "src" / "brand.ts").read_text()).group(1))
 BEAT = 60.0 / BPM
@@ -140,9 +140,9 @@ kick_steps = [0, 6, 10]
 rim_steps = [4, 12]
 conga_steps = {3: 64, 7: 62, 11: 64, 14: 59}
 chord_steps = [2, 7, 11]
-drums_in = V["a2"][0] - 0.1  # el ritmo entra con "¿Por qué uno vive lleno…?"
-phone_drop = (V["d1"][0] - 0.3, V["d1"][0] + 1.3)  # respira en "Días después"
-cta = V["h1"][0] - 0.12
+drums_in = V["h2"][0] - 0.1  # el ritmo entra con "una estrella"
+phone_drop = (V["s2"][0] - 0.1, V["s3"][0])  # respira en "Pero espera…"
+cta = V["c1"][0] - 0.12
 
 n_bars = int(DUR / (BEAT * 4)) + 1
 for bar in range(n_bars):
@@ -176,7 +176,7 @@ add(low, bass(45, 2.5), cta)
 add(drums, kick(), cta)
 # Acento cuando aparece la notificación
 for i, m in enumerate([76, 81, 84]):
-    add(keys, marimba(m) * 0.5, V["d2"][0] + 1.25 + i * 0.09)
+    add(keys, marimba(m) * 0.5, V["m1"][1] - 0.4 + i * 0.09)
 
 keys = lowpass(keys, 3500)
 intro = np.interp(np.arange(N) / SR, [0, drums_in - 0.2, drums_in], [1, 1, 0])
