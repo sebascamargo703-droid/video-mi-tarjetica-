@@ -605,12 +605,11 @@ const Sfx: React.FC<{ at: number; file: string; vol: number }> = ({ at, file, vo
   );
 };
 export const SFX: [number, string, number][] = [
-  ...(Object.keys(S) as SceneId[]).filter((id) => id !== "hook").map((id) => [S[id].from - 0.08, "whoosh-soft", 0.3] as [number, string, number]),
+  ...(Object.keys(S) as SceneId[]).filter((id) => id !== "hook" && id !== "mech").map((id) => [S[id].from - 0.08, "whoosh-soft", 0.3] as [number, string, number]),
   [wordTime("h2", "estrella") - 0.1, "ring-pulse", 0.45],
   [wordTime("s1", "dólares"), "pop", 0.4],
   [wordTime("s3", "sesenta"), "ring-pulse", 0.35],
   [wordTime("w2", "mañana"), "pop", 0.35],
-  [wordTime("m1", "compras"), "tap", 0.3],
   [wordTime("m1", "acumulas"), "tap", 0.3],
   [wordTime("m1", "estrellas"), "tap", 0.3],
   [wordTime("m1", "premio") + 0.2, "notification", 0.4],

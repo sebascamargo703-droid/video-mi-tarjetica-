@@ -18,3 +18,11 @@ REMOTION_LOCAL_FONTS=1 npx remotion still Portada out/portada.png --gl=angle --t
 ```
 
 Sin GPU el render 3D es lento (por software): cuenta con 20–45 minutos.
+
+Si solo cambia el audio (voz, música o efectos), no hace falta volver a renderizar el 3D:
+
+```bash
+python3 scripts/mix-audio.py out/audio-mezcla.wav
+ffmpeg -i out/el-secreto.mp4 -i out/audio-mezcla.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k out/final.mp4
+bash scripts/master-audio.sh out/final.mp4
+```
