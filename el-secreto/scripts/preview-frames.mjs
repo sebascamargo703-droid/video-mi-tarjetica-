@@ -10,11 +10,11 @@ const browserExecutable = process.env.REMOTION_BROWSER ?? null;
 const chromeMode = process.env.REMOTION_CHROME_MODE ?? "headless-shell";
 const envVariables = { REMOTION_LOCAL_FONTS: process.env.REMOTION_LOCAL_FONTS ?? "" };
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
-const composition = await selectComposition({ serveUrl, id, browserExecutable, chromeMode, envVariables });
+const composition = await selectComposition({ serveUrl, id, browserExecutable, chromeMode, envVariables, chromiumOptions: { gl: "angle" } });
 fs.mkdirSync(outDir, { recursive: true });
 for (const sec of secs) {
   const frame = Math.min(composition.durationInFrames - 1, Math.round(Number(sec) * composition.fps));
   const output = path.join(outDir, `${id}-${String(sec).padStart(5, "0")}s.jpg`);
-  await renderStill({ composition, serveUrl, output, frame, imageFormat: "jpeg", jpegQuality: 80, scale: 0.4, browserExecutable, chromeMode, envVariables });
+  await renderStill({ composition, serveUrl, output, frame, imageFormat: "jpeg", jpegQuality: 80, scale: 0.4, browserExecutable, chromeMode, envVariables, chromiumOptions: { gl: "angle" } });
   console.log(output);
 }

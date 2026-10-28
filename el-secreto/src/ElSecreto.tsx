@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useMemo } from "react";
+import * as THREE from "three";
 import { AbsoluteFill, Html5Audio, Sequence, getStaticFiles, interpolate, random, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { audio, brand } from "./brand";
 import { copy, headlines } from "./copy";
 import { font, logoFont, tracking } from "./fonts";
 import { Logo } from "./components/Logo";
 import { PassCard } from "./components/PassCard";
-import { Storefront } from "./components/Storefront";
-import { EASE, EASE_IN, EASE_INOUT, clamp, ease, pop } from "./motion";
+import { Cafe } from "./three/Cafe";
+import { Coin, Cup3D, GOLD, Member, Pedestal, ShadowFloor, Star3D } from "./three/Objects";
+import { Stage } from "./three/Stage";
+import { toScreen } from "./three/camera";
+import { EASE, EASE_INOUT, clamp, ease, pop } from "./motion";
 import { BigPhone, CX, Headline, Karaoke, SCREEN } from "./ui";
 import { DURATION_SEC, SCENES, type SceneId, V, VOICE, wordTime } from "./timeline";
 
@@ -36,77 +40,6 @@ export const Star: React.FC<{ size: number; glow?: number; style?: React.CSSProp
     <path d="M0 -46 L13.5 -15 L0 -6 Z" fill="rgba(255,255,255,0.35)" />
   </svg>
 );
-
-/** Vaso de café genérico (sin marcas): tapa, cuerpo crema y faja verde con una estrella. */
-const Cup: React.FC<{ w: number; tilt?: number; star?: number }> = ({ w, tilt = 0, star = 1 }) => {
-  const h = w * 1.45;
-  return (
-    <div style={{ width: w, height: h, position: "relative", transform: `perspective(1400px) rotateY(${tilt}deg)`, filter: "drop-shadow(0 50px 60px rgba(0,0,0,0.55))" }}>
-      <svg width={w} height={h} viewBox="0 0 200 290" style={{ overflow: "visible" }}>
-        <defs>
-          <linearGradient id="cupBody" x1="0" x2="1">
-            <stop offset="0" stopColor="#D9D2C2" />
-            <stop offset="0.25" stopColor="#FBF8F1" />
-            <stop offset="0.6" stopColor="#F4EFE4" />
-            <stop offset="1" stopColor="#C9C0AC" />
-          </linearGradient>
-          <linearGradient id="cupSleeve" x1="0" x2="1">
-            <stop offset="0" stopColor="#0A3A2D" />
-            <stop offset="0.3" stopColor="#14644D" />
-            <stop offset="0.7" stopColor="#0F5440" />
-            <stop offset="1" stopColor="#082E24" />
-          </linearGradient>
-          <linearGradient id="cupLid" x1="0" x2="1">
-            <stop offset="0" stopColor="#1B1B1B" />
-            <stop offset="0.35" stopColor="#3A3A3A" />
-            <stop offset="1" stopColor="#111" />
-          </linearGradient>
-        </defs>
-        <path d="M30 40 L170 40 L152 285 Q100 292 48 285 Z" fill="url(#cupBody)" />
-        <path d="M40 120 L160 120 L153 210 Q100 216 47 210 Z" fill="url(#cupSleeve)" />
-        <rect x={18} y={22} width={164} height={22} rx={8} fill="url(#cupLid)" />
-        <path d="M30 22 Q100 -8 170 22 Z" fill="url(#cupLid)" />
-        <ellipse cx={100} cy={10} rx={14} ry={4} fill="#000" opacity={0.6} />
-      </svg>
-      <div style={{ position: "absolute", left: "50%", top: h * 0.565, transform: `translate(-50%, -50%) scale(${star})` }}>
-        <Star size={w * 0.22} id="cup" />
-      </div>
-    </div>
-  );
-};
-
-/** Persona (ícono) que se ilumina en dorado. */
-const PersonIcon: React.FC<{ size: number; on: number }> = ({ size, on }) => {
-  const c = on > 0.5 ? "#E8B84A" : "rgba(167,201,189,0.28)";
-  return (
-    <svg width={size} height={size * 1.15} viewBox="0 0 40 46" style={{ transform: `scale(${1 + 0.18 * Math.sin(Math.min(1, on) * Math.PI)})`, filter: on > 0.5 ? "drop-shadow(0 0 8px rgba(232,184,74,0.55))" : undefined }}>
-      <circle cx={20} cy={12} r={9} fill={c} />
-      <path d="M3 44 Q3 24 20 24 Q37 24 37 44 Z" fill={c} />
-    </svg>
-  );
-};
-
-/** Lluvia de estrellas / partículas doradas que salen de un punto. */
-const Burst: React.FC<{ at: number; x: number; y: number; n?: number; spread?: number; seed?: string }> = ({ at, x, y, n = 18, spread = 520, seed = "b" }) => {
-  const { frame } = useT();
-  if (frame < at) return null;
-  const k = frame - at;
-  return (
-    <>
-      {Array.from({ length: n }).map((_, i) => {
-        const a = random(`${seed}a${i}`) * Math.PI * 2;
-        const d = (0.35 + random(`${seed}d${i}`) * 0.65) * spread * interpolate(k, [0, 40], [0, 1], { ...clamp, easing: EASE });
-        const o = interpolate(k, [0, 6, 34, 56], [0, 1, 0.9, 0], clamp);
-        const sz = 16 + random(`${seed}s${i}`) * 34;
-        return (
-          <div key={i} style={{ position: "absolute", left: x + Math.cos(a) * d - sz / 2, top: y + Math.sin(a) * d - sz / 2 + k * 0.6, opacity: o, transform: `rotate(${k * (random(`${seed}r${i}`) * 8 - 4)}deg)` }}>
-            <Star size={sz} id={`${seed}${i}`} />
-          </div>
-        );
-      })}
-    </>
-  );
-};
 
 const fmt = (n: number) => Math.round(n).toLocaleString("es-CO").replace(/,/g, ".");
 
@@ -142,60 +75,130 @@ const Scene: React.FC<{ id: SceneId; children: React.ReactNode }> = ({ id, child
   return <AbsoluteFill style={{ opacity: tin, transform: `scale(${1.04 - 0.04 * tin})`, filter: tin < 1 ? `blur(${(1 - tin) * 10}px)` : undefined }}>{children}</AbsoluteFill>;
 };
 
+/* ---------------- Escenas en 3D ---------------- */
+type V3 = [number, number, number];
+const Float: React.FC<{ n?: number; spread?: [number, number, number]; seed?: string; size?: number }> = ({ n = 26, spread = [6, 7, 4], seed = "f", size = 0.05 }) => {
+  const { t } = useT();
+  return (
+    <>
+      {Array.from({ length: n }).map((_, i) => {
+        const x = (random(`${seed}x${i}`) - 0.5) * spread[0];
+        const y = random(`${seed}y${i}`) * spread[1] + ((t * (0.08 + random(`${seed}v${i}`) * 0.12)) % 1) * 1.2 - 1;
+        const z = (random(`${seed}z${i}`) - 0.5) * spread[2] - 1;
+        return (
+          <mesh key={i} position={[x, y, z]}>
+            <sphereGeometry args={[size * (0.5 + random(`${seed}s${i}`)), 8, 6]} />
+            <meshBasicMaterial color="#FFD98A" transparent opacity={0.55} toneMapped={false} />
+          </mesh>
+        );
+      })}
+    </>
+  );
+};
+
+/** Estrellitas 3D que salen disparadas desde un punto. */
+const Burst3D: React.FC<{ at: number; origin: V3; n?: number; spread?: number; seed?: string }> = ({ at, origin, n = 24, spread = 3.2, seed = "b" }) => {
+  const { frame } = useT();
+  if (frame < at) return null;
+  const k = frame - at;
+  const p = interpolate(k, [0, 40], [0, 1], { ...clamp, easing: EASE });
+  const fade = interpolate(k, [30, 60], [1, 0], clamp);
+  if (fade <= 0) return null;
+  return (
+    <>
+      {Array.from({ length: n }).map((_, i) => {
+        const a = random(`${seed}a${i}`) * Math.PI * 2;
+        const e = (random(`${seed}e${i}`) - 0.5) * 1.4;
+        const d = (0.4 + random(`${seed}d${i}`) * 0.6) * spread * p;
+        return (
+          <Star3D
+            key={i}
+            position={[origin[0] + Math.cos(a) * d, origin[1] + Math.sin(a) * d * 0.9 - k * 0.004, origin[2] + e * d * 0.4]}
+            rotation={[k * 0.05 * random(`${seed}r${i}`), k * 0.08, 0]}
+            scale={(0.06 + random(`${seed}s${i}`) * 0.1) * fade}
+            emissive={0.3}
+          />
+        );
+      })}
+    </>
+  );
+};
+
 const HookScene: React.FC = () => {
   const { frame, fps, s, t } = useT();
   const rise = spring({ frame: frame - 4, fps, config: { damping: 16, stiffness: 90 } });
   const noAt = s(wordTime("h1", "no"));
-  const dimCup = ease(frame, noAt, 10);
-  const starAt = s(wordTime("h2", "estrella") - 0.15);
-  const starPop = frame >= starAt ? spring({ frame: frame - starAt, fps, config: { damping: 11, stiffness: 120 } }) : 0;
-  const float = Math.sin(t * 1.6) * 14;
+  const dim = ease(frame, noAt, 12);
+  const starAt = s(wordTime("h2", "estrella") - 0.2);
+  const sp = frame >= starAt ? spring({ frame: frame - starAt, fps, config: { damping: 12, stiffness: 110 } }) : 0;
+  const cupFade = 1 - Math.min(1, sp * 1.3);
+  const cam = { pos: [Math.sin(t * 0.25) * 1.2, 2.1 + 0.3 * dim, 13 - 0.6 * Math.min(1, sp)] as V3, target: [0, 1.3, 0] as V3, fov: 35 };
   return (
     <Scene id="hook">
       <ForestBg />
-      <div style={{ position: "absolute", left: CX - 170, top: 640 + (1 - rise) * 900 + float + dimCup * 60, opacity: (1 - 0.45 * dimCup) * (1 - Math.min(1, starPop * 1.4)), transform: `scale(${1 - 0.12 * dimCup})` }}>
-        <Cup w={340} tilt={Math.sin(t * 0.9) * 14} star={1 - Math.min(1, starPop)} />
-      </div>
-      {starPop > 0 ? (
-        <div style={{ position: "absolute", left: CX - 230, top: 640 + float, width: 460, height: 460, transform: `translateY(${(1 - Math.min(1, starPop)) * 260}px) scale(${starPop}) rotate(${(1 - Math.min(1, starPop)) * -90 + Math.sin(t * 2) * 4}deg)` }}>
-          <div style={{ position: "absolute", inset: -140, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,214,120,0.45), transparent 65%)" }} />
-          <Star size={460} glow={40} id="hero" />
-        </div>
-      ) : null}
-      <Burst at={starAt + 4} x={CX} y={870} n={22} seed="h" />
+      <Stage cam={cam}>
+        <ShadowFloor y={-0.02} opacity={0.4} />
+        {cupFade > 0.01 ? (
+          <Cup3D position={[0, -4 * (1 - rise) + Math.sin(t * 1.6) * 0.08 - 0.25 * dim, -0.8 * dim]} rotation={[0.06, t * 0.6, Math.sin(t) * 0.05]} scale={1 - 0.12 * dim} fade={cupFade * (1 - 0.35 * dim)} />
+        ) : null}
+        {sp > 0 ? (
+          <group position={[0, 2.6 - 1.25 * Math.min(1, sp) + Math.sin(t * 1.5) * 0.06, 0.3]} rotation={[0.1, (1 - Math.min(1, sp)) * Math.PI * 2 + Math.sin(t * 1.2) * 0.5, 0]} scale={1.15 * sp}>
+            <Star3D emissive={0.18} />
+            <pointLight position={[0, 0, 1.2]} intensity={6} distance={6} color="#FFD98A" />
+          </group>
+        ) : null}
+        <Burst3D at={starAt + 4} origin={[0, 1.4, 0.3]} n={26} seed="h" />
+        <Float seed="hk" />
+      </Stage>
+      {sp > 0 ? <AbsoluteFill style={{ background: "radial-gradient(circle at 480px 960px, rgba(255,214,120,0.28), transparent 38%)", opacity: Math.min(1, sp), mixBlendMode: "screen" }} /> : null}
     </Scene>
   );
 };
 
 const Stat1Scene: React.FC = () => {
-  const { frame, fps, s } = useT();
+  const { frame, fps, s, t } = useT();
   const from = s(wordTime("s1", "gastaron"));
   const to = s(wordTime("s1", "dólares"));
   const v = copy.stat1.value * interpolate(frame, [from, to], [0, 1], { ...clamp, easing: Easing3 });
   const inn = spring({ frame: frame - s(S.stat1.from), fps, config: { damping: 18, stiffness: 120 } });
   const membersAt = s(wordTime("s1", "miembros"));
-  const cols = 7;
-  const rows = 6;
   const unitIn = ease(frame, to - 4, 10);
+  const cols = 7;
+  const rows = 5;
+  const coinsAt = to - 6;
+  const cam = { pos: [Math.sin(t * 0.2) * 1.5, 9.5, 12.5] as V3, target: [0, 1.1, 0.6] as V3, fov: 36 };
   return (
     <Scene id="stat1">
       <ForestBg />
+      <Stage cam={cam}>
+        <ShadowFloor opacity={0.45} />
+        {Array.from({ length: cols * rows }).map((_, i) => {
+          const c = i % cols;
+          const r = Math.floor(i / cols);
+          const order = random(`p${i}`) * 40;
+          const on = frame >= membersAt + order ? spring({ frame: frame - membersAt - order, fps, config: { damping: 12, stiffness: 160 } }) : 0;
+          return <Member key={i} position={[(c - (cols - 1) / 2) * 0.95, 0, (r - (rows - 1) / 2) * 0.95]} on={on} scale={0.62} />;
+        })}
+        {frame >= coinsAt
+          ? Array.from({ length: 22 }).map((_, i) => {
+              const k = (frame - coinsAt - i * 2) / fps;
+              if (k < 0) return null;
+              const y = 7 - 9.8 * 0.5 * k * k * 0.6;
+              if (y < 0.1) return null;
+              return <Coin key={i} position={[(random(`cx${i}`) - 0.5) * 7, y, (random(`cz${i}`) - 0.5) * 4]} rotation={[k * 6 + i, k * 3, i]} scale={0.9} />;
+            })
+          : null}
+        <Float seed="s1" spread={[9, 6, 6]} />
+      </Stage>
       <div style={{ position: "absolute", left: 0, width: 960, top: 300, textAlign: "center", fontFamily: font, color: C.white, opacity: Math.min(1, inn * 1.5) }}>
-        <div style={{ fontSize: 168, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: C.goldLight, textShadow: "0 0 50px rgba(232,184,74,0.35)" }}>
+        <div style={{ fontSize: 168, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: C.goldLight, textShadow: "0 0 50px rgba(232,184,74,0.35), 0 10px 30px rgba(0,0,0,0.5)" }}>
           {copy.stat1.prefix}
           {fmt(v)}
         </div>
-        <div style={{ fontSize: 50, fontWeight: 800, letterSpacing: "0.04em", marginTop: 10, opacity: 0.4 + 0.6 * unitIn }}>{copy.stat1.unit}</div>
+        <div style={{ fontSize: 50, fontWeight: 800, letterSpacing: "0.04em", marginTop: 10, opacity: 0.4 + 0.6 * unitIn, textShadow: "0 8px 24px rgba(0,0,0,0.5)" }}>{copy.stat1.unit}</div>
         <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 40, color: C.soft, marginTop: 16, lineHeight: 1.2, padding: "0 80px" }}>{copy.stat1.label}</div>
       </div>
-      <div style={{ position: "absolute", left: CX - (cols * 96) / 2, top: 770, display: "grid", gridTemplateColumns: `repeat(${cols}, 96px)`, rowGap: 14, justifyItems: "center" }}>
-        {Array.from({ length: cols * rows }).map((_, i) => {
-          const order = random(`p${i}`) * 40;
-          const on = frame >= membersAt + order ? spring({ frame: frame - membersAt - order, fps, config: { damping: 12, stiffness: 160 } }) : 0;
-          return <PersonIcon key={i} size={64} on={on} />;
-        })}
-      </div>
-      <div style={{ position: "absolute", left: 0, width: 960, top: 1300, textAlign: "center", fontFamily: font, fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.7)" }}>{copy.source}</div>
+      <div style={{ position: "absolute", left: 0, width: 960, top: 1300, textAlign: "center", fontFamily: font, fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.75)" }}>{copy.source}</div>
     </Scene>
   );
 };
@@ -208,89 +211,95 @@ const Stat2Scene: React.FC = () => {
   const pctAt = s(wordTime("s3", "sesenta") - 0.25);
   const p = interpolate(frame, [pctAt, pctAt + 30], [0, 0.6], { ...clamp, easing: EASE });
   const inn = spring({ frame: frame - waitEnd, fps, config: { damping: 16, stiffness: 120 } });
-  const R = 250;
-  const L = 2 * Math.PI * R;
   const label = ease(frame, s(wordTime("s3", "venden")), 12);
-  const people = Array.from({ length: 10 });
+  const cam = { pos: [0, 0.2, 9] as V3, target: [0, 0, 0] as V3, fov: 35 };
+  const arcGeo = useMemo(() => new THREE.TorusGeometry(1.0, 0.11, 32, 160, Math.max(0.0001, Math.PI * 2 * p)), [p]);
   return (
     <Scene id="stat2">
       <ForestBg tone={0.35 + 0.65 * (1 - dim)} />
-      {/* "Espera…": la escena se apaga un instante */}
       <AbsoluteFill style={{ background: "rgba(0,0,0,0.45)", opacity: dim }} />
       {frame >= waitEnd ? (
-        <div style={{ opacity: Math.min(1, inn * 1.5), transform: `scale(${0.9 + 0.1 * inn})`, transformOrigin: `${CX}px 800px` }}>
-          <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
-            <circle cx={CX} cy={800} r={R} fill="none" stroke="rgba(167,201,189,0.15)" strokeWidth={56} />
-            <circle cx={CX} cy={800} r={R} fill="none" stroke="url(#gold)" strokeWidth={56} strokeLinecap="round" strokeDasharray={`${L * p} ${L}`} transform={`rotate(-90 ${CX} 800)`} style={{ filter: "drop-shadow(0 0 18px rgba(232,184,74,0.5))" }} />
-            <defs>
-              <linearGradient id="gold" x1="0" x2="1">
-                <stop offset="0" stopColor="#FFE6A3" />
-                <stop offset="1" stopColor="#D49B2E" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div style={{ position: "absolute", left: CX - 220, width: 440, top: 690, textAlign: "center", fontFamily: font, color: C.white }}>
+        <>
+          <Stage cam={cam} shadows={false}>
+            <group position={[0, 0.47, 0]} rotation={[0.25 * Math.sin(t * 0.7), 0.35 * Math.sin(t * 0.5), 0]} scale={0.85 + 0.15 * inn}>
+              <mesh>
+                <torusGeometry args={[1.0, 0.1, 24, 160]} />
+                <meshStandardMaterial color="#1E4F41" roughness={0.6} metalness={0.2} transparent opacity={0.85} />
+              </mesh>
+              <mesh geometry={arcGeo} rotation={[0, Math.PI, Math.PI / 2]}>
+                <meshStandardMaterial {...GOLD} emissive="#FFB733" emissiveIntensity={0.15} />
+              </mesh>
+            </group>
+            <group position={[0, -0.82, 0.4]}>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Member key={i} position={[(i - 4.5) * 0.34, 0, 0]} on={p * 10 > i + 0.5 ? 1 : 0} scale={0.28} />
+              ))}
+            </group>
+            <Float seed="s2" spread={[7, 6, 3]} />
+          </Stage>
+          <div style={{ position: "absolute", left: CX - 220, width: 440, top: 690, textAlign: "center", fontFamily: font, color: C.white, opacity: Math.min(1, inn * 1.5) }}>
             <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: "0.2em", color: C.soft }}>CASI</div>
-            <div style={{ fontSize: 150, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, color: C.goldLight, fontVariantNumeric: "tabular-nums" }}>{Math.round(p * 100)}%</div>
+            <div style={{ fontSize: 150, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, color: C.goldLight, fontVariantNumeric: "tabular-nums", textShadow: "0 0 40px rgba(232,184,74,0.35)" }}>{Math.round(p * 100)}%</div>
           </div>
-          <div style={{ position: "absolute", left: 60, width: 840, top: 1100, display: "flex", justifyContent: "center", gap: 14 }}>
-            {people.map((_, i) => (
-              <PersonIcon key={i} size={58} on={p * 10 > i + 0.5 ? 1 : 0} />
-            ))}
-          </div>
-          <div style={{ position: "absolute", left: 0, width: 960, top: 1196, textAlign: "center", fontFamily: font, opacity: label, transform: `translateY(${(1 - label) * 14}px)` }}>
+          <div style={{ position: "absolute", left: 0, width: 960, top: 1250, textAlign: "center", fontFamily: font, opacity: label, transform: `translateY(${(1 - label) * 14}px)` }}>
             <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 40, color: C.white, lineHeight: 1.2 }}>{copy.stat2.label}</div>
-            <div style={{ fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.7)", marginTop: 10 }}>{copy.source}</div>
+            <div style={{ fontSize: 22, fontWeight: 600, color: "rgba(167,201,189,0.75)", marginTop: 10 }}>{copy.source}</div>
           </div>
-        </div>
+        </>
       ) : (
-        <div style={{ position: "absolute", left: CX - 60, top: 760 + Math.sin(t * 3) * 6, opacity: 0.5 }}>
-          <Star size={120} id="wait" dim />
-        </div>
+        <Stage cam={{ pos: [0, 0.3, 8], target: [0, 0.3, 0], fov: 35 }} shadows={false}>
+          <group position={[0, 0.4 + Math.sin(t * 3) * 0.04, 0]} rotation={[0, t * 0.8, 0]}>
+            <Star3D scale={0.45} dim={0.85} />
+          </group>
+        </Stage>
       )}
     </Scene>
   );
 };
 
 const WhyScene: React.FC = () => {
-  const { frame, fps, s } = useT();
+  const { frame, fps, s, t } = useT();
   const cardsAt = s(V.w2.at);
   const today = spring({ frame: frame - cardsAt, fps, config: { damping: 16, stiffness: 130 } });
   const tomAt = s(wordTime("w2", "razón") - 0.1);
   const tom = spring({ frame: frame - tomAt, fps, config: { damping: 14, stiffness: 130 } });
   const glow = ease(frame, s(wordTime("w2", "mañana")), 12);
-  const Card: React.FC<{ title: string; sub: string; on: number; hi?: boolean; icon: React.ReactNode }> = ({ title, sub, on, hi, icon }) => (
-    <div
-      style={{
-        width: 380,
-        height: 520,
-        borderRadius: 36,
-        background: hi ? `linear-gradient(160deg, #14644D, ${C.forest})` : "#FFFFFF",
-        boxShadow: hi ? `0 30px 80px rgba(11,42,34,0.35), 0 0 ${60 * glow}px rgba(232,184,74,${0.5 * glow})` : "0 24px 60px rgba(60,50,30,0.18)",
-        border: hi ? `3px solid rgba(232,184,74,${0.3 + 0.7 * glow})` : "2px solid #E6DECD",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 26,
-        transform: `translateY(${(1 - on) * 400}px) scale(${hi ? 1 + 0.05 * glow : 1 - 0.04 * glow})`,
-        opacity: Math.min(1, on * 1.6) * (hi ? 1 : 1 - 0.35 * glow),
-        fontFamily: font,
-      }}
-    >
-      {icon}
-      <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: "-0.03em", color: hi ? C.goldLight : C.ink }}>{title}</div>
-      <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, color: hi ? C.cream : "#5B5446", textAlign: "center", padding: "0 30px", lineHeight: 1.2 }}>{sub}</div>
-    </div>
-  );
+  const cam = { pos: [0, 2.6, 13] as V3, target: [0, 0.1, 0] as V3, fov: 34 };
+  const L = toScreen([-1.25, -0.6, 0], cam);
+  const R = toScreen([1.25, -0.6, 0], cam);
   return (
     <Scene id="why">
       <PaperBg />
-      <div style={{ position: "absolute", left: 0, width: 960, top: 640, display: "flex", justifyContent: "center", alignItems: "center", gap: 30 }}>
-        <Card title={copy.today} sub="te vende el café" on={today} icon={<Cup w={110} />} />
-        <div style={{ fontFamily: font, fontSize: 70, fontWeight: 800, color: C.forest, opacity: tom, transform: `translateX(${(1 - tom) * -30}px)` }}>→</div>
-        <Card title={copy.tomorrow} sub="te da una razón para volver" on={tom} hi icon={<Star size={150} glow={20 * glow} id="tm" />} />
-      </div>
+      {frame >= cardsAt ? (
+        <Stage cam={cam} env={1}>
+          <ShadowFloor y={-0.6} opacity={0.18} />
+          <group position={[-1.25, -4 * (1 - today), 0]} scale={0.75}>
+            <Pedestal position={[0, 0, 0]} color="#EDE6D6" />
+            <Cup3D position={[0, 0, 0]} rotation={[0, t * 0.6, 0]} scale={0.55} fade={1 - 0.4 * glow} />
+          </group>
+          {tom > 0.001 ? (
+            <group position={[1.25, -4 * (1 - tom), 0]} scale={0.75}>
+              <Pedestal position={[0, 0, 0]} color="#145B44" glow={0.6 * glow} />
+              <group position={[0, 0.95 + Math.sin(t * 1.6) * 0.06, 0]} rotation={[0.1, t * 0.9, 0]} scale={0.62 + 0.1 * glow}>
+                <Star3D emissive={0.35 + 0.35 * glow} />
+              </group>
+              <pointLight position={[0, 1.2, 1.4]} intensity={4 * glow} distance={5} color="#FFD98A" />
+            </group>
+          ) : null}
+        </Stage>
+      ) : null}
+      {frame >= cardsAt ? (
+        <>
+          <div style={{ position: "absolute", left: L.x - 200, width: 400, top: L.y + 20, textAlign: "center", fontFamily: font, opacity: Math.min(1, today * 1.5) * (1 - 0.35 * glow) }}>
+            <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: "-0.03em", color: C.ink }}>{copy.today}</div>
+            <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, color: "#5B5446" }}>te vende el café</div>
+          </div>
+          <div style={{ position: "absolute", left: R.x - 200, width: 400, top: R.y + 20, textAlign: "center", fontFamily: font, opacity: Math.min(1, tom * 1.5) }}>
+            <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: "-0.03em", color: C.forest, textShadow: `0 0 ${30 * glow}px rgba(232,184,74,0.6)` }}>{copy.tomorrow}</div>
+            <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, color: "#5B5446" }}>te da una razón para volver</div>
+          </div>
+        </>
+      ) : null}
     </Scene>
   );
 };
@@ -310,91 +319,110 @@ const MechScene: React.FC = () => {
   const reward = pop(frame, fps, rewardAt + 6);
   const chartAt = s(V.m2.at - 0.05);
   const chart = ease(frame, chartAt, 14, EASE_INOUT);
-  const bars = [1, 2, 3, 5, 8];
+  const heights = [0.25, 0.5, 0.8, 1.3, 2.0];
+  const cam = { pos: [Math.sin(t * 0.3) * 0.8 * (1 - chart) + chart * 0.35, 1.6 + chart * 1.0, 10] as V3, target: [chart * 0.1, 1.2, 0] as V3, fov: 36 };
+  const labels = heights.map((_, i) => toScreen([(i - 2) * 0.62, 0.0, 0.5], cam));
   return (
     <Scene id="mech">
       <PaperBg />
-      {/* parte 1: vaso + barra de estrellas */}
-      <div style={{ opacity: 1 - chart, transform: `translateY(${-chart * 80}px)` }}>
-        <div style={{ position: "absolute", left: CX - 130, top: 560 + Math.sin(t * 1.6) * 10 }}>
-          <Cup w={260} tilt={Math.sin(t) * 10} />
-        </div>
-        <div style={{ position: "absolute", left: 90, width: 780, top: 1010 }}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <Stage cam={cam} env={1}>
+        <ShadowFloor y={0} opacity={0.18} />
+        {chart < 1 ? (
+          <group position={[0, chart * 3, 0]}>
+            <Cup3D position={[0, 1.14, -0.3]} rotation={[0.05, t * 0.6, 0]} scale={0.7} fade={1 - chart} />
             {Array.from({ length: 10 }).map((_, i) => {
               const on = i < target;
               const at = s(wordTime("m1", steps.find(([, n]) => n > i)?.[0] ?? "premio")) + (i % 3) * 2;
               const p = on ? spring({ frame: frame - at, fps, config: { damping: 10, stiffness: 220 } }) : 0;
-              return (
-                <div key={i} style={{ transform: `scale(${on ? 0.6 + 0.4 * p : 0.8})` }}>
-                  <Star size={62} id={`m${i}`} dim={!on} glow={on ? 10 : 0} />
-                </div>
-              );
+              return <Star3D key={i} position={[(i - 4.5) * 0.29, 0.98, 0.6]} rotation={[0, on ? Math.sin(t * 2 + i) * 0.25 : 0, on ? (1 - p) * Math.PI * 2 : 0]} scale={0.11 * (on ? 0.7 + 0.45 * p : 0.85)} dim={on ? 0 : 1} emissive={on ? 0.4 : 0} />;
             })}
-          </div>
-          <div style={{ marginTop: 22, height: 22, borderRadius: 99, background: "#E2D9C6", overflow: "hidden" }}>
-            <div style={{ width: `${interpolate(target, [0, 10], [0, 100])}%`, height: "100%", borderRadius: 99, background: "linear-gradient(90deg, #14644D, #E8B84A)", transition: "none" }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 18, fontFamily: font }}>
-            <div style={{ fontSize: 54, fontWeight: 800, color: C.ink, fontVariantNumeric: "tabular-nums" }}>{target} ★</div>
-            {reward > 0 ? (
-              <div style={{ transform: `scale(${reward})`, padding: "14px 28px", borderRadius: 999, background: `linear-gradient(90deg, #D49B2E, #FFD98A)`, color: C.ink, fontSize: 36, fontWeight: 800, letterSpacing: "0.08em", boxShadow: "0 14px 40px rgba(212,155,46,0.45)" }}>🎁 {copy.reward}</div>
-            ) : null}
-          </div>
+          </group>
+        ) : null}
+        {chart > 0
+          ? heights.map((h, i) => {
+              const g = ease(frame, chartAt + 6 + i * 6, 16);
+              const hh = Math.max(0.01, h * g);
+              const last = i === heights.length - 1;
+              return (
+                <group key={i} position={[(i - 2) * 0.62, 0, 0.5]}>
+                  <mesh position={[0, hh / 2, 0]} castShadow>
+                    <boxGeometry args={[0.42, hh, 0.42]} />
+                    <meshPhysicalMaterial color={last ? "#E8B84A" : "#14644D"} metalness={last ? 0.35 : 0.1} roughness={last ? 0.3 : 0.4} clearcoat={0.6} emissive={last ? "#B8821F" : "#000"} emissiveIntensity={last ? 0.35 : 0} />
+                  </mesh>
+                  <group position={[0, hh + 0.28, 0]} rotation={[0, Math.sin(t * 1.2 + i) * 0.5, 0]} scale={0.18 * g}>
+                    <Star3D emissive={0.4} />
+                  </group>
+                </group>
+              );
+            })
+          : null}
+        <Burst3D at={rewardAt + 6} origin={[1.0, 1.1, 0.6]} n={16} spread={1.6} seed="m" />
+      </Stage>
+      {/* barra y contador (parte 1) */}
+      <div style={{ position: "absolute", left: 90, width: 780, top: 1095, opacity: 1 - chart }}>
+        <div style={{ height: 20, borderRadius: 99, background: "#E2D9C6", overflow: "hidden" }}>
+          <div style={{ width: `${target * 10}%`, height: "100%", borderRadius: 99, background: "linear-gradient(90deg, #14644D, #E8B84A)" }} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, fontFamily: font }}>
+          <div style={{ fontSize: 54, fontWeight: 800, color: C.ink, fontVariantNumeric: "tabular-nums" }}>{target} ★</div>
+          {reward > 0 ? <div style={{ transform: `scale(${reward})`, padding: "14px 28px", borderRadius: 999, background: "linear-gradient(90deg, #D49B2E, #FFD98A)", color: C.ink, fontSize: 36, fontWeight: 800, letterSpacing: "0.08em", boxShadow: "0 14px 40px rgba(212,155,46,0.45)" }}>🎁 {copy.reward}</div> : null}
         </div>
       </div>
-      <Burst at={rewardAt + 6} x={CX + 230} y={1150} n={16} spread={360} seed="m" />
-      {/* parte 2: entre más vuelves… */}
-      {chart > 0 ? (
-        <div style={{ position: "absolute", left: 110, width: 740, top: 600, height: 640, opacity: chart }}>
-          <div style={{ position: "absolute", left: 0, right: 0, bottom: 60, display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-            {bars.map((b, i) => {
-              const g = ease(frame, chartAt + 6 + i * 6, 16);
-              return (
-                <div key={i} style={{ width: 110, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                  <div style={{ opacity: g, transform: `scale(${g})` }}>
-                    <Star size={56} id={`b${i}`} glow={8} />
-                  </div>
-                  <div style={{ width: 110, height: (b / 8) * 430 * g, borderRadius: "18px 18px 6px 6px", background: i === bars.length - 1 ? "linear-gradient(180deg, #E8B84A, #B8821F)" : "linear-gradient(180deg, #1B7A5E, #0E4D3B)" }} />
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", justifyContent: "space-between", fontFamily: font, fontSize: 24, fontWeight: 800, color: "#6B6455" }}>
-            {copy.visits.map((v) => (
-              <div key={v} style={{ width: 110, textAlign: "center" }}>
-                {v}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      {chart > 0.3
+        ? labels.map((p, i) => (
+            <div key={i} style={{ position: "absolute", left: p.x - 70, width: 140, top: p.y + 18, textAlign: "center", fontFamily: font, fontSize: 22, fontWeight: 800, color: "#6B6455", opacity: chart }}>
+              {copy.visits[i]}
+            </div>
+          ))
+        : null}
     </Scene>
   );
 };
 
 const BizScene: React.FC = () => {
-  const { frame, s } = useT();
+  const { frame, s, t } = useT();
   const push = ease(frame, s(S.biz.from), s(S.biz.to - S.biz.from), EASE_INOUT);
+  const cam = { pos: [1.2 - push * 0.6, 2.7, 13 - push * 2] as V3, target: [0, 1.7, -2.5] as V3, fov: 40 };
   return (
     <Scene id="biz">
-      <AbsoluteFill style={{ background: "#071510" }} />
-      <AbsoluteFill style={{ transform: `scale(${1.05 + 0.1 * push})`, transformOrigin: "540px 1150px" }}>
-        <div style={{ position: "absolute", left: 0, top: 640 }}>
-          <Storefront />
-        </div>
-      </AbsoluteFill>
-      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(5,8,11,0.85) 0%, rgba(5,8,11,0.2) 35%, rgba(5,8,11,0) 60%)" }} />
-      {Array.from({ length: 9 }).map((_, i) => {
-        const at = s(S.biz.from + 0.3) + i * 4;
-        const p = pop(frame, 30, at);
-        return (
-          <div key={i} style={{ position: "absolute", left: 120 + random(`sx${i}`) * 720, top: 760 + random(`sy${i}`) * 420 + Math.sin(frame / 20 + i) * 8, transform: `scale(${p})`, opacity: 0.9 }}>
-            <Star size={40 + random(`ss${i}`) * 36} id={`bz${i}`} glow={14} />
-          </div>
-        );
-      })}
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, #050B0E 0%, #0B1A15 60%, #070B0D 100%)" }} />
+      <Stage cam={cam} env={0.25} exposure={1.1}>
+        <hemisphereLight args={["#3a5488", "#0a0a0c", 0.5]} />
+        <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <planeGeometry args={[60, 60]} />
+          <meshStandardMaterial color="#15191d" roughness={0.9} />
+        </mesh>
+        <Cafe kind="origen" position={[0, 0.02, 0]} />
+        {Array.from({ length: 11 }).map((_, i) => {
+          const at = s(S.biz.from + 0.2) + i * 3;
+          const p = pop(frame, 30, at);
+          const x = (random(`bx${i}`) - 0.5) * 8;
+          const y = 1.0 + random(`by${i}`) * 3.4 + Math.sin(t * 1.4 + i) * 0.1;
+          const z = 0.8 + random(`bz${i}`) * 2;
+          return <Star3D key={i} position={[x, y, z]} rotation={[0, t * 1.2 + i, 0]} scale={(0.12 + random(`bs${i}`) * 0.12) * p} emissive={0.4} />;
+        })}
+      </Stage>
     </Scene>
+  );
+};
+
+/** Fondo 3D de estrellas flotando (escena de la app y CTA). */
+const StarField: React.FC<{ n?: number; seed?: string; blur?: number }> = ({ n = 18, seed = "sf", blur = 0 }) => {
+  const { t } = useT();
+  return (
+    <AbsoluteFill style={{ filter: blur ? `blur(${blur}px)` : undefined }}>
+      <Stage cam={{ pos: [0, 0, 10], target: [0, 0, 0], fov: 40 }} shadows={false}>
+        {Array.from({ length: n }).map((_, i) => (
+          <Star3D
+            key={i}
+            position={[(random(`${seed}x${i}`) - 0.5) * 9, (random(`${seed}y${i}`) - 0.5) * 14 + Math.sin(t * 0.6 + i) * 0.2, (random(`${seed}z${i}`) - 0.5) * 6 - 2]}
+            rotation={[t * 0.3 + i, t * 0.5 + i, 0]}
+            scale={0.2 + random(`${seed}s${i}`) * 0.35}
+            emissive={0.2}
+          />
+        ))}
+      </Stage>
+    </AbsoluteFill>
   );
 };
 
@@ -404,7 +432,6 @@ const AppScene: React.FC = () => {
   const rise = spring({ frame: frame - phoneAt, fps, config: { damping: 20, stiffness: 120 } });
   const logoAt = s(wordTime("y2", "mi") - 0.1);
   const logoShow = ease(frame, logoAt, 10);
-  const headOut = ease(frame, logoAt - 6, 6, EASE_IN);
   const chips: [string, string, number, number][] = [
     [copy.chips[1], "sellos", -1, 760],
     [copy.chips[2], "premios", 1, 960],
@@ -413,7 +440,8 @@ const AppScene: React.FC = () => {
   return (
     <Scene id="app">
       <AbsoluteFill style={{ background: `radial-gradient(ellipse 900px 1100px at 480px 900px, #145B44 0%, #0B2A22 55%, #04110D 100%)` }} />
-      <div style={{ position: "absolute", left: 0, width: 960, top: 300, display: "flex", justifyContent: "center", opacity: logoShow * (1 - 0) }}>
+      <StarField blur={3} />
+      <div style={{ position: "absolute", left: 0, width: 960, top: 300, display: "flex", justifyContent: "center", opacity: logoShow }}>
         <Logo height={120} color={C.white} animateAt={logoAt} />
       </div>
       <div style={{ position: "absolute", inset: 0, transform: `translateY(${(1 - rise) * 1100}px)` }}>
@@ -457,10 +485,10 @@ const AppScene: React.FC = () => {
           </div>
         );
       })}
-      <div style={{ opacity: 1 - headOut }} />
     </Scene>
   );
 };
+
 
 const CtaScene: React.FC = () => {
   const { frame, fps, s } = useT();
@@ -481,15 +509,14 @@ const CtaScene: React.FC = () => {
   return (
     <Scene id="cta">
       <ForestBg />
-      {Array.from({ length: 14 }).map((_, i) => {
-        const a = (i / 14) * Math.PI * 2 + frame * 0.012;
-        const r = 380 * ring;
-        return (
-          <div key={i} style={{ position: "absolute", left: CX + Math.cos(a) * r - 18, top: 560 + Math.sin(a) * r * 0.55 - 18, opacity: ring * (0.5 + 0.5 * Math.sin(frame * 0.1 + i)) }}>
-            <Star size={36} id={`r${i}`} glow={8} />
-          </div>
-        );
-      })}
+      <Stage cam={{ pos: [0, 0.8, 10], target: [0, 0.8, 0], fov: 36 }} shadows={false}>
+        <group position={[-0.55, 2.35, 0]} rotation={[0.35, 0, 0.05]}>
+          {Array.from({ length: 16 }).map((_, i) => {
+            const a = (i / 16) * Math.PI * 2 + frame * 0.012;
+            return <Star3D key={i} position={[Math.cos(a) * 2.6 * ring, 0, Math.sin(a) * 2.6 * ring]} rotation={[0, frame * 0.05 + i, 0]} scale={0.16 * ring} emissive={0.25} />;
+          })}
+        </group>
+      </Stage>
       <div style={{ position: "absolute", left: 0, width: 960, top: 380, display: "flex", flexDirection: "column", alignItems: "center", fontFamily: font, color: C.white, textShadow: "0 10px 40px rgba(0,0,0,0.6)" }}>
         <div style={{ fontSize: 120, fontWeight: 800, letterSpacing: tracking.headline, lineHeight: 1, transform: `scale(${0.7 + 0.3 * title})`, opacity: Math.min(1, title * 1.5) }}>{copy.cta.top}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 18, transform: `scale(${0.6 + 0.4 * word})`, opacity: Math.min(1, word * 1.5) }}>
