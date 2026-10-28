@@ -1,6 +1,6 @@
 # Video "¿Es legal?" — aviso por cercanía
 
-`es-legal-vertical.mp4` · 1080×1920 · 38 s · con voz, subtítulos y música (audio masterizado para redes).
+`es-legal-vertical.mp4` · 1080×1920 · 44 s · voz de ElevenLabs ("Lina", colombiana), subtítulos y música (audio masterizado para redes).
 `portada.jpg` · fotograma "¿ESTO ES LEGAL?" para usar de portada del reel.
 
 Para Reels y TikTok. Gancho: *"¿Es legal que un negocio te mande esto, solo por pasar por el frente?"*.

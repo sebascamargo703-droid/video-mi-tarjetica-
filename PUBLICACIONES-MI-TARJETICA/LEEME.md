@@ -17,7 +17,7 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | `11-cenefa-meguiars/` | Tres cenefas para lavadero: "En este lavadero usamos Meguiar's", la de venta "Aquí puedes comprar tus productos Meguiar's" y dos sin texto (solo logo y productos; la última con los productos de referencia) (ver `LEEME.md` de la carpeta: logo en alta y permiso de marca) | PNG/JPG 6000×1500 + PDF 200×50 cm | Impresión gran formato |
 | `12-banner-youtube-meguiars/` | Banner de canal de YouTube con el logo y los productos Meguiar's (zona segura de celular respetada) + guía de recorte por dispositivo | JPG/PNG 2560×1440 (0.6 MB) | Banner de YouTube |
 | `13-foto-grupo-whatsapp/` | Foto del grupo de WhatsApp de Mi Tarjetica: ícono + nombre, y versión solo ícono | PNG/JPG 1080×1080 (se ve en círculo) | Foto de grupo de WhatsApp |
-| `14-video-es-legal/` | Reel "¿Es legal?": explica el aviso por cercanía (no te siguen, lo muestra tu celular, se puede apagar) y cierra con "Comenta TARJETA" | MP4 1080×1920, 38 s, con voz + portada | Reels / TikTok |
+| `14-video-es-legal/` | Reel "¿Es legal?": explica el aviso por cercanía (no te siguen, lo muestra tu celular, se puede apagar) y cierra con "Comenta TARJETA" | MP4 1080×1920, 44 s, voz ElevenLabs + portada | Reels / TikTok |
 | `06-carruseles-editoriales/` | 4 carruseles editoriales (verde #145B44 / blanco): cuánto vale un cliente, premios que funcionan, cartoncito vs. Mi Tarjetica, cómo funciona — cada uno con `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 
 **En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts, más 8 historias de precios con su portada de destacada.

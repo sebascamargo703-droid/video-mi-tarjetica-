@@ -1,6 +1,6 @@
 # "¿Es legal?" — el aviso por cercanía explicado
 
-Reel/TikTok de **Mi Tarjetica** (1080×1920, 30 fps, 38 s) con locución, subtítulos animados,
+Reel/TikTok de **Mi Tarjetica** (1080×1920, 30 fps, 44 s) con locución de ElevenLabs, subtítulos animados,
 música y efectos. Responde la duda típica del cliente: *¿es legal que un negocio me mande una
 notificación solo por pasar por el frente?* → no te están siguiendo: es la tarjeta de sellos que
 tú guardaste en el Wallet, trae la ubicación del negocio y es **tu celular** el que la muestra; el
@@ -33,13 +33,14 @@ Sin internet: antepón `REMOTION_LOCAL_FONTS=1`.
 
 ## Cambiar textos, voz o tiempos
 
-- **Locución:** `src/voiceover.json` (`say` = lo que se dice, escrito como suena: "Uálet", "cú erre";
-  `pause` = silencio después). Regenera con
-  `python3 scripts/make-voice.py --models <carpeta con kokoro .onnx y voices .bin>` (voz abierta
-  Kokoro "ef_dora", español latino; instrucciones al inicio del script). El script guarda la
-  duración de cada frase y **todo el video se reacomoda solo** (`src/timeline.ts`).
-  Para una locutora profesional o ElevenLabs: graba cada frase como `public/voz/<id>.wav` y pon su
-  duración en `dur`.
+- **Locución:** voz **"Lina – Colombian Warm & Confident"** de ElevenLabs (modelo eleven_v4), una
+  frase por archivo en `public/voz/<id>.wav`; el texto de cada frase está en `src/voiceover.json`
+  (`say`) y `pause` es el silencio después. Para cambiar una frase: genérala en ElevenLabs con la misma
+  voz, guárdala como `<id>.mp3` en una carpeta y corre `python3 scripts/import-voice.py <carpeta>`:
+  recorta silencios, guarda la duración (`dur`) y **todo el video se reacomoda solo**
+  (`src/timeline.ts`); luego `python3 scripts/make-audio.py` para ajustar la música a la nueva duración.
+  Sin ElevenLabs: `scripts/make-voice.py` genera una voz abierta local (Kokoro), con algunas palabras
+  escritas como suenan ("Uálet", "cú erre").
 - **Subtítulos:** `captions` en `src/copy.ts` (`*palabra*` cursiva menta, `[palabra]` resaltador).
 - **Negocio de ejemplo, notificación, tarjeta, otras tarjetas, CTA:** `src/copy.ts`.
 - **Colores y volúmenes:** `src/brand.ts`. La música baja sola cuando habla la voz.
