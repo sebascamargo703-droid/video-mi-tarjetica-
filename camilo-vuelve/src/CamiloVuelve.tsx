@@ -2,19 +2,17 @@ import React from "react";
 import * as THREE from "three";
 import { AbsoluteFill, Html5Audio, Sequence, getStaticFiles, interpolate, random, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { audio, brand } from "./brand";
-import { business, copy, headlines } from "./copy";
+import { copy, headlines } from "./copy";
 import { font, logoFont } from "./fonts";
-import { BusinessIcon } from "./components/BusinessPin";
 import { Logo } from "./components/Logo";
-import { LockScreen } from "./components/LockScreen";
-import { Notification } from "./components/Notification";
-import { MiniCard, PassCard } from "./components/PassCard";
-import { QrCode } from "./components/QrCode";
-import { ShadowFloor } from "./three/Objects";
 import { Stage } from "./three/Stage";
 import { useCanvasTexture } from "./three/textures";
+import { toScreen, type Cam, type V3 } from "./three/camera";
+import { BarberPole, Card3D, Counter, Disc3D, GlossFloor, Phone3D, Plate, Tablet3D, Washer3D, type Layer } from "./three/Devices";
+import { Glow, Person, StreetLamp } from "./three/Props";
+import { Geofence } from "./three/Geofence";
 import { EASE_IN, EASE_INOUT, clamp, ease } from "./motion";
-import { BigPhone, CX, Headline, Karaoke, SCREEN } from "./ui";
+import { CX, Headline, Karaoke } from "./ui";
 import { DURATION_SEC, SCENES, type SceneId, V, VOICE, wordTime } from "./timeline";
 
 const C = brand.colors;
@@ -25,24 +23,17 @@ const useT = () => {
   const { fps } = useVideoConfig();
   return { frame, fps, t: frame / fps, s: (x: number) => Math.round(x * fps) };
 };
+const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
+const lerp3 = (a: V3, b: V3, k: number): V3 => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+const sp = (frame: number, fps: number, at: number, damping = 15, stiffness = 150) => (frame >= at ? spring({ frame: frame - at, fps, config: { damping, stiffness } }) : 0);
+/** Capas de pantalla: cada estado entra con fundido de 5 cuadros en su cuadro `at`. */
+const layers = (frame: number, list: [string, number][]): Layer[] =>
+  list.map(([src, at], i) => [src, i === 0 ? 1 : interpolate(frame, [at, at + 5], [0, 1], clamp)] as Layer).filter(([, o], i, arr) => o > 0 && !arr.slice(i + 1).some(([, o2]) => o2 >= 1));
 
 /* ------------------------------------------------------------------ */
 /* Piezas comunes */
 
-/** Foto 16:9 (2048×1152) recortada en vertical; `cx` es el centro horizontal en píxeles de la foto. */
-const Photo: React.FC<{ src: string; cx: number; zoom?: number; originY?: number; rotate?: number; filter?: string }> = ({ src, cx, zoom = 1, originY = 960, rotate = 0, filter }) => {
-  const k = 1920 / 1152;
-  return (
-    <AbsoluteFill style={{ overflow: "hidden" }}>
-      <img
-        src={staticFile(src)}
-        style={{ position: "absolute", height: 1920, width: 2048 * k, left: 540 - cx * k, top: 0, transform: `scale(${zoom}) rotate(${rotate}deg)`, transformOrigin: `${cx * k}px ${originY}px`, filter }}
-      />
-    </AbsoluteFill>
-  );
-};
-
-/** Fondo oscuro con un halo verde que respira. */
+/** Fondo oscuro con un halo verde que respira (detrás del lienzo 3D transparente). */
 const DarkBg: React.FC<{ glow?: number; y?: number }> = ({ glow = 1, y = 980 }) => {
   const { t } = useT();
   return (
@@ -61,131 +52,94 @@ const Scene: React.FC<{ id: SceneId; children: React.ReactNode }> = ({ id, child
   return <AbsoluteFill style={{ opacity: tin, transform: `scale(${1.04 - 0.04 * tin})`, filter: tin < 1 ? `blur(${(1 - tin) * 10}px)` : undefined }}>{children}</AbsoluteFill>;
 };
 
-/** Contenedor que entra con resorte (escala + subida) en el cuadro `at`. */
-const PopIn: React.FC<{ at: number; x: number; y: number; w?: number; from?: number; children: React.ReactNode; out?: number; style?: React.CSSProperties }> = ({ at, x, y, w, from = 60, children, out = 0, style }) => {
-  const { frame, fps } = useT();
-  if (frame < at) return null;
-  const p = spring({ frame: frame - at, fps, config: { damping: 15, stiffness: 150 } });
+/** Partículas de luz menta flotando. */
+const Motes: React.FC<{ n?: number; spread?: V3; seed?: string; color?: string; center?: V3 }> = ({ n = 30, spread = [7, 8, 5], seed = "m", color = "#8FE3C0", center = [0, 0, 0] }) => {
+  const { t } = useT();
   return (
-    <div style={{ position: "absolute", left: x, top: y, width: w, opacity: Math.min(1, p * 1.6) * (1 - out), transform: `translateY(${(1 - p) * from - out * 30}px) scale(${0.92 + 0.08 * p})`, transformOrigin: "50% 50%", ...style }}>
-      {children}
-    </div>
+    <>
+      {Array.from({ length: n }).map((_, i) => {
+        const x = center[0] + (random(`${seed}x${i}`) - 0.5) * spread[0];
+        const y = center[1] + (random(`${seed}y${i}`) - 0.5) * spread[1] + ((t * (0.06 + random(`${seed}v${i}`) * 0.1)) % 1) * 1.2;
+        const z = center[2] + (random(`${seed}z${i}`) - 0.5) * spread[2] - 1;
+        return (
+          <mesh key={i} position={[x, y, z]}>
+            <sphereGeometry args={[0.02 + random(`${seed}s${i}`) * 0.03, 8, 6]} />
+            <meshBasicMaterial color={color} transparent opacity={0.6} toneMapped={false} />
+          </mesh>
+        );
+      })}
+    </>
   );
 };
 
-/** Tarjeta oscura tipo "app" (paneles del dueño). */
-const Glass: React.FC<{ w: number; children: React.ReactNode; pad?: number }> = ({ w, children, pad = 30 }) => (
-  <div style={{ width: w, padding: pad, borderRadius: 34, background: "linear-gradient(180deg, #121C1A 0%, #0B1311 100%)", border: "1.5px solid rgba(167,201,189,0.16)", boxShadow: "0 40px 100px rgba(0,0,0,0.65)", fontFamily: font, color: C.white }}>{children}</div>
-);
-
-const Avatar: React.FC<{ letter: string; color: string; size?: number }> = ({ letter, color, size = 64 }) => (
-  <div style={{ width: size, height: size, borderRadius: "50%", background: color, color: C.ink, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: font, fontWeight: 800, fontSize: size * 0.45, flexShrink: 0 }}>{letter}</div>
-);
-
-/** Celular grande con desplazamiento horizontal libre (BigPhone siempre centra en CX). */
-const PhoneAt: React.FC<{ x?: number; y: number; w: number; tilt?: number; screenBg?: string; children: React.ReactNode }> = ({ x = 0, y, w, tilt = 0, screenBg, children }) => (
-  <div style={{ position: "absolute", inset: 0, transform: `translateX(${x}px)` }}>
-    <BigPhone y={y} w={w} tilt={tilt} screenBg={screenBg}>
-      {children}
-    </BigPhone>
-  </div>
-);
-
-/** Pantalla de la billetera con la tarjeta de sellos. */
-const WalletScreen: React.FC<{ stamps: number; pulse?: number; banner?: number }> = ({ stamps, pulse = 0, banner = 0 }) => (
-  <div style={{ position: "absolute", inset: 0, background: "#0B0D0F", fontFamily: font, color: C.white }}>
-    <div style={{ position: "absolute", left: 34, top: 120, fontSize: 52, fontWeight: 800, letterSpacing: "-0.02em" }}>Billetera</div>
-    <div style={{ position: "absolute", left: 30, top: 210 }}>
-      <PassCard width={SCREEN - 60} stamps={stamps} pulse={pulse} />
-    </div>
-    {banner > 0.01 ? (
-      <div style={{ position: "absolute", left: 20, right: 20, top: 70, transform: `translateY(${(1 - banner) * -160}px)`, opacity: Math.min(1, banner * 2) }}>
-        <MiniNotif title={copy.stampNotif.title} body={copy.stampNotif.body} width={SCREEN - 40} />
-      </div>
-    ) : null}
-  </div>
-);
-
-/** Notificación compacta (texto libre). */
-const MiniNotif: React.FC<{ title: string; body: string; width: number; when?: string }> = ({ title, body, width, when = "ahora" }) => {
-  const k = width / 620;
-  return (
-    <div style={{ width, display: "flex", gap: 18 * k, alignItems: "center", padding: `${20 * k}px ${22 * k}px`, borderRadius: 30 * k, background: "rgba(40,46,50,0.92)", backdropFilter: "blur(20px)", border: "1.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", fontFamily: font, color: C.white }}>
-      <div style={{ width: 70 * k, height: 70 * k, borderRadius: 18 * k, background: `linear-gradient(145deg, ${C.greenMid}, ${C.greenDeep})`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <BusinessIcon size={42 * k} color={C.white} />
-      </div>
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 26 * k, fontWeight: 800 }}>
-          <span>{title}</span>
-          <span style={{ fontWeight: 600, opacity: 0.6 }}>{when}</span>
-        </div>
-        <div style={{ fontSize: 28 * k, lineHeight: 1.25, marginTop: 4 * k, opacity: 0.92 }}>{body}</div>
-      </div>
-    </div>
-  );
+/** Textura de la tarjeta de papel (la que se pierde). */
+const drawPaper = (c: CanvasRenderingContext2D, w: number, h: number) => {
+  c.fillStyle = "#FFFFFF";
+  c.fillRect(0, 0, w, h);
+  c.strokeStyle = "rgba(120,80,40,0.25)";
+  c.lineWidth = 4;
+  c.strokeRect(12, 12, w - 24, h - 24);
+  c.fillStyle = "#6B4A2E";
+  c.font = "800 30px Inter";
+  c.fillText("CLIENTE FRECUENTE", 36, 64);
+  for (let i = 0; i < 10; i++) {
+    const x = 70 + (i % 5) * 92;
+    const y = 140 + Math.floor(i / 5) * 92;
+    c.beginPath();
+    c.arc(x, y, 32, 0, Math.PI * 2);
+    c.strokeStyle = "#C9473F";
+    c.lineWidth = 4;
+    c.stroke();
+    if (i < 9) {
+      c.fillStyle = "rgba(201,71,63,0.85)";
+      c.beginPath();
+      c.arc(x + 2, y + 1, 24, 0, Math.PI * 2);
+      c.fill();
+    }
+  }
+  c.fillStyle = "rgba(107,74,46,0.5)";
+  c.fillRect(36, 282, 260, 3);
 };
+const usePaper = () => useCanvasTexture("tarjeta-papel", 512, 320, drawPaper);
 
-/** Dedo que toca: círculo que se encoge con onda. */
-const Tap: React.FC<{ x: number; y: number; at: number }> = ({ x, y, at }) => {
-  const { frame } = useT();
-  const d = frame - at;
-  if (d < -8 || d > 16) return null;
-  const inn = interpolate(d, [-8, 0], [0, 1], clamp);
-  const ring = interpolate(d, [0, 16], [0, 1], clamp);
-  return (
-    <div style={{ position: "absolute", left: x, top: y, pointerEvents: "none" }}>
-      <div style={{ position: "absolute", width: 70, height: 70, left: -35, top: -35, borderRadius: "50%", background: "rgba(255,255,255,0.55)", transform: `scale(${1.2 - 0.3 * inn})`, opacity: inn * (1 - ring) }} />
-      <div style={{ position: "absolute", width: 70, height: 70, left: -35, top: -35, borderRadius: "50%", border: "4px solid rgba(255,255,255,0.8)", transform: `scale(${1 + ring * 1.6})`, opacity: (1 - ring) * (d >= 0 ? 1 : 0) }} />
-    </div>
-  );
+/** Etiqueta 2D anclada a un punto 3D. */
+const Label: React.FC<{ p: V3; cam: Cam; children: React.ReactNode; dy?: number; o?: number }> = ({ p, cam, children, dy = 0, o = 1 }) => {
+  const q = toScreen(p, cam);
+  return <div style={{ position: "absolute", left: q.x, top: q.y + dy, transform: "translate(-50%, 0)", opacity: o, whiteSpace: "nowrap" }}>{children}</div>;
 };
 
 /* ------------------------------------------------------------------ */
-/* 1 · La tarjeta de papel en la lavadora (foto) */
+/* 1 · La tarjeta en la lavadora */
+const PaperWasher: React.FC<{ spin: number; shake: number }> = ({ spin, shake }) => {
+  const paper = usePaper();
+  return <Washer3D spin={spin} shake={shake} cardTex={paper} />;
+};
 const WashScene: React.FC = () => {
-  const { frame, s, t } = useT();
-  const spinAt = s(wordTime("h2", "lavadora") - 0.1);
-  const spin = ease(frame, spinAt, 40, EASE_INOUT);
-  const zoom = 1.04 + 0.1 * (t / S.wash.to) + 0.08 * spin;
+  const { frame, t, s } = useT();
+  const la = wordTime("h2", "lavadora") - 0.1;
+  const fast = Math.max(0, t - la);
+  const spin = t * 0.9 + fast * fast * 5;
+  const k = EASE_INOUT(Math.min(1, t / S.wash.to));
+  const cam: Cam = { pos: lerp3([1.6, 1.0, 8.4], [0.25, 0.0, 4.4], k), target: lerp3([0, -0.05, 0], [0, -0.12, 0], k), fov: 35 };
+  const shake = ease(frame, s(la), 10);
   return (
     <Scene id="wash">
-      <Photo src="fotos/lavadora.jpg" cx={1040} zoom={zoom} originY={960} rotate={-1.5 + 9 * spin} filter={`saturate(${1 - 0.25 * spin}) brightness(${1 - 0.15 * spin})`} />
-      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(5,8,11,0.82) 0%, rgba(5,8,11,0.35) 26%, rgba(5,8,11,0) 40%, rgba(5,8,11,0) 62%, rgba(5,8,11,0.7) 100%)" }} />
+      <DarkBg glow={0.8} y={1000} />
+      <Stage cam={cam} env={1} exposure={1.05}>
+        <GlossFloor y={-1.15} />
+        <PaperWasher spin={spin} shake={shake} />
+        <Motes seed="w" spread={[6, 6, 4]} n={20} />
+      </Stage>
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(5,8,11,0.78) 0%, rgba(5,8,11,0.25) 24%, rgba(5,8,11,0) 34%)" }} />
     </Scene>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* 2 · Tarjetas de papel que caen, se mojan y se pierden (3D) */
+/* 2 · Tarjetas de papel que caen, se mojan y se pierden */
 const PAPER_TINTS = ["#F3EAD6", "#CDEBDD", "#F4D3DA", "#D6E2F5", "#F7E3B5"];
 const PaperCards: React.FC<{ tau: number; wet: number; lost: number }> = ({ tau, wet, lost }) => {
-  const tex = useCanvasTexture("tarjeta-papel", 512, 320, (c, w, h) => {
-    c.fillStyle = "#FFFFFF";
-    c.fillRect(0, 0, w, h);
-    c.strokeStyle = "rgba(120,80,40,0.25)";
-    c.lineWidth = 4;
-    c.strokeRect(12, 12, w - 24, h - 24);
-    c.fillStyle = "#6B4A2E";
-    c.font = "800 30px Inter";
-    c.fillText("CLIENTE FRECUENTE", 36, 64);
-    for (let i = 0; i < 10; i++) {
-      const x = 70 + (i % 5) * 92;
-      const y = 140 + Math.floor(i / 5) * 92;
-      c.beginPath();
-      c.arc(x, y, 32, 0, Math.PI * 2);
-      c.strokeStyle = "#C9473F";
-      c.lineWidth = 4;
-      c.stroke();
-      if (i < 6) {
-        c.fillStyle = "rgba(201,71,63,0.85)";
-        c.beginPath();
-        c.arc(x + 2, y + 1, 24, 0, Math.PI * 2);
-        c.fill();
-      }
-    }
-    c.fillStyle = "rgba(107,74,46,0.5)";
-    c.fillRect(36, 282, 260, 3);
-  });
+  const tex = usePaper();
   if (!tex) return null;
   const wetCol = new THREE.Color("#7E8890");
   return (
@@ -221,8 +175,8 @@ const LostScene: React.FC = () => {
   return (
     <Scene id="lost">
       <DarkBg glow={1 - 0.7 * dim} y={900} />
-      <Stage cam={{ pos: [0, 0.2, 10], target: [0, 0, 0], fov: 40 }} env={0.9 - 0.5 * dim} exposure={1.1 - 0.4 * dim}>
-        <ShadowFloor y={-4.5} opacity={0.3} />
+      <Stage cam={{ pos: [Math.sin(t * 0.3) * 0.6, 0.2, 10], target: [0, 0, 0], fov: 40 }} env={0.9 - 0.5 * dim} exposure={1.1 - 0.4 * dim}>
+        <GlossFloor y={-4.5} />
         <PaperCards tau={tau} wet={wet} lost={lost} />
       </Stage>
       <AbsoluteFill style={{ background: "radial-gradient(ellipse 120% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%)", opacity: 0.5 + 0.5 * dim }} />
@@ -231,129 +185,123 @@ const LostScene: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* 3 · ¿Adivina quién sí vuelve? */
+/* 3 · ¿Adivina quién sí vuelve? — un celular sube desde la oscuridad */
 const GuessScene: React.FC = () => {
-  const { frame, t, s } = useT();
-  const p = ease(frame, s(S.guess.from), 40);
+  const { frame, fps, t, s } = useT();
+  const a = s(S.guess.from);
+  const rise = sp(frame, fps, a, 18, 70);
+  const on = ease(frame, s(V.g1.end - 0.4), 12);
   return (
     <Scene id="guess">
-      <DarkBg glow={0.6 + 0.8 * p} y={1000} />
+      <DarkBg glow={0.5 + 0.8 * on} y={1000} />
       <AbsoluteFill
         style={{
-          background: `repeating-conic-gradient(from ${t * 12}deg at ${CX}px 1000px, rgba(143,227,192,0.08) 0deg 5deg, transparent 5deg 15deg)`,
-          maskImage: "radial-gradient(circle at 480px 1000px, black 0%, transparent 55%)",
-          opacity: p,
+          background: `repeating-conic-gradient(from ${t * 12}deg at ${CX}px 980px, rgba(143,227,192,0.09) 0deg 5deg, transparent 5deg 15deg)`,
+          maskImage: "radial-gradient(circle at 480px 980px, black 0%, transparent 55%)",
+          opacity: 0.3 + 0.7 * on,
         }}
       />
-      {[0, 1, 2].map((i) => {
-        const r = ((t * 0.6 + i / 3) % 1) * 1;
-        return <div key={i} style={{ position: "absolute", left: CX - 300, top: 700, width: 600, height: 600, borderRadius: "50%", border: "3px solid rgba(143,227,192,0.7)", transform: `scale(${0.2 + r * 1.3})`, opacity: (1 - r) * p }} />;
-      })}
+      <Stage cam={{ pos: [0.6, -0.3, 5.6], target: [0, 0.05, 0], fov: 35 }} env={0.7} exposure={1.1}>
+        <Phone3D position={[0, -3.2 * (1 - rise), 0]} rotation={[0.08, -0.7 + 0.55 * rise + Math.sin(t * 0.8) * 0.05, 0.04]} scale={0.95} screens={[["screens/lock.png", on]]} glow={on} />
+        <pointLight position={[0, 1.5, -1.5]} intensity={6} distance={6} color="#8FE3C0" />
+        <Motes seed="g" n={26} />
+      </Stage>
     </Scene>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* 4 · Mi Tarjetica: la tarjeta pasa del papel al celular */
-const PaperCard2D: React.FC<{ w: number }> = ({ w }) => (
-  <div style={{ width: w, height: w * 0.62, borderRadius: 10, background: "#F3EAD6", boxShadow: "0 24px 50px rgba(0,0,0,0.5)", padding: w * 0.06, boxSizing: "border-box", fontFamily: font }}>
-    <div style={{ fontSize: w * 0.065, fontWeight: 800, color: "#6B4A2E", letterSpacing: "0.04em" }}>CLIENTE FRECUENTE</div>
-    <div style={{ display: "flex", flexWrap: "wrap", gap: w * 0.03, marginTop: w * 0.06 }}>
-      {Array.from({ length: 10 }).map((_, i) => (
-        <div key={i} style={{ width: w * 0.13, height: w * 0.13, borderRadius: "50%", border: `${w * 0.008}px solid #C9473F`, background: i < 4 ? "rgba(201,71,63,0.85)" : undefined, boxSizing: "border-box" }} />
-      ))}
-    </div>
-  </div>
-);
-
+/* 4 · Mi Tarjetica: la tarjeta de papel entra al celular */
+const FlyingPaper: React.FC<{ fly: number; t: number; o: number }> = ({ fly, t, o }) => {
+  const paper = usePaper();
+  if (!paper) return null;
+  return (
+    <mesh position={lerp3([-1.4, 1.1, 0.8], [0, 0.1, 0.12], fly)} rotation={[0.3 * (1 - fly), 0.6 * (1 - fly) + fly * 0.3, -0.4 + 0.4 * fly + (1 - fly) * t]} scale={1 - 0.55 * fly}>
+      <boxGeometry args={[0.9, 0.56, 0.01]} />
+      <meshStandardMaterial map={paper} roughness={0.6} transparent opacity={o} />
+    </mesh>
+  );
+};
 const BrandScene: React.FC = () => {
-  const { frame, fps, s } = useT();
+  const { frame, fps, t, s } = useT();
   const logoAt = s(V.m0.at - 0.05);
-  const logoIn = frame >= logoAt ? spring({ frame: frame - logoAt, fps, config: { damping: 14, stiffness: 140 } }) : 0;
-  const logoOut = ease(frame, s(V.m1.at - 0.05), 10, EASE_IN);
-  const phoneAt = s(wordTime("m1", "celular") - 0.6);
-  const ph = frame >= phoneAt ? spring({ frame: frame - phoneAt, fps, config: { damping: 16, stiffness: 110 } }) : 0;
-  const paperIn = ease(frame, s(V.m1.at), 14);
-  const fly = ease(frame, s(wordTime("m1", "celular") - 0.1), 18, EASE_INOUT);
+  const logoIn = sp(frame, fps, logoAt, 14, 120);
+  const logoOut = ease(frame, s(V.m1.at - 0.1), 14, EASE_IN);
+  const phAt = s(V.m1.at + 0.05);
+  const ph = sp(frame, fps, phAt, 16, 90);
+  const flyAt = s(wordTime("m1", "celular") - 0.55);
+  const fly = ease(frame, flyAt, 18, EASE_INOUT);
+  const arrived = s(wordTime("m1", "celular") + 0.05);
+  const flash = interpolate(frame, [arrived - 2, arrived + 2, arrived + 14], [0, 1, 0], clamp);
   return (
     <Scene id="brand">
-      <DarkBg y={1050} />
-      {logoOut < 1 ? (
-        <div style={{ position: "absolute", left: 0, width: 960, top: 820, display: "flex", justifyContent: "center", opacity: Math.min(1, logoIn * 1.5) * (1 - logoOut), transform: `translateY(${-logoOut * 60}px) scale(${(0.8 + 0.2 * logoIn) * (1 - 0.1 * logoOut)})`, filter: logoIn < 0.95 ? `blur(${(1 - logoIn) * 12}px)` : undefined }}>
-          <Logo height={150} color={C.white} />
-        </div>
-      ) : null}
-      {/* tarjeta de papel que vuela al celular */}
-      {paperIn > 0 && fly < 1 ? (
-        <div style={{ position: "absolute", left: 70 + fly * 330, top: 760 + fly * 260, opacity: paperIn * (1 - fly), transform: `rotate(${-8 + 8 * fly}deg) scale(${1 - 0.6 * fly})`, transformOrigin: "50% 50%" }}>
-          <PaperCard2D w={360} />
-        </div>
-      ) : null}
-      {ph > 0 ? (
-        <PhoneAt x={110 - 110 * ph * 0} y={560 + (1 - ph) * 900} w={430} tilt={4 * (1 - ph)}>
-          <WalletScreen stamps={interpolate(frame, [phoneAt + 14, phoneAt + 30], [0, 4], clamp)} />
-        </PhoneAt>
-      ) : null}
+      <DarkBg y={980} glow={1 + 0.5 * flash} />
+      <Stage cam={{ pos: [0.35 + Math.sin(t * 0.4) * 0.2, 0.2, 5.6], target: [0, 0.05, 0], fov: 35 }} env={1} exposure={1.1}>
+        {logoOut < 1 ? (
+          <group position={[0, 0.1 + logoOut * 1.8, -logoOut * 2]} rotation={[0, Math.sin(t * 1.2) * 0.25 * (1 - logoIn * 0.6), 0]} scale={0.6 + 0.4 * logoIn}>
+            <Plate src="screens/logo.png" w={1.9} h={0.646} opacity={Math.min(1, logoIn * 1.4) * (1 - logoOut)} />
+            <Glow position={[0, 0, -0.2]} size={3.2} color="#16705D" opacity={0.5 * logoIn * (1 - logoOut)} />
+          </group>
+        ) : null}
+        {ph > 0 ? (
+          <Phone3D
+            position={[2.6 * (1 - ph), -0.05, 0]}
+            rotation={[0.05, -Math.PI * 1.1 * (1 - ph) - 0.22 + Math.sin(t * 0.9) * 0.06, 0.03 * (1 - ph)]}
+            scale={0.92}
+            screens={[["screens/w-s0.png", 1], ["screens/w-s4.png", interpolate(frame, [arrived, arrived + 6], [0, 1], clamp)]]}
+            brightness={1 + 0.4 * flash}
+            glow={flash}
+          />
+        ) : null}
+        {frame >= flyAt - 14 && fly < 1 ? <FlyingPaper fly={fly} t={t} o={Math.min(1, (frame - flyAt + 14) / 6) * (1 - ease(frame, arrived - 5, 5))} /> : null}
+        <Motes seed="b" n={26} />
+      </Stage>
     </Scene>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* 5 · Escanea el QR, sin descargar app */
+/* 5 · Escanea el QR del mostrador, sin descargar app */
 const QrScene: React.FC = () => {
-  const { frame, fps, s } = useT();
-  const signIn = s(S.qr.from + 0.1);
+  const { frame, fps, t, s } = useT();
+  const a = s(S.qr.from);
+  const inn = sp(frame, fps, a, 16, 110);
   const addAt = s(wordTime("q1", "sin") - 0.1);
-  const add = frame >= addAt ? spring({ frame: frame - addAt, fps, config: { damping: 18, stiffness: 140 } }) : 0;
-  const cardAt = s(wordTime("q1", "ninguna"));
-  const scan = (frame - signIn) / fps;
+  const scanned = frame >= addAt;
+  const cam: Cam = { pos: [0.4 + Math.sin(t * 0.35) * 0.25, 0.9, 6.9], target: [0.05, -0.25, 0], fov: 35 };
   return (
     <Scene id="qr">
       <DarkBg y={1000} />
-      <PopIn at={signIn} x={60} y={700} w={380}>
-        <div style={{ width: 380, borderRadius: 30, background: C.cream, padding: "34px 30px 30px", boxShadow: "0 40px 90px rgba(0,0,0,0.6)", fontFamily: font, color: C.ink, textAlign: "center", transform: "perspective(1200px) rotateY(14deg)" }}>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <div style={{ width: 72, height: 72, borderRadius: 20, background: "#1F2A33", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <BusinessIcon size={44} color={C.cream} />
-            </div>
-          </div>
-          <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 34, marginTop: 10 }}>{business.name}</div>
-          <div style={{ fontSize: 30, fontWeight: 800, lineHeight: 1.1, marginTop: 10 }}>
-            {copy.qrSign.top}
-            <br />
-            {copy.qrSign.bottom}
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", marginTop: 18 }}>
-            <div style={{ padding: 12, background: "#fff", borderRadius: 16, position: "relative" }}>
-              <QrCode size={230} color={C.ink} background="#fff" quiet={1} />
-              <div style={{ position: "absolute", left: 6, right: 6, top: 12 + (Math.sin(scan * 3) * 0.5 + 0.5) * 230, height: 4, borderRadius: 4, background: C.mint, boxShadow: `0 0 18px ${C.mint}`, opacity: add < 0.5 ? 1 : 0 }} />
-            </div>
-          </div>
-        </div>
-      </PopIn>
-      <PhoneAt x={185} y={620} w={380} tilt={-3}>
-        <div style={{ position: "absolute", inset: 0, background: "#0B0D0F" }}>
-          {/* visor de cámara */}
-          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 45%, #2a3330, #0b0d0f 70%)", opacity: 1 - add }}>
-            <div style={{ position: "absolute", left: "50%", top: "42%", width: 360, height: 360, transform: "translate(-50%,-50%)", border: "6px solid rgba(255,255,255,0.85)", borderRadius: 40, opacity: 0.9 }} />
-            <div style={{ position: "absolute", left: 0, right: 0, top: "68%", textAlign: "center", fontFamily: font, fontSize: 30, fontWeight: 600, color: "#fff", opacity: 0.85 }}>Apunta al código</div>
-          </div>
-          {/* hoja "Añadir a la billetera" */}
-          {add > 0 ? (
-            <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, top: 110 + (1 - add) * 1300, background: "#16191C", borderRadius: "40px 40px 0 0", fontFamily: font, color: "#fff" }}>
-              <div style={{ position: "absolute", left: 30, top: 90 }}>
-                <PassCard width={SCREEN - 60} stamps={frame >= cardAt ? 1 : 0} showQr={false} />
-              </div>
-              <div style={{ position: "absolute", left: 40, right: 40, top: 30, display: "flex", justifyContent: "space-between", fontSize: 28, fontWeight: 600 }}>
-                <span style={{ opacity: 0.6 }}>Cancelar</span>
-                <span style={{ color: C.mint, fontWeight: 800 }}>Añadir</span>
-              </div>
-              <div style={{ position: "absolute", left: 40, right: 40, bottom: 120, height: 96, borderRadius: 26, background: "#fff", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 800 }}>{copy.addPass}</div>
-            </div>
+      <Stage cam={cam} env={1} exposure={1.08}>
+        <Counter position={[0, -1, 0]} />
+        <group position={[-0.62, -1 + 0.78, -0.15]} rotation={[-0.12, 0.38, 0]}>
+          <Card3D src="screens/sign.png" w={0.98} h={1.53} depth={0.05} back={C.cream} />
+          {!scanned ? (
+            <mesh position={[0, -0.32 + (Math.sin((frame - a) / 5) * 0.5 + 0.5) * 0.62, 0.05]} renderOrder={10}>
+              <planeGeometry args={[0.62, 0.012]} />
+              <meshBasicMaterial color="#69D3BE" toneMapped={false} transparent opacity={0.95} />
+            </mesh>
           ) : null}
-        </div>
-      </PhoneAt>
-      <Tap x={665} y={1388} at={cardAt + 2} />
+        </group>
+        <mesh position={[-0.62, -0.97, -0.25]} castShadow>
+          <boxGeometry args={[0.7, 0.06, 0.35]} />
+          <meshStandardMaterial color="#1F2A33" roughness={0.4} />
+        </mesh>
+        <Phone3D
+          position={[0.72, -0.05 - (1 - inn) * 2.5, 0.85]}
+          rotation={[-0.05, -0.55 + 0.1 * Math.sin(t * 0.7), 0.06]}
+          scale={0.78}
+          screens={layers(frame, [["screens/cam.png", 0], ["screens/add.png", addAt]])}
+          glow={scanned ? 0.4 : 0}
+        />
+        {!scanned ? (
+          <mesh position={[0.1, -0.15, 0.4]} rotation={[0, -0.9, 0]} renderOrder={10}>
+            <planeGeometry args={[1.3, 0.004]} />
+            <meshBasicMaterial color="#8FE3C0" toneMapped={false} transparent opacity={0.35 + 0.3 * Math.sin(t * 8)} />
+          </mesh>
+        ) : null}
+        <Motes seed="q" n={18} />
+      </Stage>
     </Scene>
   );
 };
@@ -361,240 +309,296 @@ const QrScene: React.FC = () => {
 /* ------------------------------------------------------------------ */
 /* 6 · Camilo paga y el sello llega solo */
 const PayScene: React.FC = () => {
-  const { frame, fps, s } = useT();
-  const tapAt = s(wordTime("c1", "paga"));
+  const { frame, fps, t, s } = useT();
+  const a = s(S.pay.from);
+  const payAt = s(wordTime("c1", "paga"));
   const stampAt = s(wordTime("c1", "sello"));
-  const banner = frame >= stampAt ? spring({ frame: frame - stampAt, fps, config: { damping: 16, stiffness: 160 } }) * (1 - ease(frame, stampAt + 50, 10)) : 0;
-  const stamps = 3 + interpolate(frame, [stampAt + 4, stampAt + 14], [0, 1], clamp);
-  const zoomAt = s(V.c2.at - 0.1);
-  const z = ease(frame, zoomAt, 22, EASE_INOUT);
-  const badgeAt = s(wordTime("c2", "corte"));
-  const badge = frame >= badgeAt ? spring({ frame: frame - badgeAt, fps, config: { damping: 10, stiffness: 160 } }) : 0;
+  const tok = interpolate(frame, [payAt + 4, stampAt + 2], [0, 1], { ...clamp, easing: EASE_INOUT });
+  const zoom = ease(frame, s(V.c2.at - 0.15), 26, EASE_INOUT);
+  const medalAt = s(wordTime("c2", "corte") - 0.05);
+  const medal = sp(frame, fps, medalAt, 10, 150);
+  const from: V3 = [-0.55, -0.32, 0.1];
+  const to: V3 = [0.72, 0.05, 0.55];
+  const tp = lerp3(from, to, tok);
+  tp[1] += Math.sin(tok * Math.PI) * 0.9;
+  const cam: Cam = {
+    pos: lerp3([0.1 + Math.sin(t * 0.3) * 0.2, 0.75, 6.2], [0.8, 0.25, 4.2], zoom),
+    target: lerp3([0, -0.25, 0], [0.6, -0.08, 0.4], zoom),
+    fov: 35,
+  };
   return (
     <Scene id="pay">
-      <Photo src="fotos/calle.jpg" cx={330} zoom={1.15} filter="blur(16px) brightness(0.42) saturate(0.9)" />
-      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(5,8,11,0.85) 0%, rgba(5,8,11,0.3) 30%, rgba(5,8,11,0.3) 70%, rgba(5,8,11,0.8) 100%)" }} />
-      {/* caja del negocio */}
-      <div style={{ position: "absolute", left: 50, top: 760, opacity: 1 - z, transform: `translateX(${-z * 200}px)` }}>
-        <PopIn at={s(S.pay.from + 0.05)} x={0} y={0} w={420}>
-          <Glass w={420} pad={28}>
-            <div style={{ fontSize: 34, fontWeight: 800 }}>{copy.register.who}</div>
-            <div style={{ fontSize: 24, opacity: 0.6, marginTop: 4 }}>{copy.register.where}</div>
-            <div style={{ marginTop: 22, height: 78, borderRadius: 20, background: frame >= tapAt ? C.highlight : C.mint, color: C.ink, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 800, transform: `scale(${frame >= tapAt && frame < tapAt + 6 ? 0.95 : 1})` }}>
-              {frame >= stampAt ? "✓ Sellado" : copy.register.button}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 24 }}>
-              <Avatar letter="C" color={C.highlight} size={54} />
-              <span style={{ fontSize: 30, fontWeight: 700 }}>Camilo</span>
-            </div>
-          </Glass>
-        </PopIn>
-        <Tap x={210} y={155} at={tapAt} />
-      </div>
-      {/* celular de Camilo */}
-      <PhoneAt x={190 - 190 * z} y={600 - 40 * z} w={400 + 120 * z}>
-        <WalletScreen stamps={stamps} banner={banner} pulse={z * (0.6 + 0.4 * Math.sin(frame / 4))} />
-      </PhoneAt>
-      {badge > 0 ? (
-        <div style={{ position: "absolute", left: 650, top: 1010, transform: `scale(${badge}) rotate(${-12 + 4 * Math.sin(frame / 10)}deg)`, width: 230, height: 230, borderRadius: "50%", background: C.gold, color: C.ink, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: font, fontWeight: 800, boxShadow: "0 24px 60px rgba(232,184,74,0.45)", border: `6px solid ${C.goldLight}` }}>
-          <BusinessIcon size={60} color={C.ink} />
-          <div style={{ fontSize: 34, lineHeight: 1, marginTop: 6 }}>CORTE</div>
-          <div style={{ fontSize: 34, lineHeight: 1 }}>GRATIS</div>
-        </div>
-      ) : null}
+      <DarkBg y={1000} />
+      <Stage cam={cam} env={1} exposure={1.08}>
+        <Counter position={[0, -1, 0]} />
+        <Tablet3D position={[-0.82, -0.32, -0.35]} rotation={[-0.22, 0.42, 0]} scale={0.55} screens={layers(frame, [["screens/pos-a.png", 0], ["screens/pos-b.png", stampAt]])} />
+        <Phone3D
+          position={[0.72, -0.08 - (1 - sp(frame, fps, a + 3, 16, 110)) * 2.5, 0.45]}
+          rotation={[-0.06, -0.38 + 0.25 * zoom, 0.02]}
+          scale={0.78}
+          screens={layers(frame, [["screens/w-s3.png", 0], ["screens/w-s4-banner.png", stampAt], ["screens/w-s4.png", stampAt + 45], ["screens/w-s4-pulse.png", s(wordTime("c2", "cinco"))]])}
+          glow={interpolate(frame, [stampAt, stampAt + 4, stampAt + 20], [0, 1, 0], clamp)}
+        />
+        {tok > 0 && tok < 1 ? <Disc3D src="screens/token.png" r={0.14} t={0.04} position={tp} rotation={[0.3, tok * 9, 0]} edge="#F6F2EA" metal={false} /> : null}
+        {medal > 0 ? (
+          <group position={[0.3, -0.34 + 0.06 * Math.sin(t * 2), 0.95]} scale={medal * 0.8} rotation={[0.1, -0.6 + Math.sin(t * 1.5) * 0.35, 0.1]}>
+            <Disc3D src="screens/medal.png" r={0.3} t={0.06} />
+            <Glow position={[0, 0, -0.1]} size={1.4} color="#E8B84A" opacity={0.35} />
+          </group>
+        ) : null}
+        <Motes seed="p" n={18} />
+      </Stage>
     </Scene>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* 7 · Camilo deja de venir (contador de días) */
+/* 7 · Camilo deja de venir: su tarjeta se apaga y los días suben */
 const GoneScene: React.FC = () => {
-  const { frame, s } = useT();
+  const { frame, t, s } = useT();
   const from = s(wordTime("d1", "deja"));
   const to = s(V.d2.end);
   const days = Math.round(interpolate(frame, [from, to], [1, 47], { ...clamp, easing: EASE_INOUT }));
-  const grey = ease(frame, from, 30);
+  const grey = ease(frame, from, 40);
+  const tint = new THREE.Color("#ffffff").lerp(new THREE.Color("#6E757B"), grey);
   return (
     <Scene id="gone">
-      <DarkBg glow={0.5} y={1000} />
-      <div style={{ position: "absolute", left: CX - 260, top: 590, height: 420, overflow: "hidden", borderRadius: 26, transform: "perspective(1400px) rotateX(10deg) rotateZ(-3deg)", filter: `grayscale(${grey}) brightness(${1 - 0.35 * grey})` }}>
-        <PassCard width={520} stamps={4} showQr={false} />
-      </div>
-      <div style={{ position: "absolute", left: 0, width: 960, top: 1060, textAlign: "center", fontFamily: font, color: C.white, opacity: ease(frame, from - 4, 10) }}>
-        <div style={{ fontSize: 210, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: C.red, textShadow: "0 0 50px rgba(255,90,82,0.35)" }}>{days}</div>
-        <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 52, marginTop: 4, opacity: 0.85 }}>{copy.days}</div>
+      <DarkBg glow={0.6 - 0.4 * grey} y={800} />
+      <Stage cam={{ pos: [Math.sin(t * 0.25) * 0.6, 0.85 - 0.1 * grey, 5.4 - 0.4 * grey], target: [0, 0.3, 0], fov: 35 }} env={1 - 0.5 * grey} exposure={1.1 - 0.3 * grey}>
+        <GlossFloor y={-0.5} />
+        <Card3D src="screens/pass.png" w={0.64} h={0.875} depth={0.025} position={[0, 0.72, 0]} rotation={[-0.08, -0.3 + Math.sin(t * 0.4) * 0.12, 0.02]} tint={tint} back="#2A3138" />
+        <Motes seed="d" n={30} color="#9AA4AC" spread={[5, 5, 4]} />
+      </Stage>
+      <div style={{ position: "absolute", left: 0, width: 960, top: 1050, textAlign: "center", fontFamily: font, color: C.white, opacity: ease(frame, from - 4, 10) }}>
+        <div style={{ fontSize: 190, fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1, fontVariantNumeric: "tabular-nums", color: C.red, textShadow: "0 0 50px rgba(255,90,82,0.35)" }}>{days}</div>
+        <div style={{ fontFamily: logoFont, fontStyle: "italic", fontWeight: 600, fontSize: 48, marginTop: 2, opacity: 0.85 }}>{copy.days}</div>
       </div>
     </Scene>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* 8 · Pasa cerca y el celular le avisa (foto) */
-const NearScene: React.FC = () => {
-  const { frame, fps, t, s } = useT();
-  const z = 1 + 0.08 * ((t - S.near.from) / (S.near.to - S.near.from));
-  const notifAt = s(wordTime("n1", "avisa") - 0.15);
-  const n = frame >= notifAt ? spring({ frame: frame - notifAt, fps, config: { damping: 15, stiffness: 150 } }) : 0;
-  const ringsOn = ease(frame, s(wordTime("n1", "cerca")), 10);
-  const px = 823;
-  const py = 1290;
-  return (
-    <Scene id="near">
-      <Photo src="fotos/calle.jpg" cx={1300} zoom={z} originY={1290} />
-      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(5,8,11,0.85) 0%, rgba(5,8,11,0.25) 30%, rgba(5,8,11,0) 45%, rgba(5,8,11,0) 75%, rgba(5,8,11,0.55) 100%)" }} />
-      {[0, 1, 2].map((i) => {
-        const r = ((t * 0.7 + i / 3) % 1) * 1;
-        return <div key={i} style={{ position: "absolute", left: px - 200, top: py - 200, width: 400, height: 400, borderRadius: "50%", border: "3px solid rgba(143,227,192,0.85)", transform: `scale(${0.15 + r * 1.4})`, opacity: (1 - r) * ringsOn * 0.9 }} />;
-      })}
-      {n > 0 ? (
-        <div style={{ position: "absolute", left: 90, top: 880, transform: `translateY(${(1 - n) * -80}px) scale(${0.9 + 0.1 * n})`, opacity: Math.min(1, n * 1.5) }}>
-          <Notification width={780} />
-        </div>
-      ) : null}
-    </Scene>
-  );
-};
-
-/* ------------------------------------------------------------------ */
-/* 9 · Y vuelve: lo ves en tu panel */
-const PanelList: React.FC<{ back: number; select?: number }> = ({ back, select = 0 }) => (
-  <Glass w={800} pad={32}>
-    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-      <div style={{ width: 56, height: 56, borderRadius: 16, background: "#1F2A33", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <BusinessIcon size={34} color={C.cream} />
-      </div>
-      <div style={{ fontSize: 34, fontWeight: 800 }}>{copy.panel.title}</div>
-    </div>
-    <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "0.18em", color: C.soft, marginTop: 26, marginBottom: 12 }}>{copy.panel.section}</div>
-    {copy.panel.rows.map((r, i) => {
-      const isBack = i === 0 ? back : 0;
-      const sel = i > 0 ? select : 0;
-      return (
-        <div key={r.name} style={{ display: "flex", alignItems: "center", gap: 18, padding: "16px 18px", marginTop: 10, borderRadius: 22, background: isBack > 0 ? `rgba(143,227,192,${0.16 * isBack})` : sel > 0 ? `rgba(255,184,102,${0.14 * sel})` : "rgba(255,255,255,0.04)", border: `2px solid ${isBack > 0 ? `rgba(143,227,192,${isBack})` : sel > 0 ? `rgba(255,184,102,${sel})` : "rgba(255,255,255,0.06)"}` }}>
-          <Avatar letter={r.name[0]} color={r.color} />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 32, fontWeight: 800 }}>{r.name}</div>
-            <div style={{ fontSize: 24, opacity: 0.6 }}>{r.detail}</div>
-          </div>
-          {isBack > 0.5 ? (
-            <div style={{ fontSize: 24, fontWeight: 800, color: C.ink, background: C.highlight, padding: "8px 16px", borderRadius: 999, transform: `scale(${Math.min(1, (isBack - 0.5) * 2)})` }}>{copy.panel.back}</div>
-          ) : (
-            <div style={{ fontSize: 24, fontWeight: 700, opacity: 0.55 }}>{r.days} días</div>
-          )}
-        </div>
-      );
-    })}
-  </Glass>
+/* 8 · La calle: Camilo pasa cerca de la barbería y su celular le avisa */
+const Building: React.FC<{ x: number; w: number; h: number; color: string; seed: number }> = ({ x, w, h, color, seed }) => (
+  <group position={[x, 0, -2.2]}>
+    <mesh position={[0, h / 2, 0]} castShadow receiveShadow>
+      <boxGeometry args={[w, h, 3]} />
+      <meshStandardMaterial color={color} roughness={0.85} />
+    </mesh>
+    {Array.from({ length: Math.floor(h / 1.2) - 1 }).map((_, r) =>
+      Array.from({ length: Math.max(1, Math.floor(w / 1.1)) }).map((__, c) => {
+        const lit = random(`win${seed}-${r}-${c}`) > 0.45;
+        return (
+          <mesh key={`${r}-${c}`} position={[(c - (Math.max(1, Math.floor(w / 1.1)) - 1) / 2) * 1.05, 1.9 + r * 1.2, 1.505]}>
+            <planeGeometry args={[0.55, 0.7]} />
+            <meshStandardMaterial color={lit ? "#FFD9A0" : "#1C2630"} emissive={lit ? "#FFB866" : "#000"} emissiveIntensity={lit ? 0.9 : 0} />
+          </mesh>
+        );
+      }),
+    )}
+  </group>
 );
 
+const Barbershop: React.FC<{ t: number }> = ({ t }) => (
+  <group position={[0, 0, -2.2]}>
+    <mesh position={[0, 1.75, 0]} castShadow receiveShadow>
+      <boxGeometry args={[3.4, 3.5, 3]} />
+      <meshStandardMaterial color="#2B3A45" roughness={0.7} />
+    </mesh>
+    {/* vitrina iluminada */}
+    <mesh position={[-0.55, 1.05, 1.505]}>
+      <planeGeometry args={[1.9, 1.5]} />
+      <meshStandardMaterial color="#FFE2B0" emissive="#FFB866" emissiveIntensity={1.1} />
+    </mesh>
+    {[-1.2, -0.55, 0.1].map((x) => (
+      <mesh key={x} position={[x, 0.75, 1.51]}>
+        <boxGeometry args={[0.32, 0.55, 0.02]} />
+        <meshStandardMaterial color="#1B1B1B" roughness={0.5} />
+      </mesh>
+    ))}
+    {/* puerta */}
+    <mesh position={[1.05, 0.95, 1.505]}>
+      <planeGeometry args={[0.85, 1.9]} />
+      <meshStandardMaterial color="#14191D" roughness={0.3} metalness={0.4} />
+    </mesh>
+    <Plate src="screens/facade.png" w={2.9} h={0.62} position={[0, 2.75, 1.52]} lit={false} />
+    <BarberPole position={[1.6, 1.4, 1.62]} t={t} scale={0.9} />
+    <pointLight position={[-0.5, 1.2, 2.6]} intensity={5} distance={5} color="#FFB866" />
+    <Glow position={[-0.55, 1.1, 1.7]} size={3} color="#FFB866" opacity={0.35} />
+  </group>
+);
+
+const NearScene: React.FC = () => {
+  const { frame, fps, t, s } = useT();
+  const a = S.near.from;
+  const stopAt = wordTime("n1", "avisa") - 0.1;
+  const walkT = Math.min(t, stopAt) - a;
+  const cx = -3.4 + walkT * 1.05;
+  const fenceOn = ease(frame, s(wordTime("n1", "cerca") - 0.1), 18);
+  const notifAt = s(wordTime("n1", "avisa") - 0.15);
+  const n = sp(frame, fps, notifAt, 13, 140);
+  const pulse = ((t - a) * 0.7) % 1;
+  const flash = interpolate(frame, [notifAt, notifAt + 4, notifAt + 20], [0, 1, 0], clamp);
+  const cam: Cam = { pos: [cx * 0.35 + 0.6, 4.6, 13.5], target: [cx * 0.3 + 0.2, 1.3, -0.8], fov: 38 };
+  return (
+    <Scene id="near">
+      <AbsoluteFill style={{ background: "linear-gradient(180deg, #0B1622 0%, #13232E 45%, #0A1014 100%)" }} />
+      <Stage cam={cam} env={0.45} exposure={0.95}>
+        {/* andén y calle */}
+        <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+          <planeGeometry args={[40, 40]} />
+          <meshStandardMaterial color="#1A2026" roughness={0.6} metalness={0.2} />
+        </mesh>
+        <mesh position={[0, 0.06, -0.1]} receiveShadow>
+          <boxGeometry args={[40, 0.12, 2.6]} />
+          <meshStandardMaterial color="#5A6168" roughness={0.8} />
+        </mesh>
+        {[-12, -8, -4, 0, 4, 8, 12].map((x) => (
+          <mesh key={x} position={[x, 0.015, 3.2]} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[1.6, 0.12]} />
+            <meshBasicMaterial color="#C9CDD1" />
+          </mesh>
+        ))}
+        <Building x={-4.3} w={4.6} h={6} color="#5B4A3E" seed={1} />
+        <Barbershop t={t} />
+        <Building x={4.2} w={4.4} h={5} color="#3E5248" seed={2} />
+        <StreetLamp position={[-2.4, 0, 1.0]} />
+        <StreetLamp position={[3.2, 0, 1.0]} />
+        <Geofence center={[0.3, 0.06, 0.4]} r={2.6} on={fenceOn} pulse={fenceOn > 0.5 ? pulse : 0} flash={flash} />
+        <Person position={[cx, 0.12, 0.35]} rot={Math.PI / 2 - 0.15} walk={t < stopAt ? walkT * 7 : undefined} shirt="#1F4A3C" pants="#2A2F3A" seed={3} phone lookDown />
+        {n > 0 ? (
+          <group position={[cx + 0.6, 2.3 + 0.05 * Math.sin(t * 2), 1.6]} rotation={[-0.22, -0.05, 0]} scale={n}>
+            <Plate src="screens/notif-near.png" w={3.3} h={1.226} />
+          </group>
+        ) : null}
+        <Glow position={[cx + 0.22, 1.2, 0.67]} size={0.5 + 1.2 * flash} color="#8FE3C0" opacity={0.6 + 0.4 * flash} />
+      </Stage>
+    </Scene>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* 9 y 10 · El panel en la tablet: Camilo volvió; aviso a los que no vuelven */
 const BackScene: React.FC = () => {
-  const { frame, fps, s } = useT();
+  const { frame, fps, t, s } = useT();
+  const a = s(S.back.from);
+  const inn = sp(frame, fps, a, 16, 100);
   const backAt = s(V.v1.at + 0.1);
-  const back = ease(frame, backAt, 12);
-  const stampAt = s(wordTime("v2", "panel") - 0.1);
-  const st = frame >= stampAt ? spring({ frame: frame - stampAt, fps, config: { damping: 9, stiffness: 170 } }) : 0;
+  const stAt = s(wordTime("v2", "panel") - 0.15);
+  const st = sp(frame, fps, stAt, 11, 160);
   return (
     <Scene id="back">
       <DarkBg y={1000} />
-      <PopIn at={s(S.back.from + 0.02)} x={80} y={600} w={800}>
-        <PanelList back={back} />
-      </PopIn>
-      {st > 0 ? (
-        <div style={{ position: "absolute", left: 600, top: 1080, width: 300, height: 300, transform: `scale(${2 - st}) rotate(-14deg)`, opacity: Math.min(1, st * 1.5) }}>
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: `9px solid ${C.highlight}`, background: "rgba(5,8,11,0.85)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: font, fontWeight: 800, color: C.highlight, boxShadow: "0 0 60px rgba(143,227,192,0.45)" }}>
-            <div style={{ fontSize: 54, lineHeight: 1 }}>{copy.panel.badge[0]}</div>
-            <div style={{ fontSize: 54, lineHeight: 1 }}>{copy.panel.badge[1]}</div>
-          </div>
-        </div>
-      ) : null}
+      <Stage cam={{ pos: [0.3 + Math.sin(t * 0.3) * 0.3, 0.6, 6], target: [0, 0, 0], fov: 35 }} env={1} exposure={1.08}>
+        <Counter position={[0, -0.95, 0]} />
+        <Tablet3D position={[0, 0.05 - (1 - inn) * 3, 0]} rotation={[-0.12, -0.18 + Math.sin(t * 0.5) * 0.05, 0]} scale={0.85} screens={layers(frame, [["screens/pan-a.png", 0], ["screens/pan-b.png", backAt]])} />
+        {st > 0 ? (
+          <group position={[0.42, -0.48 + 2.2 * (1 - st), 1.0]} rotation={[-0.35, -0.25, -0.25 + (1 - st) * 2]} scale={0.8}>
+            <Disc3D src="screens/volvio.png" r={0.36} t={0.06} edge="#8FE3C0" metal={false} emissive={0.15} />
+          </group>
+        ) : null}
+        <Motes seed="v" n={20} />
+      </Stage>
     </Scene>
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* 10 · A los que no vuelven, un aviso */
 const PushScene: React.FC = () => {
-  const { frame, fps, s } = useT();
-  const sel = ease(frame, s(V.a1.at + 0.3), 10);
-  const composeAt = s(V.a2.at - 0.05);
-  const listOut = ease(frame, composeAt - 4, 8, EASE_IN);
+  const { frame, fps, t, s } = useT();
+  const selAt = s(V.a1.at + 0.3);
+  const cmpAt = s(V.a2.at - 0.05);
   const sendAt = s(wordTime("a2", "listo") - 0.15);
-  const phonesAt = s(V.a3.at - 0.2);
-  const composeOut = ease(frame, phonesAt - 4, 8, EASE_IN);
+  const phonesAt = s(V.a3.at - 0.25);
+  const back = ease(frame, phonesAt - 6, 16, EASE_INOUT);
+  const cam: Cam = { pos: lerp3([0.3 + Math.sin(t * 0.3) * 0.3, 0.6, 6], [0, 0.9, 6.4], back), target: lerp3([0, 0, 0], [0, -0.05, 0.6], back), fov: 35 };
   return (
     <Scene id="push">
       <DarkBg y={1000} />
-      {listOut < 1 ? (
-        <div style={{ opacity: 1 - listOut }}>
-          <PopIn at={s(S.push.from)} x={80} y={600} w={800}>
-            <PanelList back={1} select={sel} />
-          </PopIn>
-        </div>
-      ) : null}
-      {composeOut < 1 ? (
-        <div style={{ opacity: 1 - composeOut }}>
-          <PopIn at={composeAt} x={140} y={640} w={680}>
-            <Glass w={680} pad={34}>
-              <div style={{ fontSize: 38, fontWeight: 800 }}>{copy.push.title}</div>
-              <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "0.16em", color: C.soft, marginTop: 14 }}>{copy.push.to}</div>
-              <div style={{ marginTop: 18, padding: "20px 22px", borderRadius: 20, background: "rgba(255,255,255,0.06)", border: "2px solid rgba(255,255,255,0.12)", fontSize: 34, fontWeight: 600 }}>
-                {copy.push.msg.slice(0, Math.max(0, Math.round(interpolate(frame, [composeAt + 4, composeAt + 22], [0, copy.push.msg.length], clamp))))}
-                <span style={{ opacity: frame % 16 < 8 ? 1 : 0 }}>|</span>
+      <Stage cam={cam} env={1} exposure={1.08}>
+        <Counter position={[0, -0.95, 0]} />
+        <Tablet3D
+          position={[0, 0.05 + back * 0.5, -back * 2.2]}
+          rotation={[-0.12, -0.18, 0]}
+          scale={0.85}
+          screens={layers(frame, [["screens/pan-b.png", 0], ["screens/pan-c.png", selAt], ["screens/cmp-a.png", cmpAt], ["screens/cmp-b.png", cmpAt + 10], ["screens/cmp-c.png", sendAt]])}
+        />
+        {frame >= sendAt && frame < phonesAt + 20
+          ? [0, 1].map((i) => {
+              const k = interpolate(frame, [sendAt + 2 + i * 3, phonesAt + 14 + i * 3], [0, 1], { ...clamp, easing: EASE_INOUT });
+              if (k <= 0 || k >= 1) return null;
+              const p = lerp3([0, 0.1 + back * 0.5, -back * 2.2 + 0.2], [i ? 0.5 : -0.5, -0.1, 0.9], k);
+              p[1] += Math.sin(k * Math.PI) * 0.8;
+              return (
+                <group key={i} position={p}>
+                  <mesh>
+                    <sphereGeometry args={[0.05, 12, 10]} />
+                    <meshBasicMaterial color="#8FE3C0" toneMapped={false} />
+                  </mesh>
+                  <Glow position={[0, 0, 0]} size={0.6} color="#8FE3C0" opacity={0.9} />
+                </group>
+              );
+            })
+          : null}
+        {[0, 1].map((i) => {
+          const p = sp(frame, fps, phonesAt + i * 4, 15, 120);
+          if (p <= 0) return null;
+          const notif = phonesAt + 12 + i * 3;
+          return (
+            <Phone3D
+              key={i}
+              position={[i ? 0.5 : -0.5, -0.12 - (1 - p) * 2.4, 0.9]}
+              rotation={[-0.08, i ? -0.3 : 0.3, 0]}
+              scale={0.62}
+              screens={layers(frame, [["screens/lock.png", 0], ["screens/lock-push.png", notif]])}
+              glow={interpolate(frame, [notif, notif + 4, notif + 18], [0, 1, 0], clamp)}
+            />
+          );
+        })}
+        <Motes seed="a" n={20} />
+      </Stage>
+      {frame >= phonesAt + 12
+        ? copy.push.names.map((name, i) => (
+            <Label key={name} p={[i ? 0.5 : -0.5, -0.12 + 0.62 * 0.8, 0.9]} cam={cam} dy={-62} o={ease(frame, phonesAt + 14 + i * 3, 8)}>
+              <div style={{ fontFamily: font, fontSize: 30, fontWeight: 800, color: C.white }}>
+                {name} <span style={{ color: C.highlight }}>· {copy.push.sent}</span>
               </div>
-              <div style={{ marginTop: 22, height: 84, borderRadius: 22, background: frame >= sendAt ? C.highlight : C.mint, color: C.ink, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 800 }}>{frame >= sendAt ? "✓ Enviado" : copy.push.button}</div>
-            </Glass>
-          </PopIn>
-          <Tap x={480} y={925} at={sendAt} />
-        </div>
-      ) : null}
-      {frame >= phonesAt
-        ? copy.push.names.map((name, i) => {
-            const at = phonesAt + i * 5;
-            const p = frame >= at ? spring({ frame: frame - at, fps, config: { damping: 16, stiffness: 130 } }) : 0;
-            const nAt = at + 12;
-            const np = frame >= nAt ? spring({ frame: frame - nAt, fps, config: { damping: 15, stiffness: 160 } }) : 0;
-            return (
-              <div key={name} style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1920, opacity: Math.min(1, p * 1.5), transform: `translateY(${(1 - p) * 120}px)` }}>
-                <PhoneAt x={-190 + i * 380} y={560} w={330}>
-                  <LockScreen>
-                    {np > 0 ? (
-                      <div style={{ position: "absolute", left: 20, top: 420, transform: `translateY(${(1 - np) * -40}px)`, opacity: np }}>
-                        <MiniNotif title={business.name} body={copy.push.msg} width={SCREEN - 40} />
-                      </div>
-                    ) : null}
-                  </LockScreen>
-                </PhoneAt>
-                <div style={{ position: "absolute", left: CX - 190 + i * 380 - 170, width: 340, top: 1262, textAlign: "center", fontFamily: font, fontSize: 30, fontWeight: 800, color: C.white }}>
-                  {name} <span style={{ color: C.highlight, opacity: np }}>· {copy.push.sent}</span>
-                </div>
-              </div>
-            );
-          })
+            </Label>
+          ))
         : null}
     </Scene>
   );
 };
 
 /* ------------------------------------------------------------------ */
-/* 11 · Tu tarjeta, con tu logo y tus colores */
+/* 11 · Tu tarjeta con tu logo y tus colores: cuatro tarjetas 3D */
 const ColorsScene: React.FC = () => {
-  const { frame, fps, s } = useT();
+  const { frame, fps, t, s } = useT();
   const a = s(S.colors.from);
   return (
     <Scene id="colors">
-      <DarkBg y={1050} />
-      {copy.brands.map((b, i) => {
-        const at = a + 4 + i * 9;
-        const p = frame >= at ? spring({ frame: frame - at, fps, config: { damping: 14, stiffness: 120 } }) : 0;
-        const ang = (i - 1.5) * 9;
-        const x = CX - 230 + (i - 1.5) * 70;
-        const y = 640 + Math.abs(i - 1.5) * 34 + i * 120;
-        return (
-          <div key={b.name} style={{ position: "absolute", left: x, top: y + (1 - p) * 500, opacity: Math.min(1, p * 1.5), transform: `perspective(1400px) rotateY(${(1 - p) * 70}deg) rotate(${ang * p}deg)`, transformOrigin: "50% 100%" }}>
-            <MiniCard name={b.name} color={b.color} icon={b.icon} stamps={b.stamps} total={b.total} width={460} />
-          </div>
-        );
-      })}
+      <DarkBg y={1000} />
+      <Stage cam={{ pos: [Math.sin(t * 0.5) * 0.8, 0.6, 7.6], target: [0, 0.0, 0], fov: 35 }} env={1.1} exposure={1.1}>
+        <GlossFloor y={-1.6} />
+        {copy.brands.map((b, i) => {
+          const p = sp(frame, fps, a + 3 + i * 7, 14, 110);
+          if (p <= 0) return null;
+          const off = i - 1.5;
+          return (
+            <Card3D
+              key={b.name}
+              src={`screens/mini-${i}.png`}
+              w={1.5}
+              h={0.92}
+              r={0.09}
+              depth={0.025}
+              back={b.color}
+              position={[off * 0.22, 0.9 - i * 0.5 - (1 - p) * 3, off * 0.25]}
+              rotation={[-0.1, (1 - p) * Math.PI + off * 0.12 + Math.sin(t * 0.8 + i) * 0.08, off * -0.06]}
+            />
+          );
+        })}
+        <Motes seed="c" n={22} />
+      </Stage>
     </Scene>
   );
 };
@@ -602,26 +606,31 @@ const ColorsScene: React.FC = () => {
 /* ------------------------------------------------------------------ */
 /* 12 · Empieza gratis */
 const FreeScene: React.FC = () => {
-  const { frame, fps, s } = useT();
+  const { frame, fps, t, s } = useT();
+  const a = s(S.free.from);
+  const coin = sp(frame, fps, a + 2, 12, 120);
   const at = s(wordTime("f1", "veinte") - 0.3);
   return (
     <Scene id="free">
-      <DarkBg glow={1.3} y={980} />
-      <div style={{ position: "absolute", left: 0, width: 960, top: 640, display: "flex", justifyContent: "center" }}>
-        <Logo height={110} color={C.white} />
-      </div>
+      <DarkBg glow={1.3} y={860} />
+      <Stage cam={{ pos: [0, 0.2, 6], target: [0, -0.15, 0], fov: 35 }} env={1.1} exposure={1.1}>
+        <group position={[0, 0.25, 0]} scale={coin} rotation={[0.15, (1 - coin) * 4 + Math.sin(t * 1.4) * 0.5, 0]}>
+          <Disc3D src="screens/gratis.png" r={0.5} t={0.1} edge="#8FE3C0" metal={false} emissive={0.1} />
+          <Glow position={[0, 0, -0.3]} size={3.4} color="#16705D" opacity={0.6} />
+        </group>
+        <Motes seed="f" n={30} />
+      </Stage>
       {copy.free.chips.map((c, i) => {
-        const p = frame >= at + i * 6 ? spring({ frame: frame - at - i * 6, fps, config: { damping: 14, stiffness: 160 } }) : 0;
+        const p = sp(frame, fps, at + i * 6, 14, 160);
         return (
-          <div key={c} style={{ position: "absolute", left: 0, width: 960, top: 860 + i * 120, display: "flex", justifyContent: "center", opacity: Math.min(1, p * 1.5), transform: `translateY(${(1 - p) * 40}px)` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "20px 34px", borderRadius: 999, background: "rgba(143,227,192,0.12)", border: `2px solid ${C.highlight}`, fontFamily: font, fontSize: 40, fontWeight: 800, color: C.white }}>
+          <div key={c} style={{ position: "absolute", left: 0, width: 960, top: 1080 + i * 112, display: "flex", justifyContent: "center", opacity: Math.min(1, p * 1.5), transform: `translateY(${(1 - p) * 40}px)` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 32px", borderRadius: 999, background: "rgba(143,227,192,0.12)", border: `2px solid ${C.highlight}`, fontFamily: font, fontSize: 38, fontWeight: 800, color: C.white }}>
               <span style={{ color: C.highlight }}>✓</span>
               {c}
             </div>
           </div>
         );
       })}
-      <div style={{ position: "absolute", left: 0, width: 960, top: 1130, textAlign: "center", fontFamily: font, fontSize: 36, fontWeight: 700, color: C.soft, opacity: ease(frame, at + 14, 10) }}>{copy.free.url}</div>
     </Scene>
   );
 };
@@ -629,87 +638,49 @@ const FreeScene: React.FC = () => {
 /* ------------------------------------------------------------------ */
 /* 13 · Comenta TARJETICA */
 const CtaScene: React.FC = () => {
-  const { frame, fps, s, t } = useT();
+  const { frame, fps, t, s } = useT();
   const a = s(V.k1.at - 0.05);
   const wordAt = s(wordTime("k1", "tarjetica") - 0.1);
-  const pTop = spring({ frame: frame - a, fps, config: { damping: 15, stiffness: 180 } });
-  const pWord = frame >= wordAt ? spring({ frame: frame - wordAt, fps, config: { damping: 11, stiffness: 170 } }) : 0;
-  const typeFrom = wordAt + 10;
-  const typed = copy.cta.word.slice(0, Math.max(0, Math.min(copy.cta.word.length, Math.floor((frame - typeFrom) / 3))));
-  const sentAt = typeFrom + copy.cta.word.length * 3 + 8;
+  const pTop = sp(frame, fps, a, 15, 180);
+  const pWord = sp(frame, fps, wordAt, 11, 170);
+  const ph = sp(frame, fps, a + 2, 16, 100);
+  const typeAt = wordAt + 10;
+  const sentAt = typeAt + 26;
   const replyAt = sentAt + 22;
-  const reply = frame >= replyAt ? spring({ frame: frame - replyAt, fps, config: { damping: 15, stiffness: 150 } }) : 0;
   const bob = Math.sin(t * 5) * 8;
   return (
     <Scene id="cta">
-      <DarkBg glow={1.3} y={900} />
-      <div style={{ position: "absolute", left: 0, width: 960, top: 300, textAlign: "center", fontFamily: font, fontWeight: 800, color: C.white, letterSpacing: "-0.04em" }}>
-        <div style={{ fontSize: 110, opacity: Math.min(1, pTop * 1.5), transform: `scale(${1.2 - 0.2 * pTop})` }}>{copy.cta.top}</div>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 24, marginTop: 14, transform: `scale(${pWord})` }}>
-          <span style={{ fontSize: 132, background: C.highlight, color: C.ink, padding: "0.04em 0.18em 0", borderRadius: "0.12em", boxShadow: "0 20px 60px rgba(143,227,192,0.4)" }}>{copy.cta.word}</span>
-          <span style={{ fontSize: 100, color: C.highlight, transform: `translateY(${bob}px)`, display: "inline-block" }}>↓</span>
+      <DarkBg glow={1.3} y={1050} />
+      <Stage cam={{ pos: [0.3 + Math.sin(t * 0.5) * 0.25, 0.1, 5.4], target: [0, -0.35, 0], fov: 35 }} env={1} exposure={1.1}>
+        <Phone3D
+          position={[0, -0.45 - (1 - ph) * 3, 0]}
+          rotation={[0.04, -0.2 + Math.sin(t * 0.7) * 0.08, 0.02]}
+          scale={1.1}
+          screens={layers(frame, [["screens/cm-0.png", 0], ["screens/cm-1.png", typeAt], ["screens/cm-2.png", sentAt], ["screens/cm-3.png", replyAt]])}
+          glow={interpolate(frame, [replyAt, replyAt + 4, replyAt + 20], [0, 1, 0], clamp)}
+        />
+        <Motes seed="k" n={30} />
+      </Stage>
+      <div style={{ position: "absolute", left: 0, width: 960, top: 250, textAlign: "center", fontFamily: font, fontWeight: 800, color: C.white, letterSpacing: "-0.04em" }}>
+        <div style={{ fontSize: 100, opacity: Math.min(1, pTop * 1.5), transform: `scale(${1.2 - 0.2 * pTop})`, textShadow: "0 10px 40px rgba(0,0,0,0.6)" }}>{copy.cta.top}</div>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 22, marginTop: 10, transform: `scale(${pWord})` }}>
+          <span style={{ fontSize: 124, background: C.highlight, color: C.ink, padding: "0.04em 0.18em 0", borderRadius: "0.12em", boxShadow: "0 20px 60px rgba(143,227,192,0.4)" }}>{copy.cta.word}</span>
+          <span style={{ fontSize: 96, color: C.highlight, transform: `translateY(${bob}px)`, display: "inline-block" }}>↓</span>
         </div>
       </div>
-      {/* comentarios */}
-      <PopIn at={a + 6} x={110} y={760} w={740}>
-        <Glass w={740} pad={30}>
-          <div style={{ textAlign: "center", fontSize: 30, fontWeight: 800 }}>Comentarios</div>
-          {copy.cta.users.map((u, i) => {
-            const at = a + 14 + i * 8;
-            return (
-              <div key={u} style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 20, opacity: ease(frame, at, 8) }}>
-                <Avatar letter={u[0].toUpperCase()} color={i ? C.warm : C.cold} size={52} />
-                <span style={{ fontSize: 26, fontWeight: 700, opacity: 0.7 }}>{u}</span>
-                <span style={{ fontSize: 28, fontWeight: 800 }}>{copy.cta.word}</span>
-              </div>
-            );
-          })}
-          {frame >= sentAt ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 20 }}>
-              <Avatar letter="T" color={C.highlight} size={52} />
-              <span style={{ fontSize: 26, fontWeight: 700, opacity: 0.7 }}>tu_negocio</span>
-              <span style={{ fontSize: 28, fontWeight: 800 }}>{copy.cta.word}</span>
-            </div>
-          ) : null}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 26, padding: "16px 20px", borderRadius: 999, background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.12)" }}>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: C.greenMid }} />
-            <span style={{ flex: 1, fontSize: 28, fontWeight: 600, opacity: typed && frame < sentAt ? 1 : 0.5 }}>{typed && frame < sentAt ? typed : copy.cta.comment}</span>
-            <span style={{ fontSize: 26, fontWeight: 800, color: typed && frame < sentAt ? C.highlight : "rgba(143,227,192,0.4)" }}>Publicar</span>
-          </div>
-        </Glass>
-      </PopIn>
-      {reply > 0 ? (
-        <div style={{ position: "absolute", left: 110, top: 1200, transform: `translateY(${(1 - reply) * 60}px)`, opacity: Math.min(1, reply * 1.5) }}>
-          <div style={{ width: 740, display: "flex", alignItems: "center", gap: 18, padding: "20px 24px", borderRadius: 28, background: "rgba(40,46,50,0.95)", border: "1.5px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", fontFamily: font, color: C.white }}>
-            <div style={{ width: 64, height: 64, borderRadius: 18, background: C.green, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="40" height="40" viewBox="0 0 24 24">
-                <rect x="3" y="6" width="18" height="12" rx="3" fill="none" stroke="#fff" strokeWidth="2" />
-                <circle cx="8.5" cy="12" r="1.4" fill="#fff" />
-                <circle cx="12" cy="12" r="1.4" fill="#fff" />
-                <circle cx="15.5" cy="12" r="1.4" fill="#fff" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 26, fontWeight: 800 }}>{copy.cta.reply}</div>
-              <div style={{ fontSize: 26, opacity: 0.85 }}>{copy.cta.replyBody}</div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      <div style={{ position: "absolute", left: 0, width: 960, top: 1540, display: "flex", justifyContent: "center", opacity: ease(frame, replyAt + 10, 12) }}>
-        <Logo height={84} color={C.white} />
+      <div style={{ position: "absolute", left: 0, width: 960, top: 1620, display: "flex", justifyContent: "center", opacity: ease(frame, replyAt + 10, 12) }}>
+        <Logo height={80} color={C.white} />
       </div>
     </Scene>
   );
 };
 
-/* ------------------------------------------------------------------ */
 /* Titulares, cortes y grano */
 const SCENE_OF: Record<string, SceneId> = {
   h1: "wash", h2: "wash", p1: "lost", p2: "lost", p3: "lost", g1: "guess", m1: "brand", q1: "qr", c1: "pay", c2: "pay",
   d1: "gone", d2: "gone", n1: "near", n2: "near", v1: "back", v2: "back", a1: "push", a2: "push", a3: "push", t1: "colors", f1: "free",
 };
-const TOP: Record<string, number> = { g1: 830, p2: 760, p3: 760, f1: 330 };
+const TOP: Record<string, number> = { p2: 760, p3: 760 };
 const Headlines: React.FC = () => {
   const { fps } = useVideoConfig();
   const s = (x: number) => Math.round(x * fps);
