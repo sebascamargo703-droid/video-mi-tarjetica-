@@ -764,7 +764,7 @@ const Sfx: React.FC<{ at: number; file: string; vol: number }> = ({ at, file, vo
 const ctaSent = V.k1.at + 0.1 + (copy.cta.word.length * 3 + 18) / 30;
 export const SFX: [number, string, number][] = [
   ...(Object.keys(S) as SceneId[]).filter((id) => id !== "wash").map((id) => [S[id].from - 0.45, "whoosh-soft", 0.22] as [number, string, number]),
-  [wordTime("h2", "lavadora") - 0.1, "ring-pulse", 0.3],
+  [V.h2.end + 0.05, "ring-pulse", 0.25],
   [wordTime("p1", "pierde"), "pop", 0.25],
   [wordTime("p1", "moja"), "pop", 0.25],
   [wordTime("p1", "olvida"), "pop", 0.25],
@@ -772,7 +772,7 @@ export const SFX: [number, string, number][] = [
   [wordTime("c1", "paga"), "tap", 0.35],
   [wordTime("c1", "sello"), "notification", 0.4],
   [wordTime("c2", "corte"), "pop", 0.35],
-  [wordTime("n1", "cerca"), "ring-pulse", 0.3],
+  [V.n1.at - 0.35, "ring-pulse", 0.18],
   [wordTime("n1", "avisa") - 0.15, "notification", 0.45],
   [wordTime("n1", "avisa") - 0.1, "haptic", 0.3],
   [wordTime("v2", "panel") - 0.1, "pop", 0.4],
