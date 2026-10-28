@@ -426,7 +426,7 @@ export const DosLocales: React.FC = () => {
       {(Object.keys(S) as SceneId[])
         .filter((id) => id !== "hook")
         .map((id) => (
-          <Sfx key={id} at={S[id].from - 0.08} file="whoosh-soft" vol={fx.whoosh} />
+          <Sfx key={id} at={S[id].from - 0.08} file="whoosh-soft" vol={id === "notif" ? fx.whoosh * 0.35 : fx.whoosh} />
         ))}
       <Sfx at={V.a1.at + 0.6} file="pop" vol={fx.pop * 0.7} />
       <Sfx at={V.a1.at + 1.3} file="pop" vol={fx.pop * 0.5} />
@@ -434,8 +434,9 @@ export const DosLocales: React.FC = () => {
       <Sfx at={V.c1.at + 1.4} file="pop" vol={fx.pop} />
       <Sfx at={wordTime("c2", "razón")} file="tap" vol={fx.tap} />
       <Sfx at={DAYS_ENTER} file="ring-pulse" vol={fx.ringPulse} />
-      <Sfx at={S.notif.from + 0.4} file="haptic" vol={fx.haptic} />
-      <Sfx at={S.notif.from + 0.45} file="notification" vol={fx.notification} />
+      {/* bajo la voz ("le recuerda que…"): efectos suaves para no taparla */}
+      <Sfx at={S.notif.from + 0.4} file="haptic" vol={fx.haptic * 0.45} />
+      <Sfx at={S.notif.from + 0.45} file="notification" vol={fx.notification * 0.4} />
       <Sfx at={V.e1.at + 0.7} file="pop" vol={fx.pop * 0.7} />
       <Sfx at={wordTime("f2", "premios")} file="pop" vol={fx.pop} />
       <Sfx at={wordTime("f2", "avisos")} file="notification" vol={fx.notification * 0.7} />
