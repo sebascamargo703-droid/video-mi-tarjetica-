@@ -54,10 +54,10 @@ export const useCanvasTexture = (key: string, w: number, h: number, draw: (c: Ca
     if (!tex || handle.current === null) return;
     const hnd = handle.current;
     handle.current = null;
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       advance(performance.now());
       continueRender(hnd);
-    });
+    }, 0);
   }, [tex, advance]);
   return tex;
 };

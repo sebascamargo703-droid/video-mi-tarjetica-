@@ -1,5 +1,5 @@
 import React from "react";
-import { AbsoluteFill, Html5Audio, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Html5Audio, Sequence, getStaticFiles, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { audio, brand } from "./brand";
 import { copy, customer, headlines } from "./copy";
 import { font, tracking } from "./fonts";
@@ -418,7 +418,7 @@ export const DosLocales: React.FC = () => {
       <Grain />
 
       <Html5Audio src={staticFile(audio.music.file)} volume={(f) => musicVolume(f, fps, durationInFrames)} />
-      {VOICE.map((v) => (
+      {VOICE.filter((v) => getStaticFiles().some((f) => f.name === `voz/${v.id}.wav`)).map((v) => (
         <Sequence key={v.id} from={Math.round(V[v.id].at * fps)} layout="none">
           <Html5Audio src={staticFile(`voz/${v.id}.wav`)} volume={audio.voice.volume} />
         </Sequence>
