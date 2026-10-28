@@ -32,6 +32,9 @@ npx remotion studio
 npx remotion render DosLocales out/dos-locales.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000 --concurrency=3
 bash scripts/master-audio.sh out/dos-locales.mp4
 ```
+Si solo cambias audio (volúmenes, efectos, voz con la misma duración), no hace falta volver a
+renderizar el 3D: `python3 scripts/mix-audio.py out/audio-mezcla.wav` y luego
+`ffmpeg -i out/dos-locales.mp4 -i out/audio-mezcla.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k out/final.mp4`.
 El 3D necesita `--gl=angle` (en un servidor sin GPU se dibuja por software: ~25–40 min).
 Sin internet: antepón `REMOTION_LOCAL_FONTS=1`. Para revisar cámaras sin renderizar todo:
 `node scripts/preview-frames.mjs DosLocales out/prev 2 9.5 13` (segundos).
