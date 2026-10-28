@@ -2,7 +2,10 @@
 
 `dos-locales-vertical.mp4` · 1080×1920 · 53 s · escenas 3D, voz de ElevenLabs ("Lina", colombiana),
 titulares, subtítulos palabra por palabra y música (audio masterizado para redes).
-`portada.jpg` · fotograma "¿POR QUÉ?" con los dos cafés, para la portada del reel.
+`portada.jpg` / `portada.png` · portada diseñada (1080×1920): la calle 3D con "¿Por qué uno vive LLENO…"
+sobre Origen y "…y el otro CASI VACÍO?" sobre La Esquina, logo arriba; lo importante va en la franja
+central que muestra la cuadrícula del perfil.
+`portada-4x5-feed.jpg` · el mismo diseño en 1080×1350, por si la publicas también como imagen.
 
 Para Reels y TikTok. Dos cafés frente a frente (Origen y La Esquina, negocios de ejemplo): misma
 calle, productos y precios parecidos; la diferencia es que uno le da al cliente su tarjeta de sellos

@@ -31,6 +31,7 @@ npm install
 npx remotion studio
 npx remotion render DosLocales out/dos-locales.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000 --concurrency=3
 bash scripts/master-audio.sh out/dos-locales.mp4
+npx remotion still Portada out/portada.png --gl=angle --timeout=300000   # portada (src/Portada.tsx)
 ```
 Si solo cambias audio (volúmenes, efectos, voz con la misma duración), no hace falta volver a
 renderizar el 3D: `python3 scripts/mix-audio.py out/audio-mezcla.wav` y luego
