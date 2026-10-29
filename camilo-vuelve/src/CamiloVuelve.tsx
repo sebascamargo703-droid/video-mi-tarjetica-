@@ -34,7 +34,7 @@ const layers = (frame: number, list: [string, number][]): Layer[] =>
 /* Piezas comunes */
 
 /** Fondo oscuro con un halo verde que respira (detrás del lienzo 3D transparente). */
-const DarkBg: React.FC<{ glow?: number; y?: number }> = ({ glow = 1, y = 980 }) => {
+export const DarkBg: React.FC<{ glow?: number; y?: number }> = ({ glow = 1, y = 980 }) => {
   const { t } = useT();
   return (
     <AbsoluteFill style={{ background: C.bg }}>
@@ -53,7 +53,7 @@ const Scene: React.FC<{ id: SceneId; children: React.ReactNode }> = ({ id, child
 };
 
 /** Partículas de luz menta flotando. */
-const Motes: React.FC<{ n?: number; spread?: V3; seed?: string; color?: string; center?: V3 }> = ({ n = 30, spread = [7, 8, 5], seed = "m", color = "#8FE3C0", center = [0, 0, 0] }) => {
+export const Motes: React.FC<{ n?: number; spread?: V3; seed?: string; color?: string; center?: V3 }> = ({ n = 30, spread = [7, 8, 5], seed = "m", color = "#8FE3C0", center = [0, 0, 0] }) => {
   const { t } = useT();
   return (
     <>
@@ -100,7 +100,7 @@ const drawPaper = (c: CanvasRenderingContext2D, w: number, h: number) => {
   c.fillStyle = "rgba(107,74,46,0.5)";
   c.fillRect(36, 282, 260, 3);
 };
-const usePaper = () => useCanvasTexture("tarjeta-papel", 512, 320, drawPaper);
+export const usePaper = () => useCanvasTexture("tarjeta-papel", 512, 320, drawPaper);
 
 /** Etiqueta 2D anclada a un punto 3D. */
 const Label: React.FC<{ p: V3; cam: Cam; children: React.ReactNode; dy?: number; o?: number }> = ({ p, cam, children, dy = 0, o = 1 }) => {
