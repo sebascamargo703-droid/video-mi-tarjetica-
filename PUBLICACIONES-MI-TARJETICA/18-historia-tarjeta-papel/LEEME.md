@@ -14,8 +14,8 @@ Qué pasa en pantalla:
 Cómo publicarla:
 - Sube el MP4 como historia y deja la música de Instagram apagada (ya trae música).
 - No hace falta sticker: la gente responde escribiendo TARJETICA en "Enviar mensaje".
-  Opcional: un sticker de **Link** a mitarjetica.com en la zona libre entre la flecha y el logo no
-  hace falta, pero si lo pones, colócalo debajo de la flecha sin tapar "TARJETICA".
+  Opcional: si quieres sumar un sticker de **Link** a mitarjetica.com, ponlo debajo de la flecha,
+  sin tapar "TARJETICA".
 - Responde cada mensaje con el link: mitarjetica.com
 - Guárdala en el Destacado "Mi Tarjetica".
 
