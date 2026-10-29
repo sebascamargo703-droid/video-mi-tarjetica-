@@ -4,8 +4,8 @@
  */
 export type Icon = "beer" | "coffee" | "scissors" | "star" | "paw";
 export const business = { name: "Patitas Spa", short: "Patitas", emoji: "🐾", icon: "paw" as Icon };
-export const card = { stamps: 3, total: 8, customer: "Rocky", reward: "Baño gratis" };
-export const notification = { app: "PATITAS SPA", when: "ahora", title: "Rocky está cerca 🐾", body: "Le falta 1 patita para su baño gratis." };
+export const card = { stamps: 3, total: 8, customer: "Rocky", reward: "10% de descuento" };
+export const notification = { app: "PATITAS SPA", when: "ahora", title: "Rocky está cerca 🐾", body: "Le falta 1 patita para su premio." };
 
 export const copy = {
   lockTime: "5:18",
@@ -27,6 +27,7 @@ export const copy = {
     { name: "Vet Patitas", label: "Veterinaria", color: "#F26B5B", icon: "star" as Icon, stamps: 4, total: 8 },
     { name: "Michi & Can", label: "Tienda de mascotas", color: "#2F6FB3", icon: "paw" as Icon, stamps: 7, total: 10 },
   ],
+  rewardChips: ["10% de descuento", "o el premio que tú elijas"],
   free: { chips: ["Hasta 20 clientes", "Sin tarjeta de crédito"] },
   cta: { top: "COMENTA", word: "TARJETICA", comment: "Añade un comentario…", users: ["peluqueria.firulais", "vet.huellitas"], reply: "Mi Tarjetica", replyBody: "¡Hola! Aquí tienes el link 👉 mitarjetica.com" },
 };
@@ -56,7 +57,7 @@ export const headlines: Record<string, [string, string][]> = {
     ["Y [PATITAS]\nCOMO SELLOS", "patitas"],
   ],
   s4: [["CADA VISITA,\n[UNA PATITA]", "cada"]],
-  s5: [["8 PATITAS =\n[BAÑO GRATIS]", "ocho"]],
+  s5: [["8 PATITAS =\n[SU PREMIO]", "ocho"]],
   s6: [["PASA CERCA…\n[Y LE AVISA]", "pasa"]],
   s7: [["PARA [MASCOTAS]", "sirve"]],
   f1: [["EMPIEZA\n[GRATIS]", "empieza"]],

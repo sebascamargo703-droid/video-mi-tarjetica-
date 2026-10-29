@@ -387,11 +387,12 @@ const StampScene: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* 8 · A las ocho patitas… ¡baño gratis! */
+/* 8 · A las ocho patitas, su premio: un descuento… o el que tú escojas */
 const RewardScene: React.FC = () => {
   const { frame, fps, t, s } = useT();
   const ocho = s(wordTime("s5", "ocho"));
-  const gratis = wordTime("s5", "gratis") - 0.1;
+  const gratis = wordTime("s5", "premio") - 0.1;
+  const chipAt = [s(wordTime("s5", "descuento") - 0.1), s(wordTime("s5", "escojas") - 0.35)];
   const medal = sp(frame, fps, s(gratis), 10, 150);
   const j1 = hop(t, gratis, 0.45, 0.5);
   const j2 = hop(t, gratis + 0.6, 0.3, 0.4);
@@ -403,14 +404,22 @@ const RewardScene: React.FC = () => {
         <ShadowFloor opacity={0.2} />
         <Phone3D position={[-0.45, 1.15, 0]} rotation={[0.03, 0.18 + Math.sin(t * 0.8) * 0.05, -0.03]} scale={0.85} screens={layers(frame, [["w-s7-pulse", 0], ["w-s8", ocho]])} glow={interpolate(frame, [ocho, ocho + 4, ocho + 18], [0, 1, 0], clamp)} />
         {medal > 0 ? (
-          <group position={[0.42, 1.05, 0.95]} scale={medal * 1.05} rotation={[0.1, -0.4 + Math.sin(t * 1.6) * 0.4, 0.08]}>
+          <group position={[0.48, 1.62, 0.6]} scale={medal * 0.82} rotation={[0.1, -0.4 + Math.sin(t * 1.6) * 0.4, 0.08]}>
             <Disc3D src="screens/medal.png" r={0.42} t={0.07} />
             <Glow position={[0, 0, -0.1]} size={1.8} color="#E8B84A" opacity={0.45} />
           </group>
         ) : null}
         <Confetti t={t} at={gratis} origin={[0.2, 1.4, 0.5]} n={46} />
-        <Dog3D position={[0.62, j.y, 0.4]} rotation={[0, -0.35, 0]} scale={0.55} squash={j.sq} t={t} happy={1} wag={1} tilt={0.12} blink={blinkAt(t, 0.3)} />
+        <Dog3D position={[0.62, j.y, 1.0]} rotation={[0, -0.35, 0]} scale={0.5} squash={j.sq} t={t} happy={1} wag={1} tilt={0.12} blink={blinkAt(t, 0.3)} />
       </Stage>
+      {copy.rewardChips.map((c, i) => {
+        const p = sp(frame, fps, chipAt[i], 13, 170);
+        return p > 0 ? (
+          <div key={c} style={{ position: "absolute", left: 0, width: 960, top: 1120 + i * 100, display: "flex", justifyContent: "center", opacity: Math.min(1, p * 1.5), transform: `translateY(${(1 - p) * 40}px) scale(${0.9 + 0.1 * p})` }}>
+            <div style={{ padding: "16px 30px", borderRadius: 999, background: i ? "#FFFFFF" : C.gold, border: `3px solid ${i ? C.greenMid : C.goldLight}`, fontFamily: font, fontSize: 40, fontWeight: 800, color: C.ink, boxShadow: "0 12px 30px rgba(6,35,27,0.18)", whiteSpace: "nowrap" }}>{c}</div>
+          </div>
+        ) : null;
+      })}
     </Scene>
   );
 };

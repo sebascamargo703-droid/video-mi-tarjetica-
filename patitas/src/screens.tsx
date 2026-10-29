@@ -289,7 +289,7 @@ export const SCREENS: Record<string, Def> = {
   ...Object.fromEntries(copy.niches.map((n, i) => [`niche-${i}`, { w: 880, h: 540, el: <MiniCard name={n.name} color={n.color} icon={n.icon} stamps={n.stamps} total={n.total} width={880} /> }])),
   logo: { w: 1000, h: 340, transparent: true, el: <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}><Logo height={260} color="#fff" /></AbsoluteFill> },
   "notif-near": { w: 720, h: 270, transparent: true, el: <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}><Notification width={680} light /></AbsoluteFill> },
-  medal: { w: 512, h: 512, transparent: true, el: <Round bg={C.gold} fg={C.ink} ring={C.goldLight} lines={["BAÑO", "GRATIS"]} icon /> },
+  medal: { w: 512, h: 512, transparent: true, el: <Round bg={C.gold} fg={C.ink} ring={C.goldLight} lines={["SU", "PREMIO"]} icon /> },
   gratis: { w: 512, h: 512, transparent: true, el: <Round bg={C.highlight} fg={C.ink} ring="#C9F4E2" lines={["GRATIS"]} /> },
   token: { w: 256, h: 256, transparent: true, el: <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}><div style={{ width: 240, height: 240, borderRadius: "50%", background: C.cream, display: "flex", alignItems: "center", justifyContent: "center" }}><BusinessIcon size={160} color={C.green} /></div></AbsoluteFill> },
 };
