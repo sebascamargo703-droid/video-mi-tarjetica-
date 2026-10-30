@@ -27,10 +27,10 @@ const ease = (x: number) => EASE_INOUT(Math.max(0, Math.min(1, x)));
 /* 1 · Miniatura en la ventana del tren */
 
 /** Paisaje que pasa por la ventana: capas de colinas y árboles con desenfoque de movimiento. */
-const Landscape: React.FC<{ t: number; dark: number }> = ({ t, dark }) => {
+export const Landscape: React.FC<{ t: number; dark: number; dir?: 1 | -1 }> = ({ t, dark, dir = 1 }) => {
   const layer = (speed: number, seed: string, color: string, top: number, h: number, blur: number, n: number, kind: "hill" | "tree") => {
     const span = 2400;
-    const off = (t * speed) % span;
+    const off = ((((t * speed * dir) % span) + span) % span);
     return (
       <div style={{ position: "absolute", left: 0, top, width: 1080, height: h, overflow: "hidden", filter: `blur(${blur}px)` }}>
         {[0, 1].map((rep) =>
@@ -60,16 +60,16 @@ const Landscape: React.FC<{ t: number; dark: number }> = ({ t, dark }) => {
   };
   return (
     <AbsoluteFill style={{ background: "linear-gradient(180deg, #BFD9EA 0%, #D5E6E4 28%, #8DB574 52%, #4F8A3C 100%)", filter: `brightness(${1 - 0.85 * dark})` }}>
-      {layer(380, "far", "#86AE6E", 380, 560, 10, 6, "hill")}
-      {layer(900, "mid", "#5A8F3F", 520, 620, 14, 7, "hill")}
-      {layer(2200, "near", "#3C6E2A", 640, 640, 22, 14, "tree")}
+      {layer(380, "far", "#86AE6E", 380, 560, 14, 6, "hill")}
+      {layer(900, "mid", "#5A8F3F", 520, 620, 22, 7, "hill")}
+      {layer(2200, "near", "#3C6E2A", 640, 640, 34, 14, "tree")}
       {/* postes que pasan muy rápido */}
       {[0, 1].map((i) => {
-        const x = ((t * 3800 + i * 1900) % 3800) - 600;
+        const x = ((((t * 3800 * dir + i * 1900) % 3800) + 3800) % 3800) - 600;
         return <div key={i} style={{ position: "absolute", left: x, top: 0, width: 70, height: 1500, background: "linear-gradient(90deg, rgba(200,205,210,0), rgba(225,228,232,0.85) 40%, rgba(200,205,210,0))", filter: "blur(14px)" }} />;
       })}
       {/* rayas de velocidad */}
-      <AbsoluteFill style={{ background: "repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 3px, transparent 3px 60px)", transform: `translateX(${(t * 1800) % 60}px)`, mixBlendMode: "soft-light" }} />
+      <AbsoluteFill style={{ background: "repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 3px, transparent 3px 60px)", transform: `translateX(${(t * 1800 * dir) % 60}px)`, mixBlendMode: "soft-light" }} />
     </AbsoluteFill>
   );
 };
