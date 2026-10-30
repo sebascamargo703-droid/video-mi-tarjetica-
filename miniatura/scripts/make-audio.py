@@ -3,8 +3,10 @@
 0–4 s: tren (rumor + golpes de rieles) y un pad que crece con un "riser".
 4 s: impacto + whoosh y entra el ritmo (120 bpm) con el motor.
 7.6 s: whoosh y acordes más brillantes; se apaga al final.
-Uso (desde miniatura/): python3 scripts/make-audio.py
+Uso (desde miniatura/): python3 scripts/make-audio.py [duración corte1 corte2 archivo]
+  p. ej. versión horizontal: python3 scripts/make-audio.py 10 3.9 7.3 audio-h.wav
 """
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -12,8 +14,10 @@ import soundfile as sf
 from scipy.signal import butter, lfilter
 
 SR = 48000
-DUR = 11.0
-CUT1, CUT2 = 4.0, 7.6
+args = sys.argv[1:]
+DUR = float(args[0]) if args else 11.0
+CUT1, CUT2 = (float(args[1]), float(args[2])) if len(args) >= 3 else (4.0, 7.6)
+NAME = args[3] if len(args) >= 4 else "audio.wav"
 N = int(SR * DUR)
 t = np.arange(N) / SR
 rng = np.random.default_rng(7)
@@ -121,6 +125,6 @@ add(lp(chords * gate, 2500) * env(CUT2, DUR, 0.3, 0.8), 0.035)
 # master
 out = out / np.max(np.abs(out)) * 0.89
 out *= np.clip((DUR - t) / 0.7, 0, 1)[:, None]
-dst = Path(__file__).resolve().parent.parent / "public" / "audio.wav"
+dst = Path(__file__).resolve().parent.parent / "public" / NAME
 sf.write(dst, out.astype(np.float32), SR)
 print(dst, f"{DUR}s")

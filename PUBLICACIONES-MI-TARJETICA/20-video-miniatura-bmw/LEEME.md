@@ -1,5 +1,12 @@
 # Video "Miniatura" con tu BMW
 
+**`miniatura-bmw-16x9.mp4` (recomendado, igual a la referencia)** · 1920×1080 · 10 s: el BMW a escala en
+la ventana del tren → entra al túnel y aparece **andando** (ruedas girando, luces del túnel pasándole
+por encima, faros encendidos) → sigue de noche por la autopista con la ciudad al fondo.
+Hecho con el recorte de tu foto sobre un fondo 3D con la misma perspectiva.
+
+Versión anterior (vertical):
+
 `miniatura-bmw-vertical.mp4` · 1080×1920 · 11 s · sin textos ni voz (música y efectos sintetizados,
 sin canciones de terceros). `portada.jpg` · cuadro del carro real con los faros encendidos.
 
