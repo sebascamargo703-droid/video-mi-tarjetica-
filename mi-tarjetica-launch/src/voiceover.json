@@ -1,0 +1,118 @@
+{
+  "voice": "ef_dora",
+  "lang": "es-419",
+  "lines": [
+    {
+      "id": "01-gancho",
+      "scene": "hook",
+      "at": 0.12,
+      "speed": 1.08,
+      "text": "¿Tu cliente perdió otra vez la tarjeta de sellos?",
+      "durationSec": 2.746
+    },
+    {
+      "id": "02-problema",
+      "scene": "problem",
+      "at": 0.2,
+      "speed": 1.0,
+      "text": "Y con ella... su próxima visita.",
+      "durationSec": 1.948
+    },
+    {
+      "id": "03-revelacion",
+      "scene": "reveal",
+      "at": 0.45,
+      "speed": 1.02,
+      "text": "Por eso creamos Mi Tarjetica. Tu tarjeta de sellos, ahora en el celular.",
+      "durationSec": 4.207
+    },
+    {
+      "id": "04-wallet",
+      "scene": "wallet",
+      "at": 0.35,
+      "speed": 1.05,
+      "text": "Vive en el Uálet de tu cliente.",
+      "durationSec": 1.838
+    },
+    {
+      "id": "05-sin-app",
+      "scene": "wallet",
+      "at": 2.75,
+      "speed": 1.05,
+      "text": "No tiene que descargar ninguna app.",
+      "durationSec": 2.071
+    },
+    {
+      "id": "06-no-se-pierde",
+      "scene": "wallet",
+      "at": 5.0,
+      "speed": 1.0,
+      "text": "Y no se pierde. ¡Nunca!",
+      "durationSec": 1.373
+    },
+    {
+      "id": "07-sellos",
+      "scene": "stamps",
+      "at": 0.3,
+      "speed": 1.02,
+      "text": "Cada visita, un sello.",
+      "durationSec": 1.48
+    },
+    {
+      "id": "08-premio",
+      "scene": "stamps",
+      "at": 2.1,
+      "speed": 1.0,
+      "text": "Y al décimo... ¡premio!",
+      "durationSec": 1.437
+    },
+    {
+      "id": "09-sola",
+      "scene": "stamps",
+      "at": 4.0,
+      "speed": 1.05,
+      "text": "Todo se actualiza solo.",
+      "durationSec": 1.45
+    },
+    {
+      "id": "10-cerca",
+      "scene": "nearby",
+      "at": 0.3,
+      "speed": 1.08,
+      "text": "Y cuando pasa cerca de tu negocio, le llega un aviso directo a su celular.",
+      "durationSec": 4.124
+    },
+    {
+      "id": "11-firmado",
+      "scene": "fraud",
+      "at": 0.25,
+      "speed": 1.05,
+      "text": "Cada sello queda firmado: cajero, hora y caja. ¡Cero trampa!",
+      "durationSec": 3.417
+    },
+    {
+      "id": "12-negocios",
+      "scene": "business",
+      "at": 0.2,
+      "speed": 1.1,
+      "text": "Barberías, cafeterías, espás... hecho para tu negocio.",
+      "durationSec": 3.033
+    },
+    {
+      "id": "13-mensaje",
+      "scene": "message",
+      "at": 0.15,
+      "speed": 0.98,
+      "text": "¿El resultado? Tus clientes vuelven más seguido.",
+      "durationSec": 2.713
+    },
+    {
+      "id": "14-cta",
+      "scene": "cta",
+      "at": 0.35,
+      "speed": 1.03,
+      "text": "Empieza gratis hoy, sin tarjeta de crédito, en mi tarjetica punto com.",
+      "durationSec": 4.1
+    }
+  ]
+}
