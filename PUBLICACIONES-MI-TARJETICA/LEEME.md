@@ -25,6 +25,7 @@ Colores de marca: verde `#0E5244`, tinta `#1B1613`, papel `#F6F2EA`, menta `#69D
 | `19-video-patitas/` | Reel 3D "Patitas" con Rocky (schnauzer 3D) para peluquerías caninas, veterinarias y tiendas de mascotas: patitas como sellos, premio a elección del negocio (p. ej. un descuento), aviso por cercanía. Cierra con "Comenta TARJETICA" (voz temporal hasta reactivar ElevenLabs) | MP4 1080×1920, ~42 s + portada | Reels / TikTok |
 | `20-video-miniatura-bmw/` | Video "Miniatura" con el BMW Serie 4 del cliente, igual a la referencia: a escala en la ventana de un tren y luego andando por un túnel y por la autopista de noche (también versión vertical en la azotea). Sin textos ni voz | MP4 1920×1080, 10 s (+ vertical 11 s) + portada | Reels / TikTok / YouTube |
 | `21-pack-semana-instagram/` | Pack de una semana: carrusel "Tu cliente no volvió" (7), carrusel "3 avisos que hacen volver" (6), post frase y 3 historias interactivas (encuesta, cuestionario, pregunta) + captions y calendario | PNG 1080×1350 y 1080×1920 | Feed e historias de Instagram |
+| `22-video-oficina-tiktok/` | TikTok 3D "Le pedí ayuda con mi negocio… y me montó una oficina entera dentro del celular": los Tarjeticos (sellos, cumpleaños, cercanía, premios y datos) trabajan por ti mientras atiendes. Cierra con "Comenta TARJETICA" (voz temporal hasta reactivar ElevenLabs) | MP4 1080×1920, ~54 s + portada | TikTok / Reels |
 | `06-carruseles-editoriales/` | 4 carruseles editoriales (verde #145B44 / blanco): cuánto vale un cliente, premios que funcionan, cartoncito vs. Mi Tarjetica, cómo funciona — cada uno con `caption.txt` | PNG 1080×1350 | Feed de Instagram (carrusel) |
 
 **En total:** 11 videos, 71 imágenes de carrusel (10 carruseles), 14 historias y 6 posts, más 8 historias de precios con su portada de destacada.
@@ -66,6 +67,7 @@ Todo se genera desde el proyecto `../mi-tarjetica-launch/` (Remotion):
 - Video Camilo vuelve: proyecto `../camilo-vuelve/` → `npx remotion render CamiloVuelve out/camilo-vuelve.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000` + `bash scripts/master-audio.sh out/camilo-vuelve.mp4`
 - Historia tarjeta de papel (3D): proyecto `../camilo-vuelve/` → `npx remotion render Historia out/historia.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000` + `bash scripts/master-audio.sh out/historia.mp4`
 - Video Patitas (3D): proyecto `../patitas/` → `npx remotion render Patitas out/patitas.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000` + `bash scripts/master-audio.sh out/patitas.mp4`
+- Video Oficina (3D, TikTok): proyecto `../oficina/` → `npx remotion render Oficina out/oficina.mp4 --codec=h264 --crf=16 --gl=angle --timeout=300000` + `bash scripts/master-audio.sh out/oficina.mp4`
 - Video ¿Es legal?: proyecto `../es-legal/` → `npx remotion render EsLegal out/es-legal.mp4 --codec=h264 --crf=16` + `bash scripts/master-audio.sh out/es-legal.mp4`
 - Foto de grupo de WhatsApp: `python3 ../whatsapp-grupo/make.py` (y copiar `whatsapp-grupo/out/` a `13-foto-grupo-whatsapp/`)
 - Banner YouTube Meguiar's: proyecto `../cenefa-meguiars/` → `npx remotion still src/index.ts BannerYouTube out/banner-youtube.png` → `12-banner-youtube-meguiars/`
