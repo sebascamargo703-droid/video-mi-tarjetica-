@@ -11,3 +11,5 @@ out/
 
 # Raw camera clips (heavy files)
 clips_seleccionados/
+# Local secrets written by `elevenlabs onboard`
+/.env.local

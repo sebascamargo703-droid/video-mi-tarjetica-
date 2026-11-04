@@ -1,0 +1,180 @@
+{
+  "voice": "ef_dora",
+  "lang": "es-419",
+  "stories": [
+    {
+      "id": "IG01-Pregunta",
+      "duration": 9,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.05,
+          "text": "¿Sabes cuántos clientes no volvieron este mes?",
+          "durationSec": 2.624
+        },
+        {
+          "id": "b",
+          "at": 3.6,
+          "speed": 1.05,
+          "text": "Muchas veces no es el servicio... es que se les olvida volver.",
+          "durationSec": 3.669
+        }
+      ]
+    },
+    {
+      "id": "IG02-Recordatorio",
+      "duration": 9.5,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.05,
+          "text": "Mi Tarjetica se lo recuerda.",
+          "durationSec": 1.664
+        },
+        {
+          "id": "b",
+          "at": 2.4,
+          "speed": 1.08,
+          "text": "Cuando pasa cerca de tu negocio, le llega un aviso directo a su celular.",
+          "durationSec": 3.968
+        }
+      ]
+    },
+    {
+      "id": "IG03-ComoFunciona",
+      "duration": 11,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.05,
+          "text": "Así de fácil.",
+          "durationSec": 1.003
+        },
+        {
+          "id": "b",
+          "at": 1.6,
+          "speed": 1.08,
+          "text": "Tu cliente guarda la tarjeta en su celular, sin descargar apps.",
+          "durationSec": 3.477
+        },
+        {
+          "id": "c",
+          "at": 5.35,
+          "speed": 1.05,
+          "text": "Cada visita, le pones un sello.",
+          "durationSec": 1.92
+        },
+        {
+          "id": "d",
+          "at": 7.7,
+          "speed": 1.05,
+          "text": "Y al completarla, gana su premio.",
+          "durationSec": 2.069
+        }
+      ]
+    },
+    {
+      "id": "IG04-Sellos",
+      "duration": 7,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.4,
+          "speed": 1.02,
+          "text": "Cada sello lo acerca a su premio...",
+          "durationSec": 2.027
+        },
+        {
+          "id": "b",
+          "at": 3.0,
+          "speed": 1.02,
+          "text": "y a volver a tu negocio.",
+          "durationSec": 1.515
+        }
+      ]
+    },
+    {
+      "id": "IG05-Control",
+      "duration": 8.5,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.05,
+          "text": "Y tú lo controlas todo.",
+          "durationSec": 1.515
+        },
+        {
+          "id": "b",
+          "at": 2.3,
+          "speed": 1.08,
+          "text": "Cada sello queda firmado con cajero, hora y caja. ¡Cero trampa!",
+          "durationSec": 3.499
+        }
+      ]
+    },
+    {
+      "id": "IG06-Mito",
+      "duration": 8,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.08,
+          "text": "¿Crees que tus clientes no van a descargar otra app?",
+          "durationSec": 2.859
+        },
+        {
+          "id": "b",
+          "at": 3.6,
+          "speed": 1.05,
+          "text": "Tranqui: no tienen que descargar nada.",
+          "durationSec": 2.133
+        }
+      ]
+    },
+    {
+      "id": "IG07-Gratis",
+      "duration": 10,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.02,
+          "text": "Empieza gratis, hasta veinte clientes.",
+          "durationSec": 2.325
+        },
+        {
+          "id": "b",
+          "at": 3.0,
+          "speed": 1.1,
+          "text": "No necesitas tarjeta de crédito. Y cuando crezcas, desde veintinueve mil novecientos pesos al mes.",
+          "durationSec": 5.547
+        }
+      ]
+    },
+    {
+      "id": "IG08-Link",
+      "duration": 8,
+      "lines": [
+        {
+          "id": "a",
+          "at": 0.3,
+          "speed": 1.05,
+          "text": "Toca el enlace y crea tu tarjeta hoy.",
+          "durationSec": 2.325
+        },
+        {
+          "id": "b",
+          "at": 3.1,
+          "speed": 1.0,
+          "text": "Tus clientes van a volver más seguido.",
+          "durationSec": 2.389
+        }
+      ]
+    }
+  ]
+}
