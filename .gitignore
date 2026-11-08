@@ -11,3 +11,5 @@ out/
 
 # Raw camera clips (heavy files)
 clips_seleccionados/
+.env.local
+.env*.local
