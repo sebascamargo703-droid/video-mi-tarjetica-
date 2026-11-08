@@ -33,7 +33,8 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "generate:seedance": "node --experimental-strip-types --no-warnings index.ts"
+    "generate:seedance": "node --experimental-strip-types --no-warnings index.ts",
+    "generate:storyboard": "node --experimental-strip-types --no-warnings storyboard.ts"
   },
   "sideEffects": [
     "*.css"
