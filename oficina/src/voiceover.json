@@ -1,0 +1,116 @@
+[
+  {
+    "id": "h1",
+    "say": "Le pedí a Mi Tarjetica que me ayudara con mi negocio…",
+    "pause": 0.15,
+    "dur": 2.938
+  },
+  {
+    "id": "h2",
+    "say": "y me montó una oficina entera dentro del celular.",
+    "pause": 0.45,
+    "dur": 2.736
+  },
+  {
+    "id": "t1",
+    "say": "¿Y estos quiénes son?",
+    "pause": 0.2,
+    "dur": 1.164
+  },
+  {
+    "id": "t2",
+    "say": "Tu equipo.",
+    "pause": 0.45,
+    "dur": 0.711
+  },
+  {
+    "id": "w1",
+    "say": "Este pone los sellos: cada vez que un cliente paga, el sello le llega solito al celular.",
+    "pause": 0.4,
+    "dur": 4.656
+  },
+  {
+    "id": "w2",
+    "say": "Este se acuerda de los cumpleaños… y les manda un regalo.",
+    "pause": 0.4,
+    "dur": 2.863
+  },
+  {
+    "id": "w3",
+    "say": "Este vigila la cuadra: si un cliente pasa cerca, le avisa que le falta un sello.",
+    "pause": 0.4,
+    "dur": 4.386
+  },
+  {
+    "id": "w4",
+    "say": "Este cuenta los premios, y le dice a cada cliente cuánto le falta.",
+    "pause": 0.4,
+    "dur": 3.413
+  },
+  {
+    "id": "w5",
+    "say": "Y ese de ahí mira los datos: si alguien lleva un mes sin venir, le manda una promo.",
+    "pause": 0.5,
+    "dur": 4.261
+  },
+  {
+    "id": "q1",
+    "say": "¿Cuántos clientes llevan?",
+    "pause": 0.2,
+    "dur": 1.45
+  },
+  {
+    "id": "q2",
+    "say": "Doscientos cuarenta y ocho.",
+    "pause": 0.35,
+    "dur": 1.678
+  },
+  {
+    "id": "q3",
+    "say": "¿Y cuántos volvieron este mes?",
+    "pause": 0.2,
+    "dur": 1.72
+  },
+  {
+    "id": "q4",
+    "say": "Más de la mitad.",
+    "pause": 0.35,
+    "dur": 1.019
+  },
+  {
+    "id": "q5",
+    "say": "¿Cuándo descansan?",
+    "pause": 0.2,
+    "dur": 1.157
+  },
+  {
+    "id": "q6",
+    "say": "Nunca.",
+    "pause": 0.5,
+    "dur": 0.591
+  },
+  {
+    "id": "y1",
+    "say": "¿Y yo qué hago en mi propio negocio?",
+    "pause": 0.25,
+    "dur": 1.896
+  },
+  {
+    "id": "y2",
+    "say": "Lo más importante: atender a tus clientes.",
+    "pause": 0.5,
+    "dur": 2.335
+  },
+  {
+    "id": "k1",
+    "say": "Envíaselo a ese amigo que todavía da tarjetas de papel…",
+    "pause": 0.25,
+    "dur": 3.161
+  },
+  {
+    "id": "k2",
+    "say": "y comenta \"Tarjetica\" para crear la tuya gratis.",
+    "pause": 0,
+    "dur": 2.712
+  }
+]

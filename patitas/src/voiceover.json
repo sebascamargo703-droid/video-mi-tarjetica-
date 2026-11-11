@@ -1,0 +1,74 @@
+[
+  {
+    "id": "h1",
+    "say": "Este cliente no habla… pero sí puede volver.",
+    "pause": 0.45,
+    "dur": 2.437
+  },
+  {
+    "id": "h2",
+    "say": "Baño, uñas, moñito… y se va feliz.",
+    "pause": 0.45,
+    "dur": 2.112
+  },
+  {
+    "id": "h3",
+    "say": "¿Pero el próximo mes vuelve contigo… o se va para otra peluquería?",
+    "pause": 0.5,
+    "dur": 3.412
+  },
+  {
+    "id": "s1",
+    "say": "Dale a su humano tu tarjeta de sellos, en el celular.",
+    "pause": 0.35,
+    "dur": 2.833
+  },
+  {
+    "id": "s2",
+    "say": "Escanea tu QR y la guarda en su billetera, sin descargar ninguna app.",
+    "pause": 0.4,
+    "dur": 4.089
+  },
+  {
+    "id": "s3",
+    "say": "Con tu logo, tus colores… y patitas como sellos.",
+    "pause": 0.4,
+    "dur": 2.882
+  },
+  {
+    "id": "s4",
+    "say": "Cada baño o compra, le pones una patita.",
+    "pause": 0.3,
+    "dur": 2.416
+  },
+  {
+    "id": "s5",
+    "say": "A las ocho patitas, su premio: un descuento… o el que tú escojas.",
+    "pause": 0.45,
+    "dur": 3.411
+  },
+  {
+    "id": "s6",
+    "say": "Y cuando pasa cerca, su celular le avisa: te falta una patita.",
+    "pause": 0.45,
+    "dur": 3.509
+  },
+  {
+    "id": "s7",
+    "say": "Sirve para peluquerías caninas, veterinarias y tiendas de mascotas.",
+    "pause": 0.4,
+    "dur": 3.587
+  },
+  {
+    "id": "f1",
+    "say": "Empieza gratis, hasta con veinte clientes.",
+    "pause": 0.4,
+    "dur": 2.461
+  },
+  {
+    "id": "k1",
+    "say": "Comenta \"Tarjetica\" y te mando el link.",
+    "pause": 0,
+    "dur": 2.222
+  }
+]

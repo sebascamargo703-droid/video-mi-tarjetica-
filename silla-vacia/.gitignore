@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+out/*.mp4
+out/*.log
+out/*.wav
+__pycache__/
