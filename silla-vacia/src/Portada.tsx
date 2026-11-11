@@ -2,8 +2,7 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { COLORS, VIDEO } from "./constants";
 import { FONT } from "./fonts";
-import { andresAt, cameraAt, doorAt, fogAt, interiorAt, lampAt } from "./story";
-import { ganchoCam } from "./scenes/Scene1Gancho";
+import { andresAt, doorAt, fogAt, interiorAt, lampAt, type Cam } from "./story";
 import { Stage } from "./three/Stage";
 import { LogoMark } from "./ui/LogoMark";
 
@@ -15,7 +14,9 @@ import { LogoMark } from "./ui/LogoMark";
  */
 const T = 3.4; // momento del gancho que se usa como foto
 const PANEL = { w: 700, h: 800 };
-const SCALE = 0.72;
+const SCALE = PANEL.w / VIDEO.width;
+/** Cámara propia de la portada: silla completa con el cono de luz. */
+const CAM: Cam = { pos: [0.55, 1.45, -0.45], target: [-0.7, 1.02, -3.2], fov: 56 };
 
 export const Portada: React.FC = () => {
   const head: React.CSSProperties = { position: "absolute", left: 0, right: 0, textAlign: "center", fontFamily: FONT.text, fontWeight: 800, color: COLORS.white, letterSpacing: "-0.04em", lineHeight: 1.02, textShadow: "0 10px 40px rgba(0,0,0,0.5)" };
@@ -28,8 +29,8 @@ export const Portada: React.FC = () => {
       <div style={{ ...head, top: 392, fontSize: 80 }}>Esta silla era de Andrés…</div>
       {/* foto 3D del gancho */}
       <div style={{ position: "absolute", left: (VIDEO.width - PANEL.w) / 2, top: 520, width: PANEL.w, height: PANEL.h, borderRadius: 44, overflow: "hidden", boxShadow: "0 40px 100px rgba(0,0,0,0.55), 0 0 0 6px rgba(143,227,192,0.35)" }}>
-        <div style={{ position: "absolute", left: (PANEL.w - VIDEO.width * SCALE) / 2, top: -150, width: VIDEO.width, height: VIDEO.height, transform: `scale(${SCALE})`, transformOrigin: "0 0" }}>
-          <Stage T={T} cam={cameraAt(ganchoCam, T)} andres={andresAt(T)} lamp={lampAt(T)} interior={interiorAt(T)} door={doorAt(T)} fog={fogAt(T)} />
+        <div style={{ position: "absolute", left: 0, top: (PANEL.h - VIDEO.height * SCALE) / 2, width: VIDEO.width, height: VIDEO.height, transform: `scale(${SCALE})`, transformOrigin: "0 0" }}>
+          <Stage T={T} cam={CAM} andres={andresAt(T)} lamp={lampAt(T)} interior={interiorAt(T)} door={doorAt(T)} fog={fogAt(T)} />
         </div>
       </div>
       <div style={{ ...head, top: 1362 }}>
